@@ -15,7 +15,13 @@ export class ProductCard {
     cartService = inject(CartService);
 
     addToCart(product: Product) {
-        this.cartService.addToCart(this.product());
-        console.log(`Producto ${this.product().title} agregado al carrito.`);
+        const isProductRepeated = this.cartService.checkItemsRepeated(product.id);
+        if (isProductRepeated) {
+            alert('Este producto ya está en el carrito.');
+            return;
+        }
+        this.cartService.addToCart(product); 
     }
+
+
 }

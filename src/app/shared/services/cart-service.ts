@@ -7,6 +7,7 @@ import { Product } from '../models/product.model';
 export class CartService {
 
   cart = signal<Product[]>([]);
+  
 
   addToCart(product: Product) {
     this.cart.update((currentCart) => [...currentCart, product]);
@@ -18,5 +19,11 @@ export class CartService {
       currentCart.filter((item) => item.id !== productId)
     );
   }
+
+  checkItemsRepeated(productId: number): boolean {
+    return this.cart().some((item) => item.id === productId);
+  }
+
+  
   
 }

@@ -1,94 +1,6 @@
-<!-- 
-<div class="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-6 flex flex-col justify-between h-full relative overflow-hidden">
-    
-    <div class="flex items-center justify-center h-[150px] w-full">
-        <img [src]="product().image" [alt]="product().title" class="max-w-full max-h-full object-contain" />
-    </div>
-
-    <div class="flex flex-col flex-grow mt-4">
-        <span class="text-md font-bold line-clamp-2 min-h-[3rem] text-slate-800">
-            {{ product().title }}
-        </span>
-        <span class="text-lg font-bold text-slate-900 mt-1">
-            {{ '$' + product().price }}
-        </span>
-    </div>
-
-    <div class="flex justify-center mt-auto pt-6">
-        <app-primary-button
-            label="Agregar a carrito"
-            [disabled]="product().stock === 0"
-            (btnClicked)="addToCart(product())"
-        ></app-primary-button>
-    </div>
-
-    <span class="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-white/80"
-        [class]="product().stock ? 'text-green-600' : 'text-red-600'">
-        @if (product().stock) { Stock: {{ product().stock }} } @else { Sin stock }
-    </span>
-</div> -->
-
-
-<!-- <div class="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-2xl p-6 flex flex-col justify-between h-full relative">
-    
-    <div class="flex items-center justify-center h-[150px] w-full bg-gray-50/50 rounded-xl">
-        <img [src]="product().image" [alt]="product().title" class="max-w-full max-h-full object-contain p-2" />
-    </div>
-
-    <div class="flex flex-col flex-grow mt-4">
-        <span class="text-md font-semibold line-clamp-2 min-h-[3rem] text-gray-800">
-            {{ product().title }}
-        </span>
-        <span class="text-xl font-black text-indigo-600 mt-1">
-            {{ '$' + product().price }}
-        </span>
-    </div>
-
-    <div class="flex justify-center mt-auto pt-4">
-        <app-primary-button
-            label="Agregar a carrito"
-            class="w-full"
-            [disabled]="product().stock === 0"
-            (btnClicked)="addToCart(product())"
-        ></app-primary-button>
-    </div>
-
-    <span class="absolute top-3 right-3 text-xs font-medium px-2 py-0.5 rounded-lg"
-        [class]="product().stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-        {{ product().stock ? 'En Stock' : 'Agotado' }}
-    </span>
-</div> -->
-
-
-<!-- <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col justify-between h-full relative group">
-    
-    <div class="flex items-center justify-center h-[160px] w-full overflow-hidden">
-        <img [src]="product().image" [alt]="product().title" 
-             class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300" />
-    </div>
-
-    <div class="flex flex-col flex-grow mt-6">
-        <span class="text-sm font-medium text-slate-500 uppercase tracking-tight">Producto</span>
-        <span class="text-lg font-bold line-clamp-2 min-h-[3.5rem] text-slate-900 leading-tight">
-            {{ product().title }}
-        </span>
-        <div class="flex items-center justify-between mt-4">
-            <span class="text-2xl font-light text-slate-900">{{ '$' + product().price }}</span>
-        </div>
-    </div>
-
-    <div class="flex justify-center mt-6">
-        <app-primary-button
-            label="Agregar al carrito"
-            class="w-full"
-            [disabled]="product().stock === 0"
-            (btnClicked)="addToCart(product())"
-        ></app-primary-button>
-    </div>
-</div> -->
-
-<div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 flex flex-col justify-between h-full relative group transition-all hover:border-slate-300 shadow-sm hover:shadow-md w-full">
-    
+<div
+    class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 flex flex-col justify-between h-full relative group transition-all hover:border-slate-300 shadow-sm hover:shadow-md w-full"
+>
     <span
         class="absolute top-3 right-3 text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-white/90 shadow-sm z-10"
         [class]="product().rating.count > 0 ? 'text-green-600' : 'text-red-500'"
@@ -101,16 +13,19 @@
     </span>
 
     <div class="flex items-center justify-center h-[180px] sm:h-[160px] w-full overflow-hidden">
-        <img [src]="product().image" [alt]="product().title" 
-             class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+        <img
+            [src]="product().image"
+            [alt]="product().title"
+            class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+        />
     </div>
 
     <div class="flex flex-col flex-grow mt-4 sm:mt-6">
-        <span class="text-xs font-medium text-slate-500 uppercase tracking-tight">
-            Producto
-        </span>
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-tight"> Producto </span>
 
-        <span class="text-lg font-bold text-slate-900 leading-tight mt-1 sm:line-clamp-2 sm:min-h-[3.5rem]">
+        <span
+            class="text-lg font-bold text-slate-900 leading-tight mt-1 sm:line-clamp-2 sm:min-h-[3.5rem]"
+        >
             {{ product().title }}
         </span>
 

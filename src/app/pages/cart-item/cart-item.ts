@@ -18,4 +18,9 @@ export class CartItem {
     this.cartService.removeFromCart(itemId);
   }
 
+  onQuantityChange(productId:number, quantity:any) {
+    //this.cartService.updateItemQuantity(this.item.id, newQuantity);
+    //this.cartService.addToCart(product);
+  }
+
 }
