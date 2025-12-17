@@ -1,1 +1,8 @@
-<button class="bg-blue-500 text-white px-4 py-2 rounded shadow-md hover:bg-blue-600 transition-colors" (click)="onClick()">{{ label() }}</button>
+<button
+    class="bg-blue-500 text-white px-4 py-2 rounded shadow-md hover:bg-blue-600 transition-colors cursor-pointer"
+    (click)="onClick()"
+    [disabled]="disabled()"
+    [class]="disabled() ? 'opacity-50 cursor-not-allowed' : ''"
+>
+    {{ label() }}
+</button>

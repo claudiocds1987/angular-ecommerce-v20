@@ -1,0 +1,29 @@
+
+<div class="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-6 flex flex-col justify-between h-full relative overflow-hidden">
+    
+    <div class="flex items-center justify-center h-[150px] w-full">
+        <img [src]="product().image" [alt]="product().title" class="max-w-full max-h-full object-contain" />
+    </div>
+
+    <div class="flex flex-col flex-grow mt-4">
+        <span class="text-md font-bold line-clamp-2 min-h-[3rem] text-slate-800">
+            {{ product().title }}
+        </span>
+        <span class="text-lg font-bold text-slate-900 mt-1">
+            {{ '$' + product().price }}
+        </span>
+    </div>
+
+    <div class="flex justify-center mt-auto pt-6">
+        <app-primary-button
+            label="Agregar a carrito"
+            [disabled]="product().stock === 0"
+            (btnClicked)="addToCart(product())"
+        ></app-primary-button>
+    </div>
+
+    <span class="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-white/80"
+        [class]="product().stock ? 'text-green-600' : 'text-red-600'">
+        @if (product().stock) { Stock: {{ product().stock }} } @else { Sin stock }
+    </span>
+</div>

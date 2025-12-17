@@ -1,1 +1,5 @@
-<p>products-list works!</p>
+<div class="p-8 grid grid-cols-4 gap-6">
+    @for (product of products(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+    }
+</div>

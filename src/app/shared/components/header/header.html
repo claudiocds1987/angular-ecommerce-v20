@@ -1,4 +1,7 @@
 <div class="header-container flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-600">{{ title() }}</h1>
-    <app-primary-button [label]="'Carrito'" (btnClicked)="redirectToCart()"></app-primary-button>
+    <button class="text-xl font-bold cursor-pointer" (click)="redirectToHomePage()">{{ title() }}</button>
+    <app-primary-button
+        [label]="'Carrito ' + cartService.cart().length"
+        (btnClicked)="redirectToCart()"
+    ></app-primary-button>
 </div>
