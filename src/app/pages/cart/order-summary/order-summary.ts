@@ -12,12 +12,14 @@ export class OrderSummary {
 
   cartService = inject(CartService);
 
-  total = computed(() => {
+  total = this.cartService.totalPrice;
+
+  /* total = computed(() => {
     //return this.cartService.cart().reduce((sum, item) => sum + item.price, 0);
     let total = 0;
     for (const item of this.cartService.cart()) {
       total += item.price;
     }
     return total;
-  });
+  }); */
 }
