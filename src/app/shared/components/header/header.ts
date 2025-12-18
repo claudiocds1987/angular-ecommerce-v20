@@ -17,7 +17,10 @@ export class Header {
     private _router = inject(Router);
 
     redirectToCart() {
-      
+        if(this.cartService.cart().length === 0) {
+            alert('El carrito está vacío.');
+            return;
+        }
         this._router.navigate(['/cart']);
     }
 

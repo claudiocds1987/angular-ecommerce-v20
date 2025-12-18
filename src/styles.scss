@@ -1,3 +1,47 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+/* src/styles.css */
+
+:root {
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+// Efecto de brillo que cruza la tarjeta
+.glass-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+//-- El rayo de luz
+.glass-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -200%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: all 0.7s ease-in-out;
+  z-index: 30;
+  pointer-events: none;
+}
+
+// -- Al pasar el mouse, el rayo cruza toda la card
+.glass-shine:hover::after {
+  left: 200%;
+}
+
 
