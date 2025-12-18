@@ -1,5 +1,5 @@
 <div
-    class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 flex flex-col justify-between h-full relative group transition-all hover:border-slate-300 shadow-sm hover:shadow-md w-full"
+    class="fade-in-fwd bg-white border border-slate-200 rounded-xl p-5 sm:p-6 flex flex-col justify-between h-full relative group transition-all hover:border-slate-300 shadow-sm hover:shadow-md w-full"
 >
     <span
         class="absolute top-3 right-3 text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-white/90 shadow-sm z-10"
@@ -40,7 +40,6 @@
         <app-primary-button
             label="Comprar"
             [iconUrl]="'/icons/shopping-bag.svg'"
-           
             [disabled]="product().rating.count === 0"
             (btnClicked)="addToCart(product())"
         ></app-primary-button>
