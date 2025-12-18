@@ -8,8 +8,9 @@ import { Component, input, output } from '@angular/core';
     styleUrl: './primary-button.scss',
 })
 export class PrimaryButton {
-    label = input<string>('');
+    label = input<string | number>('');
     disabled = input<boolean>(false);
+    iconUrl = input<string | null>(null);
     btnClicked = output<void>();
 
     onClick() {

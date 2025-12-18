@@ -1,7 +1,13 @@
 <div class="header-container flex items-center justify-between">
-    <button class="text-xl font-bold cursor-pointer" (click)="redirectToHomePage()">{{ title() }}</button>
+    <button (click)="redirectToHomePage()" class="cursor-pointer">
+        <div class="flex items-center gap-2">
+            <img [src]="'/icons/angular.svg'" alt="Logo" class="w-10 h-10" />
+            <span>{{ title() }}</span>
+        </div>
+    </button>
     <app-primary-button
-        [label]="'Carrito ' + cartService.cart().length"
+        [label]="cartService.cart().length"
+        [iconUrl]="'/icons/shopping-cart.svg'"
         (btnClicked)="redirectToCart()"
     ></app-primary-button>
 </div>

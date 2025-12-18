@@ -38,8 +38,9 @@
 
     <div class="flex justify-center mt-6">
         <app-primary-button
-            label="Agregar al carrito"
-            class="w-full"
+            label="Comprar"
+            [iconUrl]="'/icons/shopping-bag.svg'"
+           
             [disabled]="product().rating.count === 0"
             (btnClicked)="addToCart(product())"
         ></app-primary-button>
