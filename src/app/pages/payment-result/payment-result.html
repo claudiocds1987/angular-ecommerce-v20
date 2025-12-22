@@ -1,0 +1,16 @@
+<div class="result-container">
+      <div class="card">
+        <div class="icon" [ngClass]="config.class">
+          {{ config.icon }}
+        </div>
+        
+        <h1>{{ config.title }}</h1>
+        <p>{{ config.message }}</p>
+        
+        <div class="details" v-if="paymentId">
+          <small>ID de Operación: {{ paymentId }}</small>
+        </div>
+
+        <button routerLink="/" class="btn-primary">Volver a la Tienda</button>
+      </div>
+    </div>

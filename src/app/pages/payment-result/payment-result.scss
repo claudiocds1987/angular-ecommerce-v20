@@ -1,0 +1,7 @@
+.result-container { display: flex; justify-content: center; padding: 50px; font-family: sans-serif; }
+    .card { text-align: center; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; }
+    .icon { font-size: 50px; margin-bottom: 20px; }
+    .approved { color: #28a745; }
+    .rejected { color: #dc3545; }
+    .pending { color: #ffc107; }
+    .btn-primary { background: #009ee3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 20px; }

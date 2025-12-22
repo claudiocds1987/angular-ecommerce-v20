@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ProductsList } from './pages/products-list/products-list';
+import { PaymentResult } from './pages/payment-result/payment-result';
 
 export const routes: Routes = [
     {
@@ -14,5 +15,6 @@ export const routes: Routes = [
         loadComponent: () =>
             import('./pages/cart/cart').then((m) => m.Cart),
     },
+    { path: 'payment-result', component: PaymentResult },
     
 ];

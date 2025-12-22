@@ -35,6 +35,7 @@ export class OrderSummary {
         // 3. Llamar a tu API para obtener el preferenceId
         this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
             next: (res) => {
+                console.log('Preference ID recibido:', res.id);
                 // 4. Abrir el Checkout Pro de Mercado Pago
                 mp.checkout({
                     preference: {
