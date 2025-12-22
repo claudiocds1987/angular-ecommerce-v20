@@ -9,3 +9,6 @@ Iconos descargados en:
 https://icon-sets.iconify.design/
 https://icon-sets.iconify.design/heroicons/
 https://svgl.app/ (para icono de Angular)
+
+
+PARA ACTUALIZAR EN GITHUB PAGES: npx angular-cli-ghpages --dir=dist/e-commerce-v20/browser
