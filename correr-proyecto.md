@@ -11,4 +11,9 @@ https://icon-sets.iconify.design/heroicons/
 https://svgl.app/ (para icono de Angular)
 
 
-PARA ACTUALIZAR EN GITHUB PAGES: npx angular-cli-ghpages --dir=dist/e-commerce-v20/browser
+PARA ACTUALIZAR EN GITHUB PAGES:
+# Paso A: Construir el proyecto indicando la subcarpeta de GitHub
+ng build --configuration production --base-href /angular-ecommerce-v20/
+
+# Paso B: Subir la carpeta construida
+npx angular-cli-ghpages --dir=dist/e-commerce-v20/browser

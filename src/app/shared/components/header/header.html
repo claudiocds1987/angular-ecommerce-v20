@@ -3,14 +3,14 @@
     
     <button (click)="redirectToHomePage()" class="cursor-pointer group">
         <div class="flex items-center gap-3">
-            <img [src]="'icons/angular.svg'" alt="Logo" class="w-10 h-10 group-hover:rotate-12 transition-transform" />
+            <img [src]="'./icons/angular.svg'" alt="Logo" class="w-10 h-10 group-hover:rotate-12 transition-transform" />
             <span class="text-white font-bold tracking-tight text-lg uppercase">{{ title() }}</span>
         </div>
     </button>
 
     <app-primary-button
         [label]="cartService.cart().length"
-        [iconUrl]="'icons/shopping-cart.svg'"
+        [iconUrl]="'./icons/shopping-cart.svg'"
         (btnClicked)="redirectToCart()"
         class="hover:scale-105 transition-transform"
     ></app-primary-button>
