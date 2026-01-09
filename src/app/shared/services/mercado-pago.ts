@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environmet.develop';
+import { environment } from '../../../environments/environment.development';
 
 // Definimos interfaces para mantener el tipado fuerte de Angular
 export interface CartItem {
