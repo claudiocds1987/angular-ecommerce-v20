@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
@@ -9,7 +9,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   templateUrl: './payment-result.html',
   styleUrl: './payment-result.scss',
 })
-export class PaymentResult {
+export class PaymentResult implements OnInit {
 
     private _route = inject(ActivatedRoute);
   

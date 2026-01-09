@@ -59,6 +59,7 @@ export class ProductService {
     }
 
     // 5. Eliminar un producto
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     deleteProduct(id: number): Observable<any> {
         return this._http.delete(`${this._apiUrl}/${id}`);
     }

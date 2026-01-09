@@ -1,8 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CartService } from '../../../shared/services/cart-service';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartDto, MercadoPagoService } from '../../../shared/services/mercado-pago';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare var MercadoPago: any;
 
 @Component({

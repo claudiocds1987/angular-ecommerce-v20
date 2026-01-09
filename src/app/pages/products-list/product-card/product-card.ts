@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Product } from '../../../shared/models/product.model';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartService } from '../../../shared/services/cart-service';
