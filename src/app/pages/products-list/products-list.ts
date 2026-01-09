@@ -12,7 +12,7 @@ import { ProductCardSkeleton } from "./product-card-skeleton/product-card-skelet
     styleUrl: './products-list.scss',
 })
 export class ProductsList implements OnInit {
-    products = signal<Product[]>([]);
+    /* products = signal<Product[]>([]);
     isLoading = signal(true);
     private _productsService = inject(ProductService);
 
@@ -25,5 +25,35 @@ export class ProductsList implements OnInit {
             this.isLoading.set(false);
             this.products.set(products);
         });
+
+        
+    } */
+   products = signal<Product[]>([]);
+    isLoading = signal(true);
+    // Agregamos estados para la paginación
+    skip = signal(0);
+    limit = 30;
+    totalProducts = signal(0); 
+
+    private _productsService = inject(ProductService);
+
+    ngOnInit() {
+        this._loadProducts();
+    }
+
+    private _loadProducts() {
+        this.isLoading.set(true);
+        this._productsService.getDummys(this.limit, this.skip()).subscribe((res) => {
+            console.log(res);
+            this.products.update(prev => [...prev, ...res.products]);  // para concatenar los productos nuevos a los anteriores
+            this.totalProducts.set(res.total);
+            this.isLoading.set(false);
+        });
+    }
+
+    loadMore() {
+        // Incrementamos el skip y cargamos más
+        this.skip.update(current => current + this.limit);
+        this._loadProducts();
     }
 }

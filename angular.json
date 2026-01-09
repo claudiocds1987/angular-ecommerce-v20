@@ -28,6 +28,12 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.development.ts",
+                "with": "src/environments/environment.ts"
+              }
             ]
           },
           "configurations": {
@@ -49,7 +55,8 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [] 
             }
           },
           "defaultConfiguration": "production"
@@ -57,7 +64,8 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "port": 5000
+            "port": 5000,
+            "buildTarget": "e-commerce-v20:build:development"
           },
           "configurations": {
             "production": {
