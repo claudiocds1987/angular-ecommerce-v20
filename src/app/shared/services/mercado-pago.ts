@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+
 
 // Definimos interfaces para mantener el tipado fuerte de Angular
 export interface CartItem {
@@ -19,9 +19,9 @@ export interface CartDto {
 })
 export class MercadoPagoService {
   // Cambiá esto por la URL de tu API en MonsterASP cuando hagas el deploy
-    //private _apiUrl = 'https://localhost:44364/api/MercadoPago';
+    private _apiUrl = 'https://localhost:44364/api/MercadoPago';
     //private _apiUrl = 'https://apicomponents.runasp.net/api/MercadoPago';
-    private _apiUrl = `${environment.apiUrl}/MercadoPago`;
+   
 
   constructor(private http: HttpClient) {}
 
