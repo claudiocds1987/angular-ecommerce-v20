@@ -1,8 +1,9 @@
 
 PARA CORRER PROYECTO:
-1. nvm use 22.21.1
-2. # para correr de local:
-   npm run start
+1. EJECUTAR STUDIO CODE EN MODO ADMINISTRADOR (clic derecho en el icono opcion EJECUTAR COMO ADMINISTRADOR)
+2. nvm use 22.21.1
+3. # para correr de local:
+   npm start
   # o para correr en produccion (MonsterASP.NET https://apicomponents.runasp.net):
    npm run build
 
