@@ -20,40 +20,47 @@ export class OrderSummary {
     private _mercadoPagoService = inject(MercadoPagoService);
 
     onCheckout() {
-    // 1. Mapear datos
-    const dataParaBackend: CartDto = {
-        items: this.cartService.cart().map(product => ({
-            name: product.title,
-            quantity: product.quantity,
-            price: product.price
-        }))
-    };
+        // 1. Mapeo de datos
+        const dataParaBackend: CartDto = {
+            items: this.cartService.cart().map((product) => ({
+                name: product.title,
+                quantity: product.quantity,
+                price: product.price,
+            })),
+        };
 
-    this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
-        next: (res) => {
-            console.log('Preference ID recibido:', res.id);
-            
-            const windowMP = (window as any).MercadoPago;
+        // 2. Obtener la preferencia del backend
+        this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
+            next: (res) => {
+                console.log('ID recibido:', res.id);
 
-            if (windowMP) {
-                const mp = new windowMP('TEST-c3a31b76-ad93-4877-b3a9-fdefa8357b42');
-                mp.checkout({
-                    preference: {
-                        id: res.id
-                    },
-                    autoOpen: true
-                });
-            } else {
-                console.error('El SDK de Mercado Pago no está cargado en window');
-                alert('Error: No se pudo cargar la pasarela de pago. Reintente en unos segundos.');
-            }
-        },
-        error: (err) => {
-            console.error('Error al crear la preferencia', err);
-            alert('Hubo un error al conectar con el servidor');
-        }
-    });
-}
+                // CLAVE: Acceder por string para evitar que el compilador lo cambie a "B"
+                const MercadoPagoClass = (window as any)['MercadoPago'];
+
+                if (MercadoPagoClass) {
+                    try {
+                        // Inicializar el SDK
+                        const mp = new MercadoPagoClass(
+                            'TEST-c3a31b76-ad93-4877-b3a9-fdefa8357b42',
+                        );
+
+                        // Abrir Checkout
+                        mp.checkout({
+                            preference: {
+                                id: res.id,
+                            },
+                            autoOpen: true,
+                        });
+                    } catch (err) {
+                        console.error('Error al instanciar MP:', err);
+                    }
+                } else {
+                    alert('Error: No se encontró la librería de Mercado Pago.');
+                }
+            },
+            error: (err) => console.error('Error en API:', err),
+        });
+    }
 
     /* onCheckout() {
         // 1. Mapear los datos del carrito
