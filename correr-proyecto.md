@@ -27,7 +27,7 @@ ng build --configuration production --base-href /angular-ecommerce-v20/
 # Paso B: Subir la carpeta construida
 npx angular-cli-ghpages --dir=dist/e-commerce-v20/browser
 
-INTEGRACION DE GOOGLE  AI STUDIO (para la búsqueda de productos)
+INTEGRACION DE GOOGLE  AI STUDIO https://aistudio.google.com/ (para la búsqueda de productos con IA)
 
 paso 1: Primero, instalé el SDK oficial para Google Generative AI: npm install @google/generative-ai
 Paso 2: Entrar a Google AI Studio para obtener una API Key. (deberia logearse automaticamente con mi cuenta gmail)
