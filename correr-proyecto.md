@@ -30,5 +30,15 @@ npx angular-cli-ghpages --dir=dist/e-commerce-v20/browser
 INTEGRACION DE GOOGLE  AI STUDIO https://aistudio.google.com/ (para la búsqueda de productos con IA)
 
 paso 1: Primero, instalé el SDK oficial para Google Generative AI: npm install @google/generative-ai
+
 Paso 2: Entrar a Google AI Studio para obtener una API Key. (deberia logearse automaticamente con mi cuenta gmail)
-Paso 3: Cree un servicio ia-search-service.ts para manejar la comunicación con la IA y le puse la API KEY.
+
+Paso 3: Fui a la seccion Claves API -> Crear Clave API -> le puse un nombre cualquiera y puse Crear Nuevo proyecto,
+al proyecto le puse el nombre de AI-ecommerce-v20.
+
+Paso 4: No creo la API Key asique tuve ir a "filtrar por" elegir AI-ecommerce-v20 y ahi dentro
+vovler a crear la API Key.
+
+Paso 5: Cree un servicio ia-search-service.ts para manejar la comunicación con la IA y le puse la API KEY del proyecto AI-ecommerce-v20 del paso 4.
+
+NOTA: NO USE LA API KEY POR DEFAULT PORQUE TIRABA ERRORES DE 404.
