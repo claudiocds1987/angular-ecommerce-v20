@@ -3,31 +3,17 @@ import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
 import { ProductCardSkeleton } from "./product-card-skeleton/product-card-skeleton";
+import { IaChat } from '../../shared/components/ia-chat/ia-chat';
 
 @Component({
     selector: 'app-products-list',
     standalone: true,
-    imports: [ProductCard, ProductCardSkeleton],
+    imports: [ProductCard, ProductCardSkeleton, IaChat],
     templateUrl: './products-list.html',
     styleUrl: './products-list.scss',
 })
 export class ProductsList implements OnInit {
-    /* products = signal<Product[]>([]);
-    isLoading = signal(true);
-    private _productsService = inject(ProductService);
-
-    ngOnInit() {
-        this._getProducts();
-    }
-
-    private _getProducts() {
-        this._productsService.getProducts().subscribe((products) => {
-            this.isLoading.set(false);
-            this.products.set(products);
-        });
-
-        
-    } */
+   
    products = signal<Product[]>([]);
     isLoading = signal(true);
     // Agregamos estados para la paginación

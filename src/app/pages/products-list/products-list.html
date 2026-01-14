@@ -1,16 +1,4 @@
-<!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
-    @if(isLoading()) {
-        @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
-            <app-product-card-skeleton/>
-        }
-    }@else{
-        @for (item of products(); track item.id) {
-            <app-product-card [product]="item"/>
-        }
-    }
-
-</div>
- -->
+<app-ia-chat></app-ia-chat>
 <div class="flex flex-col gap-6 p-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @for (item of products(); track item.id) {
