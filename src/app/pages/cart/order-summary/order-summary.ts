@@ -4,9 +4,6 @@ import { CartService } from '../../../shared/services/cart-service';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartDto, MercadoPagoService } from '../../../shared/services/mercado-pago';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-var
-//declare var MercadoPago: any;
-
 @Component({
     selector: 'app-order-summary',
     imports: [PrimaryButton],
