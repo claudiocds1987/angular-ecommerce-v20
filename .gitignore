@@ -45,3 +45,4 @@ Thumbs.db
 # Custom Environment Files
 src/environments/environment.ts
 src/environments/environment.production.ts
+correr-proyecto.md
