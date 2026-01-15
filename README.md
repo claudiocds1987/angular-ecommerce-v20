@@ -22,7 +22,6 @@ Para asegurar que las herramientas de Angular funcionen sin conflictos de permis
 
 ### 3. Instalación de Dependencias
 Una vez situada la versión de Node correcta, instala los módulos necesarios:
-```bash
 npm install
 
  🚀 Servidor de Desarrollo
