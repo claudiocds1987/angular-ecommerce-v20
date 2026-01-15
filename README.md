@@ -1,59 +1,32 @@
-# ECommerceV20
+# E-Commerce V20 con IA (Gemini)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.13.
+Este proyecto fue generado con [Angular CLI](https://github.com/angular/angular-cli) versión 20.3.13 e integra Inteligencia Artificial para la interacción con productos.
 
-## Development server
+## 🛠️ Requisitos para el Desarrollo
 
-To start a local development server, run:
+Para asegurar que el proyecto corra correctamente y las herramientas de Angular funcionen sin problemas de permisos, sigue este flujo:
 
-```bash
-ng serve
-```
+1. **Permisos de Sistema:** Ejecutar el editor (VS Code) en **Modo Administrador**.
+2. **Control de Versiones de Node:** Se requiere la versión exacta de Node utilizada en el desarrollo:
+   ```bash
+   nvm use 22.21.1
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Para arrancar el proyecto localmente, utiliza el script configurado:   
 
-## Code scaffolding
+# npm start
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Una vez que el servidor esté corriendo, navega a http://localhost:5000/ (o al puerto que indique la terminal). La aplicación se recargará automáticamente si modificas los archivos fuente.
 
-```bash
-ng generate component component-name
-```
+🤖 Integración de IA
+El proyecto utiliza Google Generative AI (Gemini) para potenciar la búsqueda y descripción de productos.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+# - SDK: @google/generative-ai
 
-```bash
-ng generate --help
-```
+# - Modelo: Gemini 1.5 Flash.
 
-## Building
+# - Seguridad: Las llaves de API cuentan con restricciones de dominio para evitar el uso no autorizado en sitios externos.
 
-To build the project run:
+🎨 Tecnologías Utilizadas
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# - Framework: Angular 20.
+# - Estilos: Tailwind CSS v4.1.
