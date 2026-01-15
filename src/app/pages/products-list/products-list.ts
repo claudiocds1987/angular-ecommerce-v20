@@ -4,6 +4,7 @@ import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
 import { ProductCardSkeleton } from "./product-card-skeleton/product-card-skeleton";
 import { IaChat } from '../../shared/components/ia-chat/ia-chat';
+import { IaChatService } from '../../shared/services/ia-chat-service';
 
 @Component({
     selector: 'app-products-list',
@@ -21,7 +22,10 @@ export class ProductsList implements OnInit {
     limit = 30;
     totalProducts = signal(0); 
 
+    iaChatService = inject(IaChatService);
+
     private _productsService = inject(ProductService);
+
 
     ngOnInit() {
         this._loadProducts();

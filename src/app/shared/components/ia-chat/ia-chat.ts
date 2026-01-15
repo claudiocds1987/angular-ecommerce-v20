@@ -2,9 +2,10 @@
 import { Component, ElementRef, ViewChild, effect, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IaSearchService } from '../../../shared/services/ia-search-service';
+
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../models/product.model';
+import { IaChatService } from '../../services/ia-chat-service';
 
 interface Message {
     text: string;
@@ -22,7 +23,7 @@ interface Message {
 export class IaChat {
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
-    private iaService = inject(IaSearchService);
+    iaChatService = inject(IaChatService);
     private http = inject(HttpClient);
 
     messages = signal<Message[]>([
@@ -77,7 +78,7 @@ export class IaChat {
             // LÓGICA CONDICIONAL: ¿Estamos preguntando por un producto o buscando uno nuevo?
             if (this.selectedProduct()) {
                 // Modo: Pregunta específica sobre un producto (RAG simple)
-                const respuesta = await this.iaService.responderSobreProducto(
+                const respuesta = await this.iaChatService.responderSobreProducto(
                     text,
                     this.selectedProduct(),
                 );
@@ -92,7 +93,7 @@ export class IaChat {
                 this.isTyping.set(false);
             } else {
                 // Modo: Búsqueda general en catálogo
-                const filtros = await this.iaService.analizarBusqueda(text);
+                const filtros = await this.iaChatService.analizarBusqueda(text);
                 const url = `https://dummyjson.com/products/search?q=${filtros.busqueda}`;
 
                 this.http.get<any>(url).subscribe({

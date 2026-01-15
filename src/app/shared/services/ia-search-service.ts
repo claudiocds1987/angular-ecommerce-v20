@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 export class IaSearchService {
     // API KEY de Google AI Studio
    
-    private readonly _API_KEY = environment.geminiApiKey;
+   /*  private readonly _API_KEY = environment.geminiApiKey;
 
     private _genAI = new GoogleGenerativeAI(this._API_KEY);
 
@@ -87,5 +87,5 @@ export class IaSearchService {
 
         // Respuesta genérica de respaldo si no detecta palabras clave
         return `Lo siento, tuve un problema de conexión, pero puedo confirmarte que el producto ${info.title} cuesta $${info.price} y tenemos ${info.stock} en stock.`;
-    }
+    } */
 }

@@ -1,4 +1,8 @@
-<app-ia-chat></app-ia-chat>
+@if (iaChatService.showIAchat()) {
+    <div class="fixed bottom-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <app-ia-chat></app-ia-chat>
+    </div>
+}
 <div class="flex flex-col gap-6 p-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @for (item of products(); track item.id) {
