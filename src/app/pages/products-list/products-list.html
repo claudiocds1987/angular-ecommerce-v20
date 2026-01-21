@@ -1,4 +1,4 @@
-@if (iaChatService.showIAchat()) {
+<!-- @if (iaChatService.showIAchat()) {
     <div class="fixed bottom-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-300">
         <app-ia-chat></app-ia-chat>
     </div>
@@ -26,3 +26,41 @@
         </div>
     }
 </div>
+ -->
+
+ @if (iaChatService.showIAchat()) {
+    <aside class="fixed bottom-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-300" 
+           aria-label="Asistente de IA">
+        <app-ia-chat></app-ia-chat>
+    </aside>
+}
+
+<section class="flex flex-col gap-6 p-4" aria-labelledby="products-heading">
+    <h2 id="products-heading" class="sr-only">Catálogo de Productos</h2>
+
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 list-none p-0">
+        @for (item of products(); track item.id) {
+            <li>
+                <app-product-card [product]="item"/>
+            </li>
+        }
+
+        @if(isLoading()) {
+            @for (i of [1, 2, 3, 4]; track i) {
+                <li aria-hidden="true">
+                    <app-product-card-skeleton/>
+                </li>
+            }
+        }
+    </ul>
+
+    @if (!isLoading() && products().length < totalProducts()) {
+        <nav class="flex justify-center mt-4" aria-label="Paginación">
+            <button 
+                (click)="loadMore()"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                Ver más resultados
+            </button>
+        </nav>
+    }
+</section>
