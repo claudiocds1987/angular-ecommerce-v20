@@ -26,8 +26,17 @@ export class ProductCard {
         this.cartService.addToCart(product);
     }
 
-    goToDetail(): void {
+   /*  goToDetail(): void {
         const id = this.product().id;
         this._router.navigate(['/product-detail', id]);
-    }
+    } */
+   // Dentro de tu clase ProductCardComponent
+
+handleNavigate(event: MouseEvent): void {
+  // 1. Evitamos que el navegador recargue la página completa
+  event.preventDefault();
+  
+  // 2. Usamos el router de Angular para una navegación interna suave
+  this._router.navigate(['/product-detail', this.product().id]);
+}
 }
