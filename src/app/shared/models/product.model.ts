@@ -2,9 +2,10 @@ export interface Product {
     id: number;
     title: string;
     price: number;
-    rating: { rate: number; count: number }; // "count" seria Stock disponible
+    stock: number;
     image: string;
     category?: string;
+    discountPercentage?: number;
 }
 
 export interface CartItem extends Product {

@@ -19,7 +19,7 @@ export class CartItem {
 
     onQuantityChange(productId: number, value: string) {
         let quantity = parseInt(value);
-        const maxStock = this.item().rating.count;
+        const maxStock = this.item().stock;
 
         // 1. Validar si el usuario borró el número o escribió algo raro
         if (isNaN(quantity) || quantity < 1) {

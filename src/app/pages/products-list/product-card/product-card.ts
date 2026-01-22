@@ -3,7 +3,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common'; // Importación ne
 import { Product } from '../../../shared/models/product.model';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartService } from '../../../shared/services/cart-service';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductDetail } from '../../product-detail/product-detail';
 
@@ -17,7 +17,6 @@ import { ProductDetail } from '../../product-detail/product-detail';
 export class ProductCard {
     product = input.required<Product>();
     cartService = inject(CartService);
-    private _router = inject(Router);
     private _matDialog = inject(MatDialog);
 
     addToCart(product: Product) {

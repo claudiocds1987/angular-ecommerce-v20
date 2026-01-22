@@ -5,7 +5,7 @@
     <span
         class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md bg-white/95 shadow-sm z-20 text-green-600"
     >
-        EN STOCK: {{ product().rating.count }}
+        EN STOCK: {{ product().stock }}
     </span>
 
     <div
@@ -63,7 +63,7 @@
         <app-primary-button
             label="Comprar"
             [iconUrl]="'/icons/shopping-bag.svg'"
-            [disabled]="product().rating.count === 0"
+            [disabled]="product().stock === 0"
             (btnClicked)="addToCart(product())"
             class="w-full block"
         ></app-primary-button>

@@ -12,7 +12,7 @@
             #quantityInput
             type="number"
             min="1"
-            [max]="item().rating.count"
+            [max]="item().stock"
             value="1"
             (change)="onQuantityChange(item().id, quantityInput.value)"
             class="w-16 border border-slate-300 rounded-md px-2 py-1"
