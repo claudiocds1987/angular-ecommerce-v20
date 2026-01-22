@@ -34,7 +34,6 @@ export class ProductsList implements OnInit {
     private _loadProducts() {
         this.isLoading.set(true);
         this._productsService.getDummys(this.limit, this.skip()).subscribe((res) => {
-            console.log(res);
             this.products.update(prev => [...prev, ...res.products]);  // para concatenar los productos nuevos a los anteriores
             this.totalProducts.set(res.total);
             this.isLoading.set(false);

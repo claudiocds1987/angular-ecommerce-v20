@@ -34,17 +34,6 @@ export class MercadoPagoService {
         // No añadas HttpHeaders manuales por ahora, deja que Angular lo gestione solo
         return this._http.post<{ id: string }>(`${this._apiUrl}/create-preference`, cart);
     }
-    /* createPreference(cart: CartDto): Observable<{ id: string }> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    return this._http.post<{ id: string }>(
-      `${this._apiUrl}/create-preference`, 
-      cart, 
-      { headers }
-    );
-  } */
 
     // 2. Confirmar el pago
     confirmPayment(preferenceId: string, paymentId: string): Observable<any> {

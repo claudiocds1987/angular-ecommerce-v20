@@ -17,7 +17,6 @@ export class OrderSummary {
     private _mercadoPagoService = inject(MercadoPagoService);
 
     onCheckout() {
-        // 1. Mapeo de datos
         const dataParaBackend: CartDto = {
             items: this.cartService.cart().map((product) => ({
                 name: product.title,
@@ -26,11 +25,9 @@ export class OrderSummary {
             })),
         };
 
-        // 2. Obtener la preferencia del backend
         this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
             next: (res) => {
-                console.log('ID recibido:', res.id);
-
+               
                 // CLAVE: Acceder por string para evitar que el compilador lo cambie a "B"
                 const MercadoPagoClass = (window as any)['MercadoPago'];
 
@@ -59,40 +56,4 @@ export class OrderSummary {
         });
     }
 
-    /* onCheckout() {
-        // 1. Mapear los datos del carrito
-        const dataParaBackend: CartDto = {
-            items: this.cartService.cart().map((product) => ({
-                name: product.title,
-                quantity: product.quantity,
-                price: product.price,
-            })),
-        };
-
-        this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
-            next: (res) => {
-                console.log('Preference ID recibido:', res.id);
-
-                try {
-                    // 3. Inicializar dentro del flujo de éxito para asegurar que el SDK esté listo
-                    const mp = new MercadoPago('TEST-c3a31b76-ad93-4877-b3a9-fdefa8357b42');
-
-                    // 4. Abrir el Checkout Pro
-                    mp.checkout({
-                        preference: {
-                            id: res.id,
-                        },
-                        autoOpen: true,
-                    });
-                } catch (e) {
-                    console.error('Error al inicializar el SDK de Mercado Pago:', e);
-                    alert('El SDK de Mercado Pago no cargó correctamente.');
-                }
-            },
-            error: (err) => {
-                console.error('Error al crear la preferencia', err);
-                alert('Hubo un error al procesar el pago');
-            },
-        });
-    } */
 }
