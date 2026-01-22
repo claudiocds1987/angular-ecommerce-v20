@@ -1,0 +1,50 @@
+@if (dummyProduct()) {
+  <article class="max-w-7xl mx-auto px-4 py-8">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section class="space-y-4">
+        
+        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden border">
+          <img 
+            [src]="safeThumbnail()" 
+            [alt]="dummyProduct()?.title || 'Imagen de producto'" 
+            class="w-full h-full object-contain">
+        </div>
+        
+        <div class="grid grid-cols-4 gap-4">
+          @for (img of safeGallery(); track $index) {
+            <div class="aspect-square bg-gray-50 rounded-lg border overflow-hidden">
+              <img 
+                [src]="img" 
+                [alt]="(dummyProduct()?.title || 'Producto') + ' - Vista ' + ($index + 1)" 
+                class="w-full h-full object-cover">
+            </div>
+          }
+        </div>
+
+      </section>
+
+      <section class="flex flex-col">
+          <h1 class="text-3xl font-extrabold text-gray-900">
+            {{ dummyProduct()?.title }}
+          </h1>
+          
+          <div class="mt-6 p-6 bg-blue-50 rounded-xl">
+              <p class="text-4xl font-black text-blue-600">
+                ${{ dummyProduct()?.price }}
+              </p>
+          </div>
+
+          <div class="mt-8">
+              <h2 class="text-lg font-bold">Descripción</h2>
+              <p class="text-gray-600 mt-2">{{ dummyProduct()?.description }}</p>
+          </div>
+      </section>
+    </div>
+
+  </article>
+} @else {
+  <div class="flex justify-center items-center min-h-[400px]">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+}

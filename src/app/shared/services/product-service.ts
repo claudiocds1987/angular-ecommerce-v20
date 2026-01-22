@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Product } from '../models/product.model';
 import { HttpClient } from '@angular/common/http';
-import { DummyResponse } from '../models/dummy-response.model';
+import { DummyProduct, DummyResponsePaginated } from '../models/dummy-response.model';
 
 @Injectable({
     providedIn: 'root',
@@ -13,10 +13,10 @@ export class ProductService {
     //private _apiUrl = 'https://fakestoreapi.com/products';
 
     getDummys(limit: number, skip: number) {
-    return this._http.get<DummyResponse>(`${this._apiUrl}?limit=${limit}&skip=${skip}`)
+    return this._http.get<DummyResponsePaginated>(`${this._apiUrl}?limit=${limit}&skip=${skip}`)
         .pipe(
             map(res => {
-                // Transformamos cada producto de la API a tu interfaz Product
+                // Transformamos cada producto de la API al modelo Product
                 const mappedProducts: Product[] = res.products.map(p => ({
                     id: p.id,
                     title: p.title,
@@ -44,8 +44,8 @@ export class ProductService {
     }
 
     // 2. Obtener un solo producto por ID
-    getProductById(id: number): Observable<Product> {
-        return this._http.get<Product>(`${this._apiUrl}/${id}`);
+    getProductById(id: number): Observable<DummyProduct> {
+        return this._http.get<DummyProduct>(`${this._apiUrl}/${id}`);
     }
 
     // 3. Crear un nuevo producto
