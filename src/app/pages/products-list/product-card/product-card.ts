@@ -4,6 +4,8 @@ import { Product } from '../../../shared/models/product.model';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartService } from '../../../shared/services/cart-service';
 import { Router, RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductDetail } from '../../product-detail/product-detail';
 
 @Component({
     selector: 'app-product-card',
@@ -16,6 +18,7 @@ export class ProductCard {
     product = input.required<Product>();
     cartService = inject(CartService);
     private _router = inject(Router);
+    private _matDialog = inject(MatDialog);
 
     addToCart(product: Product) {
         const isProductRepeated = this.cartService.checkItemsRepeated(product.id);
@@ -26,17 +29,15 @@ export class ProductCard {
         this.cartService.addToCart(product);
     }
 
-   /*  goToDetail(): void {
-        const id = this.product().id;
-        this._router.navigate(['/product-detail', id]);
-    } */
-   // Dentro de tu clase ProductCardComponent
-
-handleNavigate(event: MouseEvent): void {
-  // 1. Evitamos que el navegador recargue la página completa
-  event.preventDefault();
-  
-  // 2. Usamos el router de Angular para una navegación interna suave
-  this._router.navigate(['/product-detail', this.product().id]);
-}
+   
+    openDetailModal(): void {
+        this._matDialog.open(ProductDetail, {
+            data: this.product(), // Enviamos el producto al componente ProductDetail
+            width: '1000px',
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            autoFocus: false,
+            backdropClass: 'custom-modal-backdrop' // Esta clase esta definida en styles.scss para que elefecto desenfoque funcione en todo el body
+        });
+    }
 }

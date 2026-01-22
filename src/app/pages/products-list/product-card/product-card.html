@@ -1,54 +1,4 @@
-<!-- <article
-    class="fade-in-fwd glass-shine bg-white border border-slate-200/60 rounded-xl p-5 flex flex-col h-[500px] relative group w-full transition-all duration-500 ease-out shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-blue-400/40"
->
-    <span
-        class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md bg-white/95 shadow-sm z-20"
-        [class]="product().rating.count > 0 ? 'text-green-600' : 'text-red-500'"
-        [attr.aria-label]="'Stock disponible: ' + product().rating.count"
-    >
-        EN STOCK: {{ product().rating.count }}
-    </span>
 
-    <div class="aspect-square w-full overflow-hidden relative z-10 bg-gray-50">
-        <img
-            [src]="product().image"
-            [alt]="product().title"
-            class="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-110"
-            loading="lazy" 
-        />
-    </div>
-
-    <div class="flex flex-col flex-grow mt-6 relative z-10">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Producto
-        </span>
-
-        <h3 class="text-base font-bold text-slate-900 leading-tight mt-1 line-clamp-2 min-h-[3rem]">
-            {{ product().title }}
-        </h3>
-
-        <div class="mt-auto pt-4">
-            <data 
-                [value]="product().price" 
-                class="text-3xl font-black text-blue-600 tracking-tighter block"
-            >
-                {{ product().price | currency }}
-            </data>
-        </div>
-    </div>
-
-    <footer class="mt-6 relative z-20">
-        <app-primary-button
-            label="Comprar"
-            [iconUrl]="'/icons/shopping-bag.svg'"
-            [disabled]="product().rating.count === 0"
-            (btnClicked)="addToCart(product())"
-            class="w-full block transform transition-all duration-300 hover:bg-blue-100 hover:shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:-translate-y-1 active:scale-95"
-            [attr.aria-label]="'Comprar ' + product().title"
-        ></app-primary-button>
-    </footer>
-</article>
- -->
 <article
     class="fade-in-fwd glass-shine bg-white border border-slate-200/60 rounded-xl p-5 flex flex-col h-[500px] relative group w-full transition-all duration-500 ease-out shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-blue-400/40"
 >
@@ -86,16 +36,16 @@
 
         <div class="mt-1 mb-4">
           <div class="mt-1 mb-4"> 
-    <a 
-        [href]="'#/product-detail/' + product().id"
-        (click)="handleNavigate($event)"
+    <button 
+        
+        (click)="openDetailModal()"
         class="inline-flex items-center text-[10px] font-extrabold text-blue-500 hover:text-blue-700 transition-colors group/link uppercase tracking-tighter cursor-pointer"
     >
         Ver detalle
         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5 transition-transform group-hover/link:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-    </a>
+    </button>
 </div>
         </div>
 

@@ -1,63 +1,77 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ProductService } from '../../shared/services/product-service';
-import { DummyProduct } from '../../shared/models/dummy-response.model';
-import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { DummyProduct } from '../../shared/models/dummy-response.model';
+import { ProductService } from '../../shared/services/product-service'; // Importa tu servicio
+import { Product } from '../../shared/models/product.model';
 
 @Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './product-detail.html',
-  styleUrl: './product-detail.scss',
+    selector: 'app-product-detail',
+    standalone: true,
+    imports: [CommonModule, MatDialogModule],
+    templateUrl: './product-detail.html',
+    styleUrl: './product-detail.scss',
 })
 export class ProductDetail implements OnInit {
-  private _route = inject(ActivatedRoute);
-  private _productService = inject(ProductService);
-  private _titleService = inject(Title);
-  private _metaService = inject(Meta);
-  private sanitizer = inject(DomSanitizer);
+    dummyProduct = signal<DummyProduct | undefined>(undefined);
+    safeThumbnail = signal<SafeResourceUrl>('');
+    safeGallery = signal<SafeResourceUrl[]>([]);
+    loading = signal<boolean>(true);
 
-  // Signal para el producto
-  dummyProduct = signal<DummyProduct | undefined>(undefined);
-  
-  // Signals para las imágenes seguras
-  safeThumbnail = signal<SafeResourceUrl>('');
-  safeGallery = signal<SafeResourceUrl[]>([]);
+    private _data = inject<Product>(MAT_DIALOG_DATA, { optional: true });
+    private _productService = inject(ProductService);
+    private _titleService = inject(Title);
+    private _metaService = inject(Meta);
+    private _sanitizer = inject(DomSanitizer);
+    private _dialogRef = inject(MatDialogRef<ProductDetail>);
 
-  ngOnInit(): void {
-    const id = this._route.snapshot.paramMap.get('id');
-    
-    if (id) {
-      const productId = parseInt(id, 10);
-      this._productService.getProductById(productId).subscribe({
-        next: (data) => {
-          // 1. Guardar el producto
-          this.dummyProduct.set(data);
+    ngOnInit(): void {
+        if (this._data) {
+            // Si recibimos un objeto con ID, llamamos al servicio para obtener la data fresca
+            const productId = typeof this._data === 'object' ? this._data.id : this._data;
+            this._getProduct(productId);
+        }
+    }
 
-          // 2. Sanitizar la imagen principal inmediatamente
-          this.safeThumbnail.set(
-            this.sanitizer.bypassSecurityTrustResourceUrl(data.thumbnail)
-          );
+    closeModal(): void {
+        this._dialogRef.close();
+    }
 
-          // 3. Sanitizar la galería
-          if (data.images) {
-            const images = data.images.map(img => 
-              this.sanitizer.bypassSecurityTrustResourceUrl(img)
+    private _getProduct(id: number) {
+        this.loading.set(true);
+        this._productService.getProductById(id).subscribe({
+            next: (product) => {
+                this._processProductData(product);
+                this.loading.set(false);
+            },
+            error: (err) => {
+                console.error('Error cargando producto por ID:', err);
+                this.loading.set(false);
+            },
+        });
+    }
+
+    private _processProductData(data: DummyProduct) {
+        this.dummyProduct.set(data);
+        // Sanitización
+        this.safeThumbnail.set(this._sanitizer.bypassSecurityTrustResourceUrl(data.thumbnail));
+
+        if (data.images) {
+            const images = data.images.map((img) =>
+                this._sanitizer.bypassSecurityTrustResourceUrl(img),
             );
             this.safeGallery.set(images);
-          }
+        }
 
-          this.updateSeo(data);
-        },
-        error: (err) => console.error("Error cargando producto", err)
-      });
+        this._updateSeo(data);
     }
-  }
 
-  updateSeo(p: DummyProduct) {
-    this._titleService.setTitle(`${p.title} | ${p.brand}`);
-    this._metaService.updateTag({ name: 'description', content: p.description });
-  }
+    private _updateSeo(p: DummyProduct) {
+        this._titleService.setTitle(`${p.title} | ${p.brand}`);
+        this._metaService.updateTag({ name: 'description', content: p.description });
+        this._metaService.updateTag({ property: 'og:type', content: 'product' });
+        this._metaService.updateTag({ property: 'og:price:amount', content: p.price.toString() });
+        this._metaService.updateTag({ property: 'og:price:currency', content: 'USD' });
+    }
 }

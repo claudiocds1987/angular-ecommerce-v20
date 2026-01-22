@@ -1,50 +1,93 @@
+<button
+    type="button"
+    (click)="closeModal()"
+    class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors z-50 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
+    aria-label="Cerrar detalle"
+>
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+        />
+    </svg>
+</button>
+
 @if (dummyProduct()) {
-  <article class="max-w-7xl mx-auto px-4 py-8">
-    
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <section class="space-y-4">
-        
-        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden border">
-          <img 
-            [src]="safeThumbnail()" 
-            [alt]="dummyProduct()?.title || 'Imagen de producto'" 
-            class="w-full h-full object-contain">
+    <article class="relative p-6 lg:p-10 bg-white">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <section class="space-y-4">
+                <div
+                    class="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shadow-inner"
+                >
+                    <img
+                        [src]="safeThumbnail()"
+                        [alt]="dummyProduct()?.title || 'Imagen de producto'"
+                        class="w-full h-full object-contain p-4"
+                    />
+                </div>
+
+                <div class="grid grid-cols-4 gap-3">
+                    @for (img of safeGallery(); track $index) {
+                        <div
+                            class="aspect-square bg-gray-50 rounded-xl border border-gray-100 overflow-hidden cursor-pointer hover:border-blue-400 transition-all shadow-sm"
+                        >
+                            <img
+                                [src]="img"
+                                [alt]="
+                                    (dummyProduct()?.title || 'Producto') +
+                                    ' - Vista ' +
+                                    ($index + 1)
+                                "
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <section class="flex flex-col justify-center">
+                <header>
+                    <span
+                        class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-2 block"
+                    >
+                        {{ dummyProduct()?.brand }}
+                    </span>
+                    <h1 class="text-3xl lg:text-4xl font-black text-gray-900 leading-tight">
+                        {{ dummyProduct()?.title }}
+                    </h1>
+                </header>
+
+                <div class="mt-8 p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <p class="text-sm text-blue-800 font-semibold mb-1">Precio Online</p>
+                    <p class="text-5xl font-black text-blue-600 tracking-tighter">
+                        ${{ dummyProduct()?.price }}
+                    </p>
+                </div>
+
+                <div class="mt-10">
+                    <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2 mb-4">
+                        Descripción del producto
+                    </h2>
+                    <p class="text-gray-600 leading-relaxed text-base">
+                        {{ dummyProduct()?.description }}
+                    </p>
+                </div>
+
+                <button
+                    class="mt-10 w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98]"
+                >
+                    Añadir al carrito
+                </button>
+            </section>
         </div>
-        
-        <div class="grid grid-cols-4 gap-4">
-          @for (img of safeGallery(); track $index) {
-            <div class="aspect-square bg-gray-50 rounded-lg border overflow-hidden">
-              <img 
-                [src]="img" 
-                [alt]="(dummyProduct()?.title || 'Producto') + ' - Vista ' + ($index + 1)" 
-                class="w-full h-full object-cover">
-            </div>
-          }
-        </div>
-
-      </section>
-
-      <section class="flex flex-col">
-          <h1 class="text-3xl font-extrabold text-gray-900">
-            {{ dummyProduct()?.title }}
-          </h1>
-          
-          <div class="mt-6 p-6 bg-blue-50 rounded-xl">
-              <p class="text-4xl font-black text-blue-600">
-                ${{ dummyProduct()?.price }}
-              </p>
-          </div>
-
-          <div class="mt-8">
-              <h2 class="text-lg font-bold">Descripción</h2>
-              <p class="text-gray-600 mt-2">{{ dummyProduct()?.description }}</p>
-          </div>
-      </section>
-    </div>
-
-  </article>
+    </article>
 } @else {
-  <div class="flex justify-center items-center min-h-[400px]">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
+    <div class="flex flex-col justify-center items-center min-h-[500px] space-y-4">
+        <div
+            class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-b-blue-600"
+        ></div>
+        <p class="text-gray-400 font-medium animate-pulse">Cargando detalles...</p>
+    </div>
 }
