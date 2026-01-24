@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common'; // Importación necesaria
 import { Product } from '../../../shared/models/product.model';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
