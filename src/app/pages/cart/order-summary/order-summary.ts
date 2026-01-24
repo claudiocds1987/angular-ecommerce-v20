@@ -21,7 +21,7 @@ export class OrderSummary {
             items: this.cartService.cart().map((product) => ({
                 name: product.title,
                 quantity: product.quantity,
-                price: product.price,
+                price: product.finalPrice ? product.finalPrice : product.price,
             })),
         };
 

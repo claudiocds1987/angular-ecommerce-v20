@@ -23,6 +23,7 @@ export interface DummyProduct {
   category: string;
   price: number;
   discountPercentage: number;
+  finalPrice?: number;
   rating: number;
   stock: number;
   tags: string[];

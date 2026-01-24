@@ -42,7 +42,13 @@ export class ProductDetail implements OnInit {
         this.loading.set(true);
         this._productService.getProductById(id).subscribe({
             next: (product) => {
-                this._processProductData(product);
+                // Aplicando el descuento
+                const productWithDiscount = {
+                    ...product,
+                    finalPrice: this._applyDiscount(product),
+                };
+
+                this._processProductData(productWithDiscount);
                 this.loading.set(false);
             },
             error: (err) => {
@@ -65,6 +71,15 @@ export class ProductDetail implements OnInit {
         }
 
         this._updateSeo(data);
+    }
+
+    private _applyDiscount(product: DummyProduct): number {
+        if (product.discountPercentage && product.discountPercentage > 0) {
+            const discount = (product.price * product.discountPercentage) / 100;
+            const price = product.price - discount;
+            return Number(price.toFixed(2));
+        }
+        return product.price;
     }
 
     private _updateSeo(p: DummyProduct) {

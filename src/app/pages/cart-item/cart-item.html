@@ -1,30 +1,50 @@
-<div class="bg-white border border-slate-200 rounded-xl p-6 flex gap-4 items-center">
-    <img [src]="item().image" alt="{{ item().title }}" class="w-[100px] h-[100px] object-contain" />
 
-    <div class="flex flex-col gap-2 flex-1">
-        <span class="text-md font-bold">{{ item().title }}</span>
-        <span class="text-sm">{{ '$' + item().price }}</span>     
+<div class="bg-white border border-slate-100 rounded-2xl p-4 flex gap-6 items-center transition-all hover:shadow-md">
+    <div class="w-24 h-24 bg-slate-50 rounded-xl flex-shrink-0 overflow-hidden border border-slate-100">
+        <img [src]="item().image" [alt]="item().title" class="w-full h-full object-contain p-2" />
     </div>
 
-    <div>
-        <span>Cantidad: </span>
+    <div class="flex flex-col gap-1 flex-1">
+        <span class="text-sm font-bold text-slate-900 line-clamp-1">{{ item().title }}</span>
+        
+        <div class="flex flex-col">
+            @if (item().discountPercentage! > 0) {
+                <span class="text-[10px] text-slate-400 line-through">
+                    {{ item().price | currency }}
+                </span>
+                <span class="text-lg font-black text-blue-600">
+                    {{ item().finalPrice | currency }}
+                </span>
+            } @else {
+                <span class="text-lg font-black text-slate-900">
+                    {{ item().price | currency }}
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center gap-1">
+        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Cantidad</span>
         <input
-            #quantityInput
+             #quantityInput
             type="number"
             min="1"
             [max]="item().stock"
             value="1"
             (change)="onQuantityChange(item().id, quantityInput.value)"
-            class="w-16 border border-slate-300 rounded-md px-2 py-1"
-            >
+            class="w-14 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+        >
     </div>
 
-    <div class="flex justify-end">
+    <div class="flex items-center">
         <button
-            class="text-black px-5 py-2 rounded-xl shadow-md cursor-pointer bg-gray-100 hover:bg-gray-200 transition-colors"
+            class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer group"
             (click)="onRemoveItem(item().id)"
+            title="Eliminar producto"
         >
-            Eliminar
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
         </button>
     </div>
 </div>

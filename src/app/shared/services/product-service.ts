@@ -24,6 +24,7 @@ export class ProductService {
                         price: p.price,
                         category: p.category,
                         stock: p.stock,
+                        discountPercentage: p.discountPercentage,
                         // Usamos el thumbnail como imagen principal
                         image: p.thumbnail,
                     }));

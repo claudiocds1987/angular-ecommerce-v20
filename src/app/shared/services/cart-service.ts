@@ -8,7 +8,7 @@ export class CartService {
     cart = signal<CartItem[]>([]);
     // El precio total es automático, siempre estará sincronizado con computed
     totalPrice = computed(() =>
-        this.cart().reduce((total, item) => total + item.price * item.quantity, 0),
+        this.cart().reduce((total, item) => total + (item.finalPrice ?? item.price) * item.quantity, 0),
     );
 
     addToCart(product: Product) {

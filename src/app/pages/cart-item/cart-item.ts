@@ -1,10 +1,11 @@
 import { Component, inject, input } from '@angular/core';
 import { Product } from '../../shared/models/product.model';
 import { CartService } from '../../shared/services/cart-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-cart-item',
-    imports: [],
+    imports: [CommonModule],
     templateUrl: './cart-item.html',
     styleUrl: './cart-item.scss',
 })
