@@ -25,6 +25,7 @@ export class PaymentResult implements OnInit {
 
     setAppearance() {
         switch (this.status) {
+            
             case 'approved':
                 this.config = {
                     title: '¡Pago Exitoso!',
@@ -32,6 +33,7 @@ export class PaymentResult implements OnInit {
                     icon: '✅',
                     class: 'approved',
                 };
+                console.log("Status de pago:", this.status);
                 break;
             case 'rejected':
                 this.config = {
@@ -40,6 +42,7 @@ export class PaymentResult implements OnInit {
                     icon: '❌',
                     class: 'rejected',
                 };
+                console.log("Status de pago:", this.status);
                 break;
             default: // pending o null
                 this.config = {
@@ -48,6 +51,7 @@ export class PaymentResult implements OnInit {
                     icon: '⏳',
                     class: 'pending',
                 };
+                console.log("Status de pago:", this.status);
         }
     }
 }
