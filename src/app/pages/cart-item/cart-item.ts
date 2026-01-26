@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { Product } from '../../shared/models/product.model';
 import { CartService } from '../../shared/services/cart-service';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     templateUrl: './cart-item.html',
     styleUrl: './cart-item.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartItem {
     item = input.required<Product>();

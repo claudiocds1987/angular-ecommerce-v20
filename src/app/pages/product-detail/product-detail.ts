@@ -1,10 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DummyProduct } from '../../shared/models/dummy-response.model';
 import { ProductService } from '../../shared/services/product-service'; // Importa tu servicio
 import { Product } from '../../shared/models/product.model';
+import { CartService } from '../../shared/services/cart-service';
 
 @Component({
     selector: 'app-product-detail',
@@ -12,6 +13,8 @@ import { Product } from '../../shared/models/product.model';
     imports: [CommonModule, MatDialogModule],
     templateUrl: './product-detail.html',
     styleUrl: './product-detail.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
+    
 })
 export class ProductDetail implements OnInit {
     dummyProduct = signal<DummyProduct | undefined>(undefined);
@@ -25,6 +28,7 @@ export class ProductDetail implements OnInit {
     private _metaService = inject(Meta);
     private _sanitizer = inject(DomSanitizer);
     private _dialogRef = inject(MatDialogRef<ProductDetail>);
+    private _cartService = inject(CartService);
 
     ngOnInit(): void {
         if (this._data) {
@@ -36,6 +40,24 @@ export class ProductDetail implements OnInit {
 
     closeModal(): void {
         this._dialogRef.close();
+    }
+
+     addToCart(dummyProduct: DummyProduct) {
+        const isProductRepeated = this._cartService.checkItemsRepeated(dummyProduct.id);
+        if (isProductRepeated) {
+            alert('Este producto ya está en el carrito.');
+            return;
+        }
+        const product: Product = {
+            id: dummyProduct.id,
+            title: dummyProduct.title,
+            price: dummyProduct.price,
+            finalPrice: dummyProduct.finalPrice,
+            image: dummyProduct.thumbnail,
+            discountPercentage: dummyProduct.discountPercentage,
+            stock: dummyProduct.stock,
+        }
+        this._cartService.addToCart(product);
     }
 
     private _getProduct(id: number) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CartService } from '../../../shared/services/cart-service';
 import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 import { CartDto, MercadoPagoService } from '../../../shared/services/mercado-pago';
@@ -9,6 +9,7 @@ import { CartDto, MercadoPagoService } from '../../../shared/services/mercado-pa
     imports: [PrimaryButton],
     templateUrl: './order-summary.html',
     styleUrl: './order-summary.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderSummary {
     cartService = inject(CartService);
@@ -44,6 +45,7 @@ export class OrderSummary {
                                 id: res.id,
                             },
                             autoOpen: true,
+                            mode: 'redirect'
                         });
                     } catch (err) {
                         console.error('Error al instanciar MP:', err);

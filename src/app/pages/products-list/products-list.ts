@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
@@ -12,6 +12,7 @@ import { IaChatService } from '../../shared/services/ia-chat-service';
     imports: [ProductCard, ProductCardSkeleton, IaChat],
     templateUrl: './products-list.html',
     styleUrl: './products-list.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsList implements OnInit {
     products = signal<Product[]>([]);
@@ -53,15 +54,6 @@ export class ProductsList implements OnInit {
             this.isLoading.set(false);
         });
     }
-
-   /*  private _loadProducts() {
-        this.isLoading.set(true);
-        this._productsService.getDummys(this.limit, this.skip()).subscribe((res) => {
-            this.products.update((prev) => [...prev, ...res.products]); // para concatenar los productos nuevos a los anteriores
-            this.totalProducts.set(res.total);
-            this.isLoading.set(false);
-        });
-    } */
 
     // Función que aplica la lógica de descuento
     private _applyDiscount(product: Product): number {
