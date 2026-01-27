@@ -9,7 +9,7 @@ import { ProductFilterData } from '../../../shared/models/product-filter-data.mo
     styleUrl: './product-filter.scss',
 })
 export class ProductFilter implements OnInit {
-    @Input() isSidebarVisible = true;
+    @Input() isFilterVisible = true;
     @Output() toggleSidebar = new EventEmitter<boolean>();
     @Output() emitFilterChange = new EventEmitter<ProductFilterData>();
 
