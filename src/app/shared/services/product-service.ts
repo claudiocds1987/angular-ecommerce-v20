@@ -37,6 +37,27 @@ export class ProductService {
             );
     }
 
+    getFilteredProducts(limit: number, skip: number, query = '') {
+        const url = query
+            ? `${this._apiUrl}/search?q=${query}&limit=${limit}&skip=${skip}`
+            : `${this._apiUrl}?limit=${limit}&skip=${skip}`;
+
+        return this._http.get<DummyResponsePaginated>(url).pipe(
+            map((res) => ({
+                total: res.total,
+                products: res.products.map((p) => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    category: p.category,
+                    stock: p.stock,
+                    discountPercentage: p.discountPercentage,
+                    image: p.thumbnail,
+                })),
+            })),
+        );
+    }
+
     // 1. Obtener todos los productos
     getProducts(): Observable<Product[]> {
         return this._http.get<Product[]>(this._apiUrl);
