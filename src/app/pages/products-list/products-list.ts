@@ -24,7 +24,6 @@ import { ProductFilter } from './product-filter/product-filter';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsList implements OnInit {
-    // Signals de estado
     products = signal<Product[]>([]);
     isLoading = signal(true);
     skip = signal(0);
@@ -32,7 +31,7 @@ export class ProductsList implements OnInit {
     totalProducts = signal(0);
     showFilter = signal(false);
 
-    // Nuevo signal para guardar los filtros actuales
+    // signal para guardar los filtros actuales
     currentFilters = signal<ProductFilterData | null>(null);
 
     iaChatService = inject(IaChatService);
