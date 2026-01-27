@@ -30,7 +30,7 @@
         [class.opacity-0]="!showFilter()"
         [class.opacity-100]="showFilter()"
     >
-        <div class="w-80 h-full overflow-hidden">
+        <div class="w-80 h-full overflow-hidden" [class.hidden]="!showFilter()">
             <app-product-filter
                 [isFilterVisible]="showFilter()"
                 (toggleSidebar)="showFilter.set(false)"
@@ -42,12 +42,30 @@
 
     <section class="flex-1 flex flex-col gap-6" aria-labelledby="products-heading">
         <h2 id="products-heading" class="sr-only">Catálogo de Productos</h2>
+
         <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 list-none p-0">
             @for (item of products(); track item.id) {
                 <li class="animate-in fade-in duration-500">
                     <app-product-card [product]="item" />
                 </li>
             }
+
+            @if (isLoading()) {
+                @for (i of [1, 2, 3, 4]; track i) {
+                    <li><app-product-card-skeleton /></li>
+                }
+            }
         </ul>
+
+        @if (!isLoading() && products().length < totalProducts()) {
+            <nav class="flex justify-center mt-4">
+                <button
+                    (click)="loadMore()"
+                    class="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all active:scale-95"
+                >
+                    Ver más resultados
+                </button>
+            </nav>
+        }
     </section>
 </div>
