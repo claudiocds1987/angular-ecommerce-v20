@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, inject, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
 
@@ -9,7 +9,10 @@ import { ProductFilterData } from '../../../shared/models/product-filter-data.mo
     styleUrl: './product-filter.scss',
 })
 export class ProductFilter implements OnInit {
+    @Input() isSidebarVisible = true;
+    @Output() toggleSidebar = new EventEmitter<boolean>();
     @Output() emitFilterChange = new EventEmitter<ProductFilterData>();
+
     filterForm!: FormGroup;
 
     private _fb = inject(FormBuilder);

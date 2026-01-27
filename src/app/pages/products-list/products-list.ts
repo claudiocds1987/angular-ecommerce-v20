@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
@@ -23,6 +23,7 @@ export class ProductsList implements OnInit {
     skip = signal(0);
     limit = 30;
     totalProducts = signal(0);
+    showSidebar = signal(true);
 
     // Nuevo signal para guardar los filtros actuales
     currentFilters = signal<ProductFilterData | null>(null);
@@ -30,8 +31,28 @@ export class ProductsList implements OnInit {
     iaChatService = inject(IaChatService);
     private _productsService = inject(ProductService);
 
+    isMobile = false;
+
+    // HostListener para detectar cambios en el tamaño de la pantalla
+    @HostListener('window:resize')
+    onResize() {
+        this.checkScreenSize();
+    }
+
     ngOnInit() {
+        this.checkScreenSize();
         this._loadProducts();
+    }
+
+    //  checkScreenSize() para determinar si es móvil (pantallas menores a 1024px)
+    private checkScreenSize() {
+        // Determinamos si es móvil basándonos en el ancho de la ventana
+        this.isMobile = window.innerWidth < 1024;
+        
+        // Si es escritorio (>=1024px), forzamos a que el sidebar se vea
+        if (!this.isMobile) {
+            this.showSidebar.set(true);
+        }
     }
 
     handleFilter(filters: ProductFilterData) {

@@ -1,124 +1,220 @@
-<!-- <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <form [formGroup]="filterForm" class="space-y-6">
-        
-        <div class="relative">
-          <label for="search-input" class="sr-only">Buscar productos</label>
-          <input id="search-input" type="text" formControlName="search" 
-                 class="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all text-gray-700"
-                 placeholder="Buscar por descripción o marca...">
-          <span class="absolute left-4 top-3.5 text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+<!-- <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 sticky">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-indigo-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                />
             </svg>
-          </span>
-        </div>
+            Filtros
+        </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <fieldset class="space-y-2 border-none p-0 m-0">
-            <legend class="text-xs font-bold uppercase text-gray-500 tracking-wider">Rango de Precio ($)</legend>
-            <div class="flex items-center space-x-2">
-              <div class="relative w-full">
-                <label for="min-price" class="sr-only">Precio mínimo</label>
-                <input id="min-price" type="number" formControlName="minPrice" placeholder="Min" 
-                       class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
-              </div>
-              <span class="text-gray-400" aria-hidden="true">-</span>
-              <div class="relative w-full">
-                <label for="max-price" class="sr-only">Precio máximo</label>
-                <input id="max-price" type="number" formControlName="maxPrice" placeholder="Max" 
-                       class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
-              </div>
+        <button
+            type="button"
+            (click)="toggleSidebar.emit(true)"
+            class="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-indigo-600 transition-colors"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+                />
+            </svg>
+        </button>
+    </div>
+
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="flex flex-col gap-6">
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest"
+                >Palabra clave</span
+            >
+            <div class="relative">
+                <input
+                    type="text"
+                    formControlName="search"
+                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    placeholder="Buscar..."
+                />
+                <span class="absolute left-3 top-3 text-gray-400">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                    </svg>
+                </span>
             </div>
-          </fieldset>
+        </label>
 
-          <div class="space-y-2 flex flex-col">
-            <label for="category-select" class="text-xs font-bold uppercase text-gray-500 tracking-wider">Categoría</label>
-            <select id="category-select" formControlName="category" 
-                    class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:border-indigo-500">
-              <option value="">Todas las categorías</option>
-              <option value="beauty">Belleza</option>
-              <option value="fragrances">Fragancias</option>
-              <option value="furniture">Muebles</option>
+        <fieldset class="flex flex-col gap-2 border-none p-0 m-0">
+            <legend class="text-xs font-bold uppercase text-gray-400 tracking-widest mb-2">
+                Presupuesto
+            </legend>
+            <div class="grid grid-cols-2 gap-2">
+                <label>
+                    <span class="sr-only">Precio Mínimo</span>
+                    <input
+                        type="number"
+                        formControlName="minPrice"
+                        placeholder="Mín"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                    />
+                </label>
+                <label>
+                    <span class="sr-only">Precio Máximo</span>
+                    <input
+                        type="number"
+                        formControlName="maxPrice"
+                        placeholder="Máx"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                    />
+                </label>
+            </div>
+        </fieldset>
+
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">Categoría</span>
+            <select
+                formControlName="category"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
+            >
+                <option value="">Todas</option>
+                <option value="beauty">Belleza</option>
+                <option value="fragrances">Fragancias</option>
+                <option value="furniture">Muebles</option>
             </select>
-          </div>
+        </label>
 
-          <div class="space-y-2 flex flex-col">
-            <label for="sort-select" class="text-xs font-bold uppercase text-gray-500 tracking-wider">Ordenar por</label>
-            <select id="sort-select" formControlName="sortBy" 
-                    class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
-              <option value="title">Nombre</option>
-              <option value="price">Precio</option>
-              <option value="rating">Calificación</option>
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest"
+                >Ordenar por</span
+            >
+            <select
+                formControlName="sortBy"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
+            >
+                <option value="title">A - Z</option>
+                <option value="price">Precio</option>
+                <option value="rating">Popularidad</option>
             </select>
-          </div>
+        </label>
+
+        <div class="flex flex-col gap-2 pt-4 border-t border-gray-100">
+            <button
+                type="submit"
+                class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all active:scale-95"
+            >
+                Aplicar
+            </button>
+            <button
+                type="button"
+                (click)="clearFilters()"
+                class="w-full py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors text-center"
+            >
+                Resetear filtros
+            </button>
         </div>
-      </form>
-    </div> -->
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="space-y-6">
-    
-    <div class="relative">
-      <label for="search-input" class="sr-only">Buscar productos</label>
-      <input id="search-input" type="text" formControlName="search" 
-             class="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all text-gray-700"
-             placeholder="Buscar por descripción o marca...">
-      <span class="absolute left-4 top-3.5 text-gray-400">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      </span>
+    </form>
+</div>
+ -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 sticky top-4 max-h-[calc(100vh-48px)] overflow-y-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Filtros
+        </h3>
+
+        <button
+            type="button"
+            (click)="toggleSidebar.emit(true)"
+            class="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-indigo-600 transition-colors"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+        </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <fieldset class="space-y-2 border-none p-0 m-0">
-        <legend class="text-xs font-bold uppercase text-gray-500 tracking-wider">Rango de Precio ($)</legend>
-        <div class="flex items-center space-x-2">
-          <div class="relative w-full">
-            <label for="min-price" class="sr-only">Precio mínimo</label>
-            <input id="min-price" type="number" formControlName="minPrice" placeholder="Min" 
-                   class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
-          </div>
-          <span class="text-gray-400" aria-hidden="true">-</span>
-          <div class="relative w-full">
-            <label for="max-price" class="sr-only">Precio máximo</label>
-            <input id="max-price" type="number" formControlName="maxPrice" placeholder="Max" 
-                   class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500">
-          </div>
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="flex flex-col gap-6">
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">Palabra clave</span>
+            <div class="relative">
+                <input type="text" formControlName="search" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Buscar..." />
+                <span class="absolute left-3 top-3 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+            </div>
+        </label>
+
+        <fieldset class="flex flex-col gap-2 border-none p-0 m-0">
+            <legend class="text-xs font-bold uppercase text-gray-400 tracking-widest mb-2">Presupuesto</legend>
+            <div class="grid grid-cols-2 gap-2">
+                <label>
+                    <span class="sr-only">Precio Mínimo</span>
+                    <input type="number" formControlName="minPrice" placeholder="Mín" class="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                </label>
+                <label>
+                    <span class="sr-only">Precio Máximo</span>
+                    <input type="number" formControlName="maxPrice" placeholder="Máx" class="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                </label>
+            </div>
+        </fieldset>
+
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">Categoría</span>
+            <select formControlName="category" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
+                <option value="">Todas</option>
+                <option value="beauty">Belleza</option>
+                <option value="fragrances">Fragancias</option>
+                <option value="furniture">Muebles</option>
+            </select>
+        </label>
+
+        <label class="flex flex-col gap-2">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">Ordenar por</span>
+            <select formControlName="sortBy" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
+                <option value="title">A - Z</option>
+                <option value="price">Precio</option>
+                <option value="rating">Popularidad</option>
+            </select>
+        </label>
+
+        <div class="flex flex-col gap-2 pt-4 border-t border-gray-100">
+            <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                Aplicar
+            </button>
+            <button type="button" (click)="clearFilters()" class="w-full py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors text-center">
+                Resetear filtros
+            </button>
         </div>
-      </fieldset>
-
-      <div class="space-y-2 flex flex-col">
-        <label for="category-select" class="text-xs font-bold uppercase text-gray-500 tracking-wider">Categoría</label>
-        <select id="category-select" formControlName="category" 
-                class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer">
-          <option value="">Todas las categorías</option>
-          <option value="beauty">Belleza</option>
-          <option value="fragrances">Fragancias</option>
-          <option value="furniture">Muebles</option>
-        </select>
-      </div>
-
-      <div class="space-y-2 flex flex-col">
-        <label for="sort-select" class="text-xs font-bold uppercase text-gray-500 tracking-wider">Ordenar por</label>
-        <select id="sort-select" formControlName="sortBy" 
-                class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 cursor-pointer">
-          <option value="title">Nombre</option>
-          <option value="price">Precio</option>
-          <option value="rating">Calificación</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-100">
-      <button type="button" (click)="clearFilters()"
-              class="px-6 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors">
-        Limpiar filtros
-      </button>
-      <button type="submit"
-              class="px-8 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all active:scale-95">
-        Aplicar Filtros
-      </button>
-    </div>
-  </form>
+    </form>
 </div>
