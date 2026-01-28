@@ -37,19 +37,24 @@
 
                 <div class="grid grid-cols-4 gap-3">
                     @for (img of safeGallery(); track $index) {
-                        <div
-                            class="aspect-square bg-gray-50 rounded-xl border border-gray-100 overflow-hidden cursor-pointer hover:border-blue-400 transition-all shadow-sm"
+                        <button
+                            type="button"
+                            (click)="changeImage(img)"
+                            class="aspect-square bg-gray-50 rounded-xl border overflow-hidden cursor-pointer transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            [class.border-blue-500]="safeThumbnail() === img"
+                            [class.border-gray-100]="safeThumbnail() !== img"
+                            aria-label="Ver imagen del producto"
                         >
                             <img
                                 [src]="img"
-                                class="w-full h-full object-cover"
+                                class="w-full h-full object-cover pointer-events-none"
                                 [alt]="
                                     (dummyProduct()?.title || 'Producto') +
                                     ' - Vista ' +
                                     ($index + 1)
                                 "
                             />
-                        </div>
+                        </button>
                     }
                 </div>
             </section>

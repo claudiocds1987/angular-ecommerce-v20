@@ -1,11 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    HostListener,
-    inject,
-    OnInit,
-    signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
@@ -36,8 +29,6 @@ export class ProductsList implements OnInit {
 
     iaChatService = inject(IaChatService);
     private _productsService = inject(ProductService);
-
-    isMobile = false;
 
     ngOnInit() {
         this._loadProducts();

@@ -13,8 +13,7 @@ import { CartService } from '../../shared/services/cart-service';
     imports: [CommonModule, MatDialogModule],
     templateUrl: './product-detail.html',
     styleUrl: './product-detail.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
-    
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetail implements OnInit {
     dummyProduct = signal<DummyProduct | undefined>(undefined);
@@ -32,7 +31,6 @@ export class ProductDetail implements OnInit {
 
     ngOnInit(): void {
         if (this._data) {
-            // Si recibimos un objeto con ID, llamamos al servicio para obtener la data fresca
             const productId = typeof this._data === 'object' ? this._data.id : this._data;
             this._getProduct(productId);
         }
@@ -42,7 +40,7 @@ export class ProductDetail implements OnInit {
         this._dialogRef.close();
     }
 
-     addToCart(dummyProduct: DummyProduct) {
+    addToCart(dummyProduct: DummyProduct) {
         const isProductRepeated = this._cartService.checkItemsRepeated(dummyProduct.id);
         if (isProductRepeated) {
             alert('Este producto ya está en el carrito.');
@@ -56,8 +54,12 @@ export class ProductDetail implements OnInit {
             image: dummyProduct.thumbnail,
             discountPercentage: dummyProduct.discountPercentage,
             stock: dummyProduct.stock,
-        }
+        };
         this._cartService.addToCart(product);
+    }
+
+    changeImage(img: SafeResourceUrl): void {
+        this.safeThumbnail.set(img);
     }
 
     private _getProduct(id: number) {
@@ -69,7 +71,6 @@ export class ProductDetail implements OnInit {
                     ...product,
                     finalPrice: this._applyDiscount(product),
                 };
-
                 this._processProductData(productWithDiscount);
                 this.loading.set(false);
             },
@@ -93,7 +94,7 @@ export class ProductDetail implements OnInit {
         }
 
         this._updateSeo(data);
-    }
+    } 
 
     private _applyDiscount(product: DummyProduct): number {
         if (product.discountPercentage && product.discountPercentage > 0) {
