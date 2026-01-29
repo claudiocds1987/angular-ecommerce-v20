@@ -1,0 +1,82 @@
+import { inject, Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Product } from '../models/product.model';
+import { HttpClient } from '@angular/common/http';
+import { DummyProduct, DummyResponsePaginated } from '../models/dummy-response.model';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class ProductService {
+    private _http = inject(HttpClient);
+    private _apiUrl = 'https://dummyjson.com/products';
+
+    // Obtener productos paginados
+    getDummys(limit: number, skip: number) {
+        return this._http
+            .get<DummyResponsePaginated>(`${this._apiUrl}?limit=${limit}&skip=${skip}`)
+            .pipe(
+                map((res) => {
+                    // Transformamos cada producto de la API al modelo Product
+                    const mappedProducts: Product[] = res.products.map((p) => ({
+                        id: p.id,
+                        title: p.title,
+                        price: p.price,
+                        category: p.category,
+                        stock: p.stock,
+                        discountPercentage: p.discountPercentage,
+                        // Usamos el thumbnail como imagen principal
+                        image: p.thumbnail,
+                    }));
+
+                    return {
+                        products: mappedProducts,
+                        total: res.total,
+                    };
+                }),
+            );
+    }
+
+    getFilteredProducts(limit: number, skip: number, query = '') {
+        const url = query
+            ? `${this._apiUrl}/search?q=${query}&limit=${limit}&skip=${skip}`
+            : `${this._apiUrl}?limit=${limit}&skip=${skip}`;
+
+        return this._http.get<DummyResponsePaginated>(url).pipe(
+            map((res) => ({
+                total: res.total,
+                products: res.products.map((p) => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    category: p.category,
+                    stock: p.stock,
+                    discountPercentage: p.discountPercentage,
+                    image: p.thumbnail,
+                })),
+            })),
+        );
+    }
+
+    // 1. Obtener todos los productos
+    getProducts(): Observable<Product[]> {
+        return this._http.get<Product[]>(this._apiUrl);
+    }
+
+    getProductById(id: number): Observable<DummyProduct> {
+        return this._http.get<DummyProduct>(`${this._apiUrl}/${id}`);
+    }
+
+    createProduct(product: Product): Observable<Product> {
+        return this._http.post<Product>(`${this._apiUrl}/add`, product);
+    }
+
+    updateProduct(id: number, product: Partial<Product>): Observable<Product> {
+        return this._http.put<Product>(`${this._apiUrl}/${id}`, product);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    deleteProduct(id: number): Observable<any> {
+        return this._http.delete(`${this._apiUrl}/${id}`);
+    }
+}

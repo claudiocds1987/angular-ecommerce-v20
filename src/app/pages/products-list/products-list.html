@@ -1,0 +1,86 @@
+@if (iaChatService.showIAchat()) {
+    <aside
+        class="fixed bottom-6 right-6 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-300"
+    >
+        <app-ia-chat></app-ia-chat>
+    </aside>
+}
+
+<button
+    [hidden]="showFilter()"
+    (click)="showFilter.set(true)"
+    class="fixed left-0 top-28 z-[100] bg-white text-indigo-600 border border-gray-200 border-l-0 p-4 rounded-r-2xl shadow-[10px_0_15px_-3px_rgba(0,0,0,0.1)] hover:bg-indigo-50 hover:pl-6 transition-all group flex items-center gap-3"
+>
+    <div class="flex items-center gap-3">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M9 5l7 7-7 7"
+            />
+        </svg>
+        <span class="text-xs font-black tracking-widest uppercase">Filtros</span>
+    </div>
+</button>
+
+<div class="flex flex-col lg:flex-row gap-6 p-4 min-h-screen bg-gray-50 relative">
+    <aside
+        class="transition-all duration-500 ease-in-out flex-shrink-0 z-[80] fixed left-0 top-[115px] bottom-0 lg:relative lg:inset-auto lg:top-4 lg:sticky lg:h-fit bg-transparent"
+        [class.w-80]="showFilter()"
+        [class.w-0]="!showFilter()"
+        [class.-translate-x-full]="!showFilter()"
+        [class.translate-x-0]="showFilter()"
+        [class.opacity-0]="!showFilter()"
+        [class.opacity-100]="showFilter()"
+    >
+        <div
+            class="w-80 rounded-r-2xl lg:rounded-2xl border border-gray-100 overflow-hidden h-full lg:h-auto"
+            [class.hidden]="!showFilter()"
+        >
+            <app-product-filter
+                [isFilterVisible]="showFilter()"
+                (toggleSidebar)="showFilter.set(false)"
+                (emitFilterChange)="handleFilter($event)"
+            >
+            </app-product-filter>
+        </div>
+    </aside>
+
+    <section class="flex-1 flex flex-col gap-6" aria-labelledby="products-heading">
+        <h2 id="products-heading" class="sr-only">Catálogo de Productos</h2>
+
+        <ul
+            class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 list-none p-0"
+        >
+            @for (item of products(); track item.id) {
+                <li class="animate-in fade-in duration-500">
+                    <app-product-card [product]="item" />
+                </li>
+            }
+
+            @if (isLoading()) {
+                @for (i of [1, 2, 3, 4]; track i) {
+                    <li><app-product-card-skeleton /></li>
+                }
+            }
+        </ul>
+
+        @if (!isLoading() && products().length < totalProducts()) {
+            <nav class="flex justify-center mt-4">
+                <button
+                    (click)="loadMore()"
+                    class="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all active:scale-95"
+                >
+                    Ver más resultados
+                </button>
+            </nav>
+        }
+    </section>
+</div>

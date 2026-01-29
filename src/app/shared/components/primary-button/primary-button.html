@@ -1,0 +1,13 @@
+<button
+    class="bg-blue-500 text-white px-4 py-2 rounded shadow-md hover:bg-blue-600 transition-colors cursor-pointer"
+    (click)="onClick()"
+    [disabled]="disabled()"
+    [class]="disabled() ? 'opacity-50 cursor-not-allowed' : ''"
+>
+    <div class="flex items-center gap-2 justify-center">
+        @if (iconUrl()) {
+            <img [src]="iconUrl()" class="w-5 h-5 invert" alt="icon" />
+        }
+        <span>{{ label() }}</span>
+    </div>
+</button>

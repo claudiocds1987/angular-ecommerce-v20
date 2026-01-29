@@ -1,0 +1,15 @@
+<div class="bg-slate-100 border border-slate-200 rounded-xl p-6 shadow-xl">
+    <h2 class="text-2xl">Total del pedido</h2>
+    <div class="flex flex-col gap-4">
+        <div class="flex gap-4 mt-2">
+            <span class="text-lg">Total</span>
+            <span class="text-lg font-bold">{{ '$' + total() }}</span>
+        </div>
+        <app-primary-button 
+            label="Proceder al pago" 
+            (click)="onCheckout()"
+            [disabled]="isDisabled()"
+            >
+        </app-primary-button>
+    </div>
+</div>

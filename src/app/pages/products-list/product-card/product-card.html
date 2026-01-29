@@ -1,0 +1,96 @@
+<article
+    class="fade-in-fwd glass-shine bg-white border border-slate-200/60 rounded-xl p-5 flex flex-col h-[500px] relative group w-full transition-all duration-500 ease-out shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-blue-400/40"
+>
+    <span
+        class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md bg-white/95 shadow-sm z-20 text-green-600"
+    >
+        EN STOCK: {{ product().stock }}
+    </span>
+
+    <div
+        [routerLink]="['/product', product().id]"
+        class="aspect-square w-full overflow-hidden relative z-10 bg-gray-50 cursor-pointer rounded-lg"
+    >
+        <img
+            [src]="product().image"
+            [alt]="product().title"
+            class="w-full h-full object-contain p-2 transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+        />
+    </div>
+
+    <div class="flex flex-col flex-grow mt-3 relative z-10">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Producto
+        </span>
+
+        <h3 class="text-sm font-bold text-slate-900 leading-tight mt-0.5 line-clamp-2">
+            <a class="hover:text-blue-600 transition-colors">
+                {{ product().title }}
+            </a>
+        </h3>
+
+        <div class="mt-1 mb-4">
+            <div class="mt-1 mb-4">
+                <button
+                    (click)="openDetailModal()"
+                    class="inline-flex items-center text-[10px] font-extrabold text-blue-500 hover:text-blue-700 transition-colors group/link uppercase tracking-tighter cursor-pointer"
+                >
+                    Ver detalle
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-3 w-3 ml-0.5 transition-transform group-hover/link:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-auto">
+            @if (product().discountPercentage! > 0) {
+                <span class="text-[10px] font-bold text-slate-400 block mb-0.5">
+                    Antes: <span class="line-through">{{ product().price | currency }}</span>
+                </span>
+                <div class="flex items-center gap-2">
+                    <data
+                        [value]="product().finalPrice"
+                        class="text-3xl font-black text-blue-600 tracking-tighter block leading-none"
+                    >
+                        {{ product().finalPrice | currency }}
+                    </data>
+                    <span
+                        class="text-[10px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100"
+                    >
+                        {{ product().discountPercentage }}% DESC
+                    </span>
+                </div>
+            } @else {
+                <data
+                    [value]="product().price"
+                    class="text-3xl font-black text-blue-600 tracking-tighter block leading-none"
+                >
+                    {{ product().price | currency }}
+                </data>
+            }
+        </div>
+    </div>
+
+    <footer class="mt-4 relative z-20">
+        <app-primary-button
+            label="Agregar al carrito"
+            [iconUrl]="'icons/shopping-bag.svg'"
+            [disabled]="product().stock === 0"
+            (btnClicked)="addToCart(product())"
+            class="w-full block"
+        ></app-primary-button>
+    </footer>
+</article>
