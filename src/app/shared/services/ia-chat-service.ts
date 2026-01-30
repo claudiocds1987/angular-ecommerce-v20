@@ -9,10 +9,6 @@ import { environment } from '../../../environments/environment';
 export class IaChatService {
     showIAchat = signal<boolean>(false);
 
-    /* toggleChat() {
-    this.showChat.update(state => !state);
-  } */
-
     openIAChat() {
         this.showIAchat.set(true);
     }
@@ -55,9 +51,7 @@ export class IaChatService {
             }
 
             // Si la IA falla por otra razón, usamos la lógica de respuesta manual
-            return this.respuestaDeEmergencia(pregunta, info);
-            // Si la IA falla, usamos la lógica de respuesta manual
-            return this.respuestaDeEmergencia(pregunta, info);
+            return this._respuestaDeEmergencia(pregunta, info);
         }
     }
 
@@ -90,7 +84,7 @@ export class IaChatService {
 
     // Lógica de respaldo manual basada en palabras clave en caso de fallo de la IA
 
-    private respuestaDeEmergencia(pregunta: string, info: any): string {
+    private _respuestaDeEmergencia(pregunta: string, info: any): string {
         const q = pregunta.toLowerCase();
 
         if (q.includes('stock') || q.includes('cuanto hay')) {
