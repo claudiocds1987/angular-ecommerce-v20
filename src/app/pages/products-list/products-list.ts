@@ -22,7 +22,7 @@ import { ProductFilter } from './product-filter/product-filter';
 export class ProductsList {
     products = signal<Product[]>([]);
     isLoading = signal(true);
-    skip = signal(0); // Número de productos a saltar (paginación offset) para cargar los siguientes
+    skip = signal(0); // Número de productos a saltar (paginación offset) para cargar los siguientes ej: Salta los primeros 30 y dame los siguientes 30". (Te da del 31 al 60).
     limit = 30;// Número de productos por página
     totalProducts = signal(0);
     showFilter = signal(false);
