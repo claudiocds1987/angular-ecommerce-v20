@@ -4,4 +4,5 @@ export interface ProductFilterData {
     maxPrice: number | null;
     category: string;
     sortBy: string;
+    order: string;
 }

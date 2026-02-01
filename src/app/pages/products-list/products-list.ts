@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { map, switchMap } from 'rxjs';
 import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
@@ -17,7 +19,7 @@ import { ProductFilter } from './product-filter/product-filter';
     styleUrl: './products-list.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsList implements OnInit {
+export class ProductsList {
     products = signal<Product[]>([]);
     isLoading = signal(true);
     skip = signal(0);
@@ -30,69 +32,78 @@ export class ProductsList implements OnInit {
 
     iaChatService = inject(IaChatService);
     private _productsService = inject(ProductService);
+    
+    // Combinamos el estado para reaccionar a cambios en filtros o paginación
+    private _queryState = computed(() => ({
+        filters: this.currentFilters(),
+        skip: this.skip(),
+    }));
 
-    ngOnInit() {
-        this._loadProducts();
-    }
+    constructor() {
+        // Reacción automática ante cambios en filtros o skip
+        toObservable(this._queryState)
+            .pipe(
+                switchMap(({ filters, skip }) => {
+                    this.isLoading.set(true);
+                    const searchTerm = filters?.search || '';
+                    const category = filters?.category || '';
 
-    handleFilter(filters: ProductFilterData) {
-        this.currentFilters.set(filters);
-        this.skip.set(0); // Al filtrar, volvemos a la primera página
-        this._loadProducts();
-    }
+                    return this._productsService
+                        .getFilteredProducts(this.limit, skip, searchTerm, category)
+                        .pipe(
+                            map((res) => {
+                                // 1. Mapeamos y aplicamos descuento
+                                let processed = res.products.map((product: Product) => ({
+                                    ...product,
+                                    finalPrice: this._applyDiscount(product),
+                                }));
 
-    // Función para cargar más productos (paginación)
-    loadMore() {
-        this.skip.update((current) => current + this.limit);
-        this._loadProducts();
-    }
+                                // 2. Filtros adicionales en el cliente (Precio y Ordenamiento)
+                                // NOTA: La categoría ya se filtró en el servidor
+                                if (filters) {
+                                    if (filters.minPrice !== null && filters.minPrice !== undefined) {
+                                        processed = processed.filter((p) => p.price >= filters.minPrice!);
+                                    }
+                                    if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
+                                        processed = processed.filter((p) => p.price <= filters.maxPrice!);
+                                    }
 
-    private _loadProducts() {
-        this.isLoading.set(true);
-        const filters = this.currentFilters();
-        const searchTerm = filters?.search || '';
+                                    // Ordenar dinámicamente según el selector
+                                    const sortKey = filters.sortBy as keyof Product;
+                                    processed.sort((a, b) => {
+                                        if (a[sortKey]! < b[sortKey]!) return filters.order === 'desc' ? 1 : -1;
+                                        if (a[sortKey]! > b[sortKey]!) return filters.order === 'desc' ? -1 : 1;
+                                        return 0;
+                                    });
+                                }
 
-        this._productsService
-            .getFilteredProducts(this.limit, this.skip(), searchTerm)
-            .subscribe((res) => {
-                // 1. Mapeamos y aplicamos descuento
-                let processed = res.products.map((product: Product) => ({
-                    ...product,
-                    finalPrice: this._applyDiscount(product),
-                }));
-
-                // 2. Filtros adicionales en el cliente (Precio y Categoría)
-                if (filters) {
-                    if (filters.category) {
-                        processed = processed.filter((p) => p.category === filters.category);
-                    }
-                    if (filters.minPrice !== null && filters.minPrice !== undefined) {
-                        processed = processed.filter((p) => p.price >= filters.minPrice!);
-                    }
-                    if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
-                        processed = processed.filter((p) => p.price <= filters.maxPrice!);
-                    }
-
-                    // Ordenar dinámicamente según el selector
-                    const sortKey = filters.sortBy as keyof Product;
-                    processed.sort((a, b) => {
-                        if (a[sortKey]! < b[sortKey]!) return -1;
-                        if (a[sortKey]! > b[sortKey]!) return 1;
-                        return 0;
-                    });
-                }
-
+                                return { processed, total: res.total, skip };
+                            })
+                        );
+                })
+            )
+            .subscribe(({ processed, total, skip }) => {
                 // 3. Actualizamos el signal
-                // Si skip es 0, reemplazamos (nueva búsqueda). Si no, concatenamos (ver más).
-                if (this.skip() === 0) {
+                if (skip === 0) {
                     this.products.set(processed);
                 } else {
                     this.products.update((prev) => [...prev, ...processed]);
                 }
 
-                this.totalProducts.set(res.total);
+                this.totalProducts.set(total);
                 this.isLoading.set(false);
             });
+    }
+
+    handleFilter(filters: ProductFilterData) {
+        // Al setear currentFilters, el computed _queryState cambia y dispara el switchMap
+        this.currentFilters.set(filters);
+        this.skip.set(0); 
+    }
+
+    // Función para cargar más productos (paginación)
+    loadMore() {
+        this.skip.update((current) => current + this.limit);
     }
 
     private _applyDiscount(product: Product): number {

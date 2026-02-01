@@ -37,10 +37,15 @@ export class ProductService {
             );
     }
 
-    getFilteredProducts(limit: number, skip: number, query = '') {
-        const url = query
-            ? `${this._apiUrl}/search?q=${query}&limit=${limit}&skip=${skip}`
-            : `${this._apiUrl}?limit=${limit}&skip=${skip}`;
+    getFilteredProducts(limit: number, skip: number, query = '', category = '') {
+        let url = `${this._apiUrl}?limit=${limit}&skip=${skip}`;
+
+        if (category) {
+            // Prioridad a la categoría sobre la búsqueda (limitación de DummyJSON)
+            url = `${this._apiUrl}/category/${category}?limit=${limit}&skip=${skip}`;
+        } else if (query) {
+            url = `${this._apiUrl}/search?q=${query}&limit=${limit}&skip=${skip}`;
+        }
 
         return this._http.get<DummyResponsePaginated>(url).pipe(
             map((res) => ({
