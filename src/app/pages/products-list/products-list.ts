@@ -40,6 +40,10 @@ export class ProductsList {
     }));
 
     constructor() {
+        this._listenToQueryChanges();
+    }
+
+    private _listenToQueryChanges() {
         // Reacción automática ante cambios en filtros o skip
         toObservable(this._queryState)
             .pipe(
