@@ -28,30 +28,23 @@ export class OrderSummary {
 
         this._mercadoPagoService.createPreference(dataParaBackend).subscribe({
             next: (res) => {
-               
-                // CLAVE: Acceder por string para evitar que el compilador lo cambie a "B"
-                const MercadoPagoClass = (window as any)['MercadoPago'];
+                // Priorizar el link de sandbox que viene del backend
+                let url = res.sandbox_init_point || res.init_point;
 
-                if (MercadoPagoClass) {
-                    try {
-                        // Inicializar el SDK
-                        const mp = new MercadoPagoClass(
-                            'TEST-c3a31b76-ad93-4877-b3a9-fdefa8357b42',
-                        );
+                if (!url && res.id) {
+                    // Fallback: Si el backend no devuelve la URL completa (común en algunas implementaciones),
+                    // la construimos manualmente usando el ID de preferencia.
+                    // Nota: Asumimos Sandbox (.com.ar) dado el token de prueba.
+                    url = `https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=${res.id}`;
+                    console.warn('Backend no devolvió sandbox_init_point, usando URL construida manualmente:', url);
+                }
 
-                        // Abrir Checkout
-                        mp.checkout({
-                            preference: {
-                                id: res.id,
-                            },
-                            autoOpen: true,
-                            mode: 'redirect'
-                        });
-                    } catch (err) {
-                        console.error('Error al instanciar MP:', err);
-                    }
+                if (url) {
+                    // Redirigir en la misma pestaña
+                    window.location.href = url;
                 } else {
-                    alert('Error: No se encontró la librería de Mercado Pago.');
+                    console.error('Error: No se recibió link ni ID de preferencia.', res);
+                    alert('Error: No se pudo generar el link de pago.');
                 }
             },
             error: (err) => console.error('Error en API:', err),

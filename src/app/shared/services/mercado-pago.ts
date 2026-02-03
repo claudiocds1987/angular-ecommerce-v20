@@ -30,9 +30,9 @@ export class MercadoPagoService {
 
     // 1. Enviar el carrito para obtener el ID de preferencia
 
-    createPreference(cart: CartDto): Observable<{ id: string }> {
+    createPreference(cart: CartDto): Observable<{ id: string; init_point: string; sandbox_init_point: string }> {
         // No añadas HttpHeaders manuales por ahora, deja que Angular lo gestione solo
-        return this._http.post<{ id: string }>(`${this._apiUrl}/create-preference`, cart);
+        return this._http.post<{ id: string; init_point: string; sandbox_init_point: string }>(`${this._apiUrl}/create-preference`, cart);
     }
 
     // 2. Confirmar el pago
