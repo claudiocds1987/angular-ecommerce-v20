@@ -1,5 +1,5 @@
 export const environment = {
-    production: false,
-    serverUrl: '',
-    geminiApiKey: '',
+  production: false,
+  serverUrl: '',
+  geminiApiKey: '',
 };

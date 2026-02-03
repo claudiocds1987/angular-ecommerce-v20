@@ -104,8 +104,8 @@ export class IaChatService {
     }
 } */
 
-    import { Injectable, signal } from '@angular/core';
-import { GoogleGenAI } from "@google/genai";
+import { Injectable, signal } from '@angular/core';
+import { GoogleGenAI } from '@google/genai';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -116,10 +116,10 @@ export class IaChatService {
   showIAchat = signal<boolean>(false);
 
   // Inicialización del cliente de Google GenAI
-  // Nota: Si la librería no detecta la variable de entorno automáticamente, 
+  // Nota: Si la librería no detecta la variable de entorno automáticamente,
   // pasamos el apiKey en el objeto de configuración.
   private readonly ai = new GoogleGenAI({
-    apiKey: environment.geminiApiKey 
+    apiKey: environment.geminiApiKey,
   });
 
   openIAChat() {
@@ -138,17 +138,21 @@ export class IaChatService {
 
     try {
       const response = await this.ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [{
-          role: 'user',
-          parts: [{
-            text: `Actúa como vendedor experto. 
+        model: 'gemini-3-flash-preview',
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Actúa como vendedor experto. 
                   Producto: ${info.title}. 
                   Datos técnicos: ${JSON.stringify(info)}. 
                   Pregunta del cliente: "${pregunta}". 
-                  Instrucción: Responde de forma muy breve y amable basada solo en estos datos.`
-          }]
-        }]
+                  Instrucción: Responde de forma muy breve y amable basada solo en estos datos.`,
+              },
+            ],
+          },
+        ],
       });
 
       return response.text;
@@ -170,18 +174,22 @@ export class IaChatService {
   async analizarBusqueda(text: string) {
     try {
       const response = await this.ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [{
-          role: 'user',
-          parts: [{
-            text: `Analiza la intención de búsqueda del usuario: "${text}". 
+        model: 'gemini-3-flash-preview',
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Analiza la intención de búsqueda del usuario: "${text}". 
                   Debes responder ÚNICAMENTE un objeto JSON válido con este formato:
-                  {"busqueda": string, "categoria": string, "precioMax": number | null}`
-          }]
-        }]
+                  {"busqueda": string, "categoria": string, "precioMax": number | null}`,
+              },
+            ],
+          },
+        ],
       });
 
-      const responseText = response.text ?? "";
+      const responseText = response.text ?? '';
       // Limpieza de Markdown por si la IA devuelve bloques de código
       const cleanJson = responseText.replace(/```json|```/g, '').trim();
 
@@ -199,7 +207,7 @@ export class IaChatService {
     const q = pregunta.toLowerCase();
     if (q.includes('stock')) return `Tenemos ${info.stock} unidades de ${info.title}.`;
     if (q.includes('precio')) return `El precio de ${info.title} es $${info.price}.`;
-    
+
     return `Lo siento, hubo un error de conexión. El producto ${info.title} cuesta $${info.price}.`;
   }
 }

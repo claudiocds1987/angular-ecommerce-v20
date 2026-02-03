@@ -65,8 +65,8 @@ export interface Meta {
 
 // Esta es la estructura del "paquete" que trae la paginación
 export interface DummyResponsePaginated {
-    products: DummyProduct[];
-    total: number;
-    skip: number;
-    limit: number;
+  products: DummyProduct[];
+  total: number;
+  skip: number;
+  limit: number;
 }

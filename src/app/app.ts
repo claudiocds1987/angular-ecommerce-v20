@@ -5,12 +5,12 @@ import { Footer } from './shared/components/footer/footer';
 import { Toast } from './shared/components/toast/toast';
 
 @Component({
-    selector: 'app-root',
-    standalone: true,
-    imports: [RouterOutlet, Header, Footer, Toast],
-    templateUrl: './app.html',
-    styleUrl: './app.scss',
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, Header, Footer, Toast],
+  templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
 export class App {
-    protected readonly title = signal('e-commerce-v20');
+  protected readonly title = signal('e-commerce-v20');
 }
