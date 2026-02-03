@@ -1,16 +1,70 @@
-<div class="result-container">
-      <div class="card">
-        <div class="icon" [ngClass]="config.class">
-          {{ config.icon }}
-        </div>
-        
-        <h1>{{ config.title }}</h1>
-        <p>{{ config.message }}</p>
-        
-        <div class="details" v-if="paymentId">
-          <small>ID de Operación: {{ paymentId }}</small>
-        </div>
-
-        <button routerLink="/" class="btn-primary">Volver a la Tienda</button>
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-100">
+      
+      <!-- Icon Wrapper -->
+      <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 transition-all duration-300 ease-in-out"
+           [ngClass]="{
+             'bg-green-100': config.class === 'approved',
+             'bg-red-100': config.class === 'rejected',
+             'bg-yellow-100': config.class === 'pending'
+           }">
+           
+        @switch (config.class) {
+          @case ('approved') {
+            <!-- Check Icon -->
+            <svg class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          }
+          @case ('rejected') {
+            <!-- X Icon -->
+            <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          }
+           @case ('pending') {
+            <!-- Clock Icon -->
+             <svg class="h-10 w-10 text-yellow-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+             </svg>
+           }
+        }
       </div>
+
+      <div class="sm:mx-auto sm:w-full sm:max-w-md mb-6">
+        <h2 class="text-center text-3xl font-extrabold text-gray-900 tracking-tight">
+          {{ config.title }}
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          {{ config.message }}
+        </p>
+      </div>
+
+      <!-- Payment ID -->
+      @if (paymentId) {
+        <div class="mt-6 border-t border-gray-100 pt-4">
+           <p class="text-center text-xs text-gray-500 uppercase tracking-wide font-semibold">
+             ID de Operación
+           </p>
+           <p class="text-center text-sm font-mono text-gray-900 mt-1 select-all">
+             {{ paymentId }}
+           </p>
+        </div>
+      }
+
+      <div class="mt-8">
+        <button routerLink="/" 
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out hover:shadow-lg transform hover:-translate-y-0.5">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          Volver a la Tienda
+        </button>
+      </div>
+      
     </div>
+  </div>
+</div>

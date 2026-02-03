@@ -14,7 +14,7 @@ export class PaymentResult implements OnInit {
 
     status: string | null = '';
     paymentId: string | null = '';
-    config = { title: '', message: '', icon: '', class: '' };
+    config = { title: '', message: '', class: '' };
 
     ngOnInit() {
         this.status = this._route.snapshot.queryParamMap.get('status');
@@ -30,7 +30,7 @@ export class PaymentResult implements OnInit {
                 this.config = {
                     title: '¡Pago Exitoso!',
                     message: 'Tu pedido ha sido procesado correctamente.',
-                    icon: '✅',
+
                     class: 'approved',
                 };
                 console.log("Status de pago:", this.status);
@@ -39,7 +39,7 @@ export class PaymentResult implements OnInit {
                 this.config = {
                     title: 'Pago Rechazado',
                     message: 'Lo sentimos, hubo un problema con tu tarjeta.',
-                    icon: '❌',
+ 
                     class: 'rejected',
                 };
                 console.log("Status de pago:", this.status);
@@ -48,7 +48,7 @@ export class PaymentResult implements OnInit {
                 this.config = {
                     title: 'Pago Pendiente',
                     message: 'Estamos esperando la confirmación de Mercado Pago.',
-                    icon: '⏳',
+
                     class: 'pending',
                 };
                 console.log("Status de pago:", this.status);
