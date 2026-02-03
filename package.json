@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "format": "prettier --write ."
+    "format": "prettier --write \"src/**/*.{ts,html,scss,css,json}\""
   },
   "prettier": {
     "printWidth": 100,
