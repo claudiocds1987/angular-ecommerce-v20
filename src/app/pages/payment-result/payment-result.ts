@@ -25,12 +25,11 @@ export class PaymentResult implements OnInit {
 
     setAppearance() {
         switch (this.status) {
-            
+
             case 'approved':
                 this.config = {
                     title: '¡Pago Exitoso!',
                     message: 'Tu pedido ha sido procesado correctamente.',
-
                     class: 'approved',
                 };
                 console.log("Status de pago:", this.status);
@@ -39,7 +38,6 @@ export class PaymentResult implements OnInit {
                 this.config = {
                     title: 'Pago Rechazado',
                     message: 'Lo sentimos, hubo un problema con tu tarjeta.',
- 
                     class: 'rejected',
                 };
                 console.log("Status de pago:", this.status);
@@ -48,7 +46,6 @@ export class PaymentResult implements OnInit {
                 this.config = {
                     title: 'Pago Pendiente',
                     message: 'Estamos esperando la confirmación de Mercado Pago.',
-
                     class: 'pending',
                 };
                 console.log("Status de pago:", this.status);
