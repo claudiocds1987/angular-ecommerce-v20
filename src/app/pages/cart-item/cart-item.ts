@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { Product } from '../../shared/models/product.model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  ViewChild,
+} from '@angular/core';
+import { CartItem } from '../../shared/models/product.model';
 import { CartService } from '../../shared/services/cart-service';
 import { CommonModule } from '@angular/common';
 
@@ -10,10 +17,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './cart-item.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CartItem {
-  item = input.required<Product>();
+export class CartItemComponent {
+  item = input.required<CartItem>();
 
   cartService = inject(CartService);
+
+  @ViewChild('inputQuantity') inputQuantity!: ElementRef<HTMLInputElement>;
 
   onRemoveItem(itemId: number) {
     this.cartService.removeFromCart(itemId);
@@ -33,9 +42,9 @@ export class CartItem {
     }
 
     // 3. Actualizar el valor visualmente en el input (por si el usuario escribió 999)
-    // Usamos el ViewChild o simplemente el evento para resetear el valor visual
-    const inputElement = document.querySelector('input[type="number"]') as HTMLInputElement;
-    if (inputElement) inputElement.value = quantity.toString();
+    if (this.inputQuantity && this.inputQuantity.nativeElement) {
+      this.inputQuantity.nativeElement.value = quantity.toString();
+    }
 
     // 4. Llamar al servicio para actualizar el carrito
     this.cartService.updateQuantity(productId, quantity);

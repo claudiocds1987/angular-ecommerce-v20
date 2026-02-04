@@ -45,7 +45,7 @@
         type="number"
         min="1"
         [max]="item().stock"
-        value="1"
+        [value]="item().quantity"
         readonly
         class="w-8 text-center bg-transparent border-none text-sm font-bold text-slate-800 focus:ring-0 cursor-default"
         (change)="onQuantityChange(item().id, inputQuantity.value)"
