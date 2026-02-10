@@ -1,0 +1,49 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Cambia esto si tu rama principal se llama de otra forma (ej. master)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/checkout@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Create Environment Files
+        run: |
+          mkdir -p src/environments
+          cat <<EOF > src/environments/environment.production.ts
+          export const environment = {
+            production: true,
+            serverUrl: 'https://apicomponents.runasp.net',
+            geminiApiKey: '${{ secrets.GEMINI_API_KEY }}'
+          };
+          EOF
+          cat <<EOF > src/environments/environment.ts
+          export const environment = {
+            production: false,
+            serverUrl: 'https://localhost:44364',
+            geminiApiKey: ''
+          };
+          EOF
+
+      - name: Build Project
+        run: npx ng build --configuration production --base-href /angular-ecommerce-v20/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/e-commerce-v20/browser
+          branch: gh-pages
