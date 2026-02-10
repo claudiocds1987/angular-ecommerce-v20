@@ -30,7 +30,7 @@ export class IaChatService {
         try {
             // Usamos v1beta y gemini-1.5-flash para máxima compatibilidad
             const model = this._genAI.getGenerativeModel(
-                { model: 'gemini-3-flash-preview' },
+                { model: 'gemini-1.5-flash' },
                 { apiVersion: 'v1beta' },
             );
 
@@ -60,7 +60,7 @@ export class IaChatService {
     async analizarBusqueda(text: string) {
         try {
             const model = this._genAI.getGenerativeModel(
-                { model: 'gemini-3-flash-preview' },
+                { model: 'gemini-1.5-flash' },
                 { apiVersion: 'v1beta' },
             );
 
@@ -115,12 +115,22 @@ export class IaChatService {
   // Signals para controlar la UI del chat
   showIAchat = signal<boolean>(false);
 
-  // Inicialización del cliente de Google GenAI
-  // Nota: Si la librería no detecta la variable de entorno automáticamente,
-  // pasamos el apiKey en el objeto de configuración.
-  private readonly ai = new GoogleGenAI({
-    apiKey: environment.geminiApiKey,
-  });
+  // Inicialización diferida del cliente para evitar errores si no hay Key (entorno local)
+  private _ai: any;
+  private get ai() {
+    if (!this._ai) {
+      if (!environment.geminiApiKey) {
+        console.warn(
+          'IA Chat: No se detectó GEMINI_API_KEY. El chat funcionará en modo emergencia.',
+        );
+        return null;
+      }
+      this._ai = new GoogleGenAI({
+        apiKey: environment.geminiApiKey,
+      });
+    }
+    return this._ai;
+  }
 
   openIAChat() {
     this.showIAchat.set(true);
@@ -137,8 +147,10 @@ export class IaChatService {
     const info = productoContexto.raw ? productoContexto.raw : productoContexto;
 
     try {
+      if (!this.ai) return this._respuestaDeEmergencia(pregunta, info);
+
       const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-1.5-flash',
         contents: [
           {
             role: 'user',
@@ -173,8 +185,10 @@ export class IaChatService {
    */
   async analizarBusqueda(text: string) {
     try {
+      if (!this.ai) return { busqueda: text, categoria: 'all', precioMax: null };
+
       const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-1.5-flash',
         contents: [
           {
             role: 'user',
