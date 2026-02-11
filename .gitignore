@@ -46,3 +46,7 @@ Thumbs.db
 src/environments/environment.ts
 src/environments/environment.production.ts
 correr-proyecto.md
+
+# Evitar archivos compilados de JavaScript y sus mapas
+*.js.map
+chunk-*.js
