@@ -21,7 +21,7 @@ export class IaChatService {
       }
       this._ai = new GoogleGenAI({
         apiKey: environment.geminiApiKey,
-        apiVersion: 'v1',
+        apiVersion: 'v1beta',
       });
     }
     return this._ai;
@@ -45,7 +45,7 @@ export class IaChatService {
       if (!this.ai) return this._respuestaDeEmergencia(pregunta, info);
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3-flash-preview',
         contents: [
           {
             role: 'user',
@@ -82,7 +82,7 @@ export class IaChatService {
       if (!this.ai) return { busqueda: text, categoria: 'all', precioMax: null };
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3-flash-preview',
         contents: [
           {
             role: 'user',
