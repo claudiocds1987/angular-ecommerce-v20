@@ -313,6 +313,10 @@ export class IaChat {
     }
   }
 
+  closeIAChat() {
+    this.iaChatService.closeIAChat();
+  }
+
   private scrollToBottom() {
     if (this.scrollContainer) {
       this.scrollContainer.nativeElement.scrollTop =
