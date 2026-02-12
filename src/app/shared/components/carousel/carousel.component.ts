@@ -79,8 +79,10 @@ export class CarouselComponent implements OnInit, OnDestroy {
       this.itemsPerView.set(2);
     } else if (width < 1280) {
       this.itemsPerView.set(3);
-    } else {
+    } else if (width < 1536) {
       this.itemsPerView.set(4);
+    } else {
+      this.itemsPerView.set(5);
     }
 
     // Reset index if out of bounds after resize
