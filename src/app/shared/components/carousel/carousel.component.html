@@ -69,6 +69,31 @@
                   {{ product.title }}
                 </h3>
 
+                <div class="mt-1 mb-4">
+                  <div class="mt-1 mb-4">
+                    <button
+                      (click)="openDetailModal(product)"
+                      class="inline-flex items-center text-[10px] font-extrabold text-blue-500 hover:text-blue-700 transition-colors group/link uppercase tracking-tighter cursor-pointer"
+                    >
+                      Ver detalle
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-3 w-3 ml-0.5 transition-transform group-hover/link:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
                 <!-- Price -->
                 <div
                   class="flex flex-col"

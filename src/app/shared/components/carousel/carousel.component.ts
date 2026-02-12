@@ -1,6 +1,17 @@
-import { Component, input, signal, computed, HostListener, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  input,
+  signal,
+  computed,
+  HostListener,
+  OnInit,
+  OnDestroy,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product.model';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductDetail } from '../../../pages/product-detail/product-detail';
 
 @Component({
   selector: 'app-carousel',
@@ -37,9 +48,10 @@ export class CarouselComponent implements OnInit, OnDestroy {
     this.updateItemsPerView();
   }
 
-  private _intervalId: any;
   autoPlay = input(true);
   autoPlayInterval = input(5000);
+  private _intervalId: any;
+  private _matDialog = inject(MatDialog);
 
   ngOnInit() {
     this.updateItemsPerView();
@@ -107,5 +119,16 @@ export class CarouselComponent implements OnInit, OnDestroy {
     const targetIndex = pageIndex * this.itemsPerView();
     // Ensure we don't go out of bounds
     this.currentIndex.set(Math.min(targetIndex, this.maxIndex()));
+  }
+
+  openDetailModal(product: Product): void {
+    this._matDialog.open(ProductDetail, {
+      data: product, // Enviamos el producto al componente ProductDetail
+      width: '1000px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      backdropClass: 'custom-modal-backdrop', // Esta clase esta definida en styles.scss para que elefecto desenfoque funcione en todo el body
+    });
   }
 }
