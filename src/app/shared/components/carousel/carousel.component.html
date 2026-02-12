@@ -1,0 +1,169 @@
+<section
+  class="relative w-full bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+  aria-label="Product Carousel"
+  (mouseenter)="stopAutoplay()"
+  (mouseleave)="startAutoplay()"
+>
+  <!-- Header -->
+  <div class="bg-[#990099] px-6 py-3">
+    <h2 class="text-white text-xl font-bold tracking-wide">
+      {{ title() }}
+    </h2>
+  </div>
+
+  <!-- Carousel Container -->
+  <div class="relative px-2 py-6">
+    <!-- Carousel Body / Track -->
+    <div class="overflow-hidden">
+      <div
+        class="flex transition-transform duration-500 ease-out"
+        [style.transform]="'translateX(' + -currentIndex() * (100 / itemsPerView()) + '%)'"
+        role="list"
+      >
+        @for (product of products(); track product.id) {
+          <div
+            class="flex-shrink-0 px-3 flex justify-center"
+            [style.width]="100 / itemsPerView() + '%'"
+            role="listitem"
+          >
+            <!-- Product Card -->
+            <article
+              class="w-full bg-white flex flex-col group/card h-full justify-between"
+              itemscope
+              itemtype="http://schema.org/Product"
+            >
+              <div>
+                <!-- Badges Row -->
+                <div class="flex gap-2 mb-2 min-h-[24px]">
+                  @if (product.discountPercentage) {
+                    <span
+                      class="bg-[#990099] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase"
+                    >
+                      {{ product.discountPercentage }}% OFF
+                    </span>
+                  }
+                  <span
+                    class="bg-[#702095] text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase leading-tight flex items-center"
+                  >
+                    Mismo precio
+                  </span>
+                </div>
+
+                <!-- Image Area -->
+                <figure class="relative h-48 flex items-center mb-4">
+                  <img
+                    [src]="product.image"
+                    [alt]="product.title"
+                    class="max-h-full max-w-full object-contain transition-transform duration-500 group-hover/card:scale-105"
+                    itemprop="image"
+                    loading="lazy"
+                  />
+                </figure>
+
+                <!-- Title -->
+                <h3
+                  class="text-sm font-normal text-gray-500 line-clamp-2 mb-2 h-10"
+                  itemprop="name"
+                  title="{{ product.title }}"
+                >
+                  {{ product.title }}
+                </h3>
+
+                <!-- Price -->
+                <div
+                  class="flex flex-col"
+                  itemprop="offers"
+                  itemscope
+                  itemtype="http://schema.org/Offer"
+                >
+                  <meta itemprop="priceCurrency" content="USD" />
+                  <link itemprop="availability" href="http://schema.org/InStock" />
+
+                  @if (product.discountPercentage && product.discountPercentage > 0) {
+                    <span class="text-[10px] font-bold text-slate-400 block mb-0.5">
+                      Antes: <span class="line-through">{{ product.price | currency }}</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <data
+                        [value]="product.finalPrice"
+                        class="text-3xl font-black text-blue-600 tracking-tighter block leading-none"
+                      >
+                        {{ product.finalPrice | currency }}
+                      </data>
+                      <span
+                        class="text-[10px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100"
+                      >
+                        {{ product.discountPercentage }}% DESC
+                      </span>
+                    </div>
+                  } @else {
+                    <data
+                      [value]="product.price"
+                      class="text-3xl font-black text-blue-600 tracking-tighter block leading-none"
+                    >
+                      {{ product.price | currency }}
+                    </data>
+                  }
+                </div>
+              </div>
+
+              <!-- Footer / Delivery -->
+              <div class="mt-2">
+                <p class="text-[#00a650] text-sm font-semibold">Llega GRATIS mañana</p>
+              </div>
+            </article>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    @if (showControls()) {
+      <button
+        type="button"
+        (click)="prev()"
+        [disabled]="currentIndex() === 0"
+        class="absolute left-4 top-1/2 -translate-y-1/2 size-12 bg-white hover:bg-gray-50 text-[#3483fa] flex items-center justify-center rounded-full shadow-lg border border-gray-100 transition-all disabled:opacity-0 disabled:cursor-not-allowed z-10"
+        aria-label="Previous slide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        (click)="next()"
+        [disabled]="currentIndex() >= maxIndex()"
+        class="absolute right-4 top-1/2 -translate-y-1/2 size-12 bg-white hover:bg-gray-50 text-[#3483fa] flex items-center justify-center rounded-full shadow-lg border border-gray-100 transition-all disabled:opacity-0 disabled:cursor-not-allowed z-10"
+        aria-label="Next slide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+    }
+  </div>
+</section>

@@ -9,11 +9,12 @@ import { IaChat } from '../../shared/components/ia-chat/ia-chat';
 import { IaChatService } from '../../shared/services/ia-chat-service';
 import { ProductFilterData } from '../../shared/models/product-filter-data.model';
 import { ProductFilter } from './product-filter/product-filter';
+import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [ProductCard, ProductCardSkeleton, IaChat, ProductFilter],
+  imports: [ProductCard, ProductCardSkeleton, IaChat, ProductFilter, CarouselComponent],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +30,8 @@ export class ProductsList {
   // signal para guardar los filtros actuales
   currentFilters = signal<ProductFilterData | null>(null);
 
+  carouselProducts = signal<Product[]>([]);
+
   iaChatService = inject(IaChatService);
   private _productsService = inject(ProductService);
 
@@ -40,6 +43,26 @@ export class ProductsList {
 
   constructor() {
     this._listenToQueryChanges();
+    this._loadCarouselProducts();
+  }
+
+  private _loadCarouselProducts() {
+    this._productsService.getDummys(100, 0).subscribe((res) => {
+      const uniqueCategories = new Set<string>();
+      const selectedProducts: Product[] = [];
+
+      for (const product of res.products) {
+        if (product.category && !uniqueCategories.has(product.category)) {
+          uniqueCategories.add(product.category);
+          selectedProducts.push({
+            ...product,
+            finalPrice: this._applyDiscount(product),
+          });
+          if (selectedProducts.length === 8) break;
+        }
+      }
+      this.carouselProducts.set(selectedProducts);
+    });
   }
 
   private _listenToQueryChanges() {
