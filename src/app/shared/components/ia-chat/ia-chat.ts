@@ -69,21 +69,24 @@ export class IaChat {
         })),
       },
     ]);
-    /* const respuestaIA = await this.iaChatService.consultarAlBackend(text);
 
-    // 2. Agregamos la respuesta al chat
-    this.messages.update((prev) => [
-      ...prev,
-      {
-        text: respuestaIA,
-        sender: 'bot',
-      },
-    ]); */
+    /*  if (this.selectedProduct()) {
+      // Modo pregunta sobre producto seleccionado
+      const text = this.userInput().trim();
+      const respuesta = await this.iaChatService.responderSobreProducto(text, this.selectedProduct());
+      this.messages.update((prev) => [
+        ...prev,
+        {
+          text: respuesta,
+          sender: 'bot',
+        },
+      ]);
+    } */
 
     this.isTyping.set(false);
   }
 
-  /*  selectProduct(product: any) {
+  selectProduct(product: any) {
     this.selectedProduct.set(product);
     this.messages.update((prev) => [
       ...prev,
@@ -92,9 +95,9 @@ export class IaChat {
         sender: 'bot',
       },
     ]);
-  } */
+  }
 
-  /*   clearSelection() {
+  clearSelection() {
     this.selectedProduct.set(null);
     this.messages.update((prev) => [
       ...prev,
@@ -103,7 +106,7 @@ export class IaChat {
         sender: 'bot',
       },
     ]);
-  } */
+  }
 
   /* async sendMessage() {
     const text = this.userInput().trim();

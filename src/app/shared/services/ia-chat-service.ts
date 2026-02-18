@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ export class IaChatService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'https://localhost:44364/api/Gemini/ask'; // CambiaR esta URL por la de MonsterApp (cuando suba el proyecto backend)
+  private apiUrl = `${environment.serverUrl}/api/Gemini/ask`;
 
   openIAChat() {
     this.showIAchat.set(true);
@@ -27,28 +28,9 @@ export class IaChatService {
   async consultarAlBackend(pregunta: string): Promise<{ Response: string; Products: Product[] }> {
     const body = { prompt: pregunta };
     return await firstValueFrom(
-      this.http.post<{ Response: string; Products: Product[] }>(
-        'https://localhost:44364/api/Gemini/ask',
-        body,
-      ),
+      this.http.post<{ Response: string; Products: Product[] }>(this.apiUrl, body),
     );
   }
-  /* async consultarAlBackend(pregunta: string): Promise<string> {
-    try {
-      // IMPORTANTE: La propiedad debe llamarse 'prompt' para que coincida con GeminiSimpleRequestDto
-      const body = { prompt: pregunta };
-
-      const response = await firstValueFrom(
-        this.http.post<{ response: string }>('https://localhost:44364/api/Gemini/ask', body),
-      );
-
-      return response.response;
-    } catch (error: any) {
-      console.error('Error detallado:', error);
-      if (error.error) return `Error del servidor: ${error.error}`;
-      return 'Lo siento, hubo un problema de conexión.';
-    }
-  } */
 
   // Mantenemos este para la lógica de filtros rápidos si la sigues necesitando
   async analizarBusquedaLocal(text: string) {
