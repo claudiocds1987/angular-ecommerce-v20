@@ -25,6 +25,7 @@ export class ProductService {
             category: p.category,
             stock: p.stock,
             discountPercentage: p.discountPercentage,
+            rating: p.rating,
             // Usamos el thumbnail como imagen principal
             image: p.thumbnail,
           }));
@@ -57,6 +58,7 @@ export class ProductService {
           category: p.category,
           stock: p.stock,
           discountPercentage: p.discountPercentage,
+          rating: p.rating,
           image: p.thumbnail,
         })),
       })),
@@ -83,5 +85,9 @@ export class ProductService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deleteProduct(id: number): Observable<any> {
     return this._http.delete(`${this._apiUrl}/${id}`);
+  }
+
+  getProductsCategoryList(): Observable<string[]> {
+    return this._http.get<string[]>(`${this._apiUrl}/category-list`);
   }
 }

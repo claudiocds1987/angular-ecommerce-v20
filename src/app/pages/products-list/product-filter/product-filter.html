@@ -104,9 +104,9 @@
         class="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
       >
         <option value="">Todas</option>
-        <option value="beauty">Belleza</option>
-        <option value="fragrances">Fragancias</option>
-        <option value="furniture">Muebles</option>
+        @for (category of productCategories(); track category) {
+          <option [value]="category">{{ category }}</option>
+        }
       </select>
     </label>
 

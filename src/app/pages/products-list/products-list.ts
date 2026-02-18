@@ -74,6 +74,9 @@ export class ProductsList {
           const searchTerm = filters?.search || '';
           const category = filters?.category || '';
 
+          console.log('searchTerm', searchTerm);
+          console.log('category', category);
+
           return this._productsService
             .getFilteredProducts(this.limit, skip, searchTerm, category)
             .pipe(
@@ -84,9 +87,17 @@ export class ProductsList {
                   finalPrice: this._applyDiscount(product),
                 }));
 
-                // 2. Filtros adicionales en el cliente (Precio y Ordenamiento)
-                // NOTA: La categoría ya se filtró en el servidor
+                // 2. Filtros adicionales en el cliente
+                // NOTA: DummyJSON no permite filtrar por categoría y búsqueda simultáneamente,
+                // por lo que aplicamos el filtrado por búsqueda, precio y ordenamiento aca.
                 if (filters) {
+                  // Filtrar por término de búsqueda (insensible a mayúsculas/minúsculas)
+                  if (filters.search) {
+                    const term = filters.search.toLowerCase();
+                    processed = processed.filter((p) => p.title.toLowerCase().includes(term));
+                  }
+
+                  // Filtrar por rango de precio
                   if (filters.minPrice !== null && filters.minPrice !== undefined) {
                     processed = processed.filter((p) => p.price >= filters.minPrice!);
                   }
@@ -95,10 +106,18 @@ export class ProductsList {
                   }
 
                   // Ordenar dinámicamente según el selector
-                  const sortKey = filters.sortBy as keyof Product;
+
+                  // Si el usuario elige ordenar por "precio", usamos el precio final (con descuento)
+                  // que es el que el usuario ve en la interfaz.
+                  const effectiveSortKey: keyof Product =
+                    filters.sortBy === 'price' ? 'finalPrice' : (filters.sortBy as keyof Product);
+
                   processed.sort((a, b) => {
-                    if (a[sortKey]! < b[sortKey]!) return filters.order === 'desc' ? 1 : -1;
-                    if (a[sortKey]! > b[sortKey]!) return filters.order === 'desc' ? -1 : 1;
+                    const valA = a[effectiveSortKey];
+                    const valB = b[effectiveSortKey];
+
+                    if (valA! < valB!) return filters.order === 'desc' ? 1 : -1;
+                    if (valA! > valB!) return filters.order === 'desc' ? -1 : 1;
                     return 0;
                   });
                 }
@@ -109,7 +128,7 @@ export class ProductsList {
         }),
       )
       .subscribe(({ processed, total, skip }) => {
-        // 3. Actualizamos el signal
+        // 3. Actualizando el signal
         if (skip === 0) {
           this.products.set(processed);
         } else {
