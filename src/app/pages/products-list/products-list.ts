@@ -74,9 +74,6 @@ export class ProductsList {
           const searchTerm = filters?.search || '';
           const category = filters?.category || '';
 
-          console.log('searchTerm', searchTerm);
-          console.log('category', category);
-
           return this._productsService
             .getFilteredProducts(this.limit, skip, searchTerm, category)
             .pipe(

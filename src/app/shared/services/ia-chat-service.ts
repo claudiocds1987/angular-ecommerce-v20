@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product.model';
 import { environment } from '../../../environments/environment';
+import { GeminiResponse } from '../models/gemini-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,19 +23,10 @@ export class IaChatService {
     this.showIAchat.set(false);
   }
 
-  /**
-   * Llama a tu Backend de .NET que ya tiene el catálogo y la seguridad
-   */
+  // LLama a mi Backend de .NET que ya tiene el catálogo y la seguridad
   async consultarAlBackend(pregunta: string): Promise<{ Response: string; Products: Product[] }> {
     const body = { prompt: pregunta };
-    return await firstValueFrom(
-      this.http.post<{ Response: string; Products: Product[] }>(this.apiUrl, body),
-    );
-  }
-
-  // Mantenemos este para la lógica de filtros rápidos si la sigues necesitando
-  async analizarBusquedaLocal(text: string) {
-    return { busqueda: text, categoria: 'all', precioMax: null };
+    return firstValueFrom(this.http.post<GeminiResponse>(this.apiUrl, body));
   }
 
   async responderSobreProducto(pregunta: string, productId: number): Promise<string> {
@@ -50,117 +42,3 @@ export class IaChatService {
     return res.response;
   }
 }
-
-/* import { Injectable, signal } from '@angular/core';
-import { GoogleGenAI } from '@google/genai';
-import { environment } from '../../../environments/environment';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class IaChatService {
-  // Signals para controlar la UI del chat
-  showIAchat = signal<boolean>(false);
-
-  // Inicialización diferida del cliente para evitar errores si no hay Key (entorno local)
-  private _ai: any;
-  private get ai() {
-    if (!this._ai) {
-      if (!environment.geminiApiKey) {
-        console.warn(
-          'IA Chat: No se detectó GEMINI_API_KEY. El chat funcionará en modo emergencia.',
-        );
-        return null;
-      }
-      this._ai = new GoogleGenAI({
-        apiKey: environment.geminiApiKey,
-        apiVersion: 'v1beta',
-      });
-    }
-    return this._ai;
-  }
-
-  openIAChat() {
-    this.showIAchat.set(true);
-  }
-
-  closeIAChat() {
-    this.showIAchat.set(false);
-  }
-
-  
-  async responderSobreProducto(pregunta: string, productoContexto: any) {
-    const info = productoContexto.raw ? productoContexto.raw : productoContexto;
-
-    try {
-      if (!this.ai) return this._respuestaDeEmergencia(pregunta, info);
-
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                text: `Actúa como vendedor experto de una tienda e-commerce. 
-                  Producto: ${info.title}. 
-                  Datos técnicos: ${JSON.stringify(info)}. 
-                  Pregunta del cliente: "${pregunta}". 
-                  Instrucción: Responde de forma muy breve (máximo 2 frases), amable y basada solo en estos datos.`,
-              },
-            ],
-          },
-        ],
-      });
-
-      return response.text;
-    } catch (error: any) {
-      console.error('Error en Gemini (responderSobreProducto):', error);
-
-      if (error.status === 429 || error.message?.includes('429')) {
-        return '¡Hola! He recibido muchas consultas. Por favor, espera un momento y vuelve a preguntarme.';
-      }
-
-      return this._respuestaDeEmergencia(pregunta, info);
-    }
-  }
-
-  
-  async analizarBusqueda(text: string) {
-    try {
-      if (!this.ai) return { busqueda: text, categoria: 'all', precioMax: null };
-
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                text: `Analiza la intención de búsqueda del usuario: "${text}". 
-                  Debes responder ÚNICAMENTE un objeto JSON válido con este formato:
-                  {"busqueda": string, "categoria": string, "precioMax": number | null}`,
-              },
-            ],
-          },
-        ],
-      });
-
-      const responseText = response.text ?? '';
-      const cleanJson = responseText.replace(/```json|```/g, '').trim();
-
-      return JSON.parse(cleanJson);
-    } catch (error) {
-      console.error('Error en analizarBusqueda:', error);
-      return { busqueda: text, categoria: 'all', precioMax: null };
-    }
-  }
-
-  private _respuestaDeEmergencia(pregunta: string, info: any): string {
-    const q = pregunta.toLowerCase();
-    if (q.includes('stock')) return `Tenemos ${info.stock} unidades de ${info.title} disponibles.`;
-    if (q.includes('precio')) return `El precio de ${info.title} es $${info.price}.`;
-
-    return `Lo siento, tuve un inconveniente al procesar tu pregunta. El producto ${info.title} cuesta $${info.price}. ¿Te gustaría saber algo más?`;
-  }
-} */

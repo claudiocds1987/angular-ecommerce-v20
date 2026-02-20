@@ -31,7 +31,7 @@ export class PaymentResult implements OnInit {
           message: 'Tu pedido ha sido procesado correctamente.',
           class: 'approved',
         };
-        console.log('Status de pago:', this.status);
+
         break;
       case 'rejected':
         this.config = {
@@ -39,7 +39,7 @@ export class PaymentResult implements OnInit {
           message: 'Lo sentimos, hubo un problema con tu tarjeta.',
           class: 'rejected',
         };
-        console.log('Status de pago:', this.status);
+
         break;
       default: // pending o null
         this.config = {
@@ -47,7 +47,6 @@ export class PaymentResult implements OnInit {
           message: 'Estamos esperando la confirmación de Mercado Pago.',
           class: 'pending',
         };
-        console.log('Status de pago:', this.status);
     }
   }
 }
