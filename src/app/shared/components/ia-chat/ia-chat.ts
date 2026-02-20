@@ -52,15 +52,12 @@ export class IaChat {
     try {
       if (this.selectedProduct()) {
         // --- MODO: Vendedor Experto cuando selecciono un producto desde el asistente IA ---
-        const respuesta = await this.iaChatService.responderSobreProducto(
-          text,
-          this.selectedProduct().id,
-        );
+        const respuesta = await this.iaChatService.askAboutProduct(text, this.selectedProduct().id);
 
         this.messages.update((prev) => [...prev, { text: respuesta, sender: 'bot' }]);
       } else {
         // --- MODO: Búsqueda General ---
-        const iaResponse: GeminiResponse = await this.iaChatService.consultarAlBackend(text);
+        const iaResponse: GeminiResponse = await this.iaChatService.sendPromptToAI(text);
 
         this.messages.update((prev) => [
           ...prev,

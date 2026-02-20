@@ -24,16 +24,16 @@ export class IaChatService {
   }
 
   // LLama a mi Backend de .NET que ya tiene el catálogo y la seguridad
-  async consultarAlBackend(pregunta: string): Promise<{ Response: string; Products: Product[] }> {
-    const body = { prompt: pregunta };
+  async sendPromptToAI(prompt: string): Promise<{ Response: string; Products: Product[] }> {
+    const body = { prompt: prompt };
     return firstValueFrom(this.http.post<GeminiResponse>(this.apiUrl, body));
   }
 
-  async responderSobreProducto(pregunta: string, productId: number): Promise<string> {
+  async askAboutProduct(prompt: string, productId: number): Promise<string> {
     const expertUrl = `${environment.serverUrl}/api/Gemini/seller-expert`;
     const body = {
       productId: productId,
-      userMessage: pregunta,
+      userMessage: prompt,
     };
 
     // Usamos el DTO de respuesta que espera un objeto con { response: "..." }
