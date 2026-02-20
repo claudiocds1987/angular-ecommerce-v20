@@ -45,6 +45,56 @@ export class IaChat {
     const text = this.userInput().trim();
     if (!text || this.isTyping()) return;
 
+    // 1. Agregar mensaje del usuario a la UI
+    this.messages.update((prev) => [...prev, { text, sender: 'user' }]);
+    this.userInput.set('');
+    this.isTyping.set(true);
+
+    try {
+      if (this.selectedProduct()) {
+        // --- MODO: Vendedor Experto ---
+        const respuesta = await this.iaChatService.responderSobreProducto(
+          text,
+          this.selectedProduct().id,
+        );
+
+        this.messages.update((prev) => [...prev, { text: respuesta, sender: 'bot' }]);
+      } else {
+        // --- MODO: Búsqueda General ---
+        const respuestaIA = await this.iaChatService.consultarAlBackend(text);
+
+        this.messages.update((prev) => [
+          ...prev,
+          {
+            text: respuestaIA.Response,
+            sender: 'bot',
+            products: respuestaIA.Products.map((p: any) => ({
+              id: p.Id,
+              title: p.Title,
+              price: p.Price,
+              image: p.Thumbnail,
+              stock: p.Stock,
+              category: p.Category,
+              rating: p.Rating,
+            })),
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error('Error en el chat:', error);
+      this.messages.update((prev) => [
+        ...prev,
+        { text: 'Lo siento, hubo un error. Inténtalo de nuevo.', sender: 'bot' },
+      ]);
+    } finally {
+      this.isTyping.set(false);
+    }
+  }
+
+  /*   async sendMessage() {
+    const text = this.userInput().trim();
+    if (!text || this.isTyping()) return;
+
     this.messages.update((prev) => [...prev, { text, sender: 'user' }]);
     this.userInput.set('');
     this.isTyping.set(true);
@@ -70,21 +120,8 @@ export class IaChat {
       },
     ]);
 
-    /*  if (this.selectedProduct()) {
-      // Modo pregunta sobre producto seleccionado
-      const text = this.userInput().trim();
-      const respuesta = await this.iaChatService.responderSobreProducto(text, this.selectedProduct());
-      this.messages.update((prev) => [
-        ...prev,
-        {
-          text: respuesta,
-          sender: 'bot',
-        },
-      ]);
-    } */
-
     this.isTyping.set(false);
-  }
+  } */
 
   selectProduct(product: any) {
     this.selectedProduct.set(product);

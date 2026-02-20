@@ -1,0 +1,59 @@
+/* Thin indigo scrollbar for chips and vertical lists */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 4px; /* Para scroll vertical */
+  height: 4px; /* Para scroll horizontal */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #c7d2fe; /* indigo-200 */
+  border-radius: 10px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #818cf8; /* indigo-400 */
+}
+
+/* Firefox support */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c7d2fe transparent;
+}
+
+/* Compact rules for short screens (Landscape) */
+@media (max-height: 550px) {
+  .chat-header {
+    padding: 0.5rem 1rem !important; /* p-2 instead of p-4 */
+
+    .header-icon {
+      width: 1.5rem !important;
+      height: 1.5rem !important;
+      span {
+        font-size: 1rem !important;
+      }
+    }
+  }
+
+  .message-container {
+    padding: 0.75rem !important; /* p-3 instead of p-4 */
+    gap: 0.5rem !important;
+  }
+
+  .info-bar {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+    font-size: 10px !important;
+  }
+
+  .queries-container {
+    padding: 0.5rem 1rem !important;
+    max-height: 80px !important; /* Even smaller scroll area */
+  }
+
+  .input-container {
+    padding: 0.5rem 0.75rem !important;
+  }
+}

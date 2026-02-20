@@ -36,6 +36,19 @@ export class IaChatService {
   async analizarBusquedaLocal(text: string) {
     return { busqueda: text, categoria: 'all', precioMax: null };
   }
+
+  async responderSobreProducto(pregunta: string, productId: number): Promise<string> {
+    const expertUrl = `${environment.serverUrl}/api/Gemini/seller-expert`;
+    const body = {
+      productId: productId,
+      userMessage: pregunta,
+    };
+
+    // Usamos el DTO de respuesta que espera un objeto con { response: "..." }
+    const res = await firstValueFrom(this.http.post<{ response: string }>(expertUrl, body));
+
+    return res.response;
+  }
 }
 
 /* import { Injectable, signal } from '@angular/core';
