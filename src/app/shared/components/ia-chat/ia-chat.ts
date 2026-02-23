@@ -64,15 +64,22 @@ export class IaChat {
           {
             text: iaResponse.Response,
             sender: 'bot',
-            products: iaResponse.Products.map((p: any) => ({
-              id: p.Id,
-              title: p.Title,
-              price: p.Price,
-              image: p.Thumbnail,
-              stock: p.Stock,
-              category: p.Category,
-              rating: p.Rating,
-            })),
+            products: iaResponse.Products.map((product: any) => {
+              const mappedProduct: Product = {
+                id: product.Id,
+                title: product.Title,
+                price: product.Price,
+                discountPercentage: product.DiscountPercentage,
+                image: product.Thumbnail,
+                stock: product.Stock,
+                category: product.Category,
+                rating: product.Rating,
+              };
+              return {
+                ...mappedProduct,
+                finalPrice: this._applyDiscount(mappedProduct),
+              };
+            }),
           },
         ]);
       }
@@ -118,5 +125,14 @@ export class IaChat {
       this.scrollContainer.nativeElement.scrollTop =
         this.scrollContainer.nativeElement.scrollHeight;
     }
+  }
+
+  private _applyDiscount(product: Product): number {
+    if (product.discountPercentage && product.discountPercentage > 0) {
+      const discount = (product.price * product.discountPercentage) / 100;
+      const price = product.price - discount;
+      return Number(price.toFixed(2));
+    }
+    return product.price;
   }
 }

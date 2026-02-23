@@ -61,9 +61,31 @@
                       {{ product.title }}
                     </p>
                     <p class="text-[10px] text-gray-500 line-clamp-1 italic">Click para detalles</p>
-                    <p class="text-xs text-indigo-600 font-bold mt-0.5">
-                      {{ product.price | currency }}
-                    </p>
+                    @if (product.discountPercentage! > 0) {
+                      <span class="text-[10px] font-bold text-slate-400 block mb-0.5">
+                        Antes: <span class="line-through">{{ product.price | currency }}</span>
+                      </span>
+                      <div class="flex items-center gap-2">
+                        <data
+                          [value]="product.finalPrice"
+                          class="text-xl font-black text-blue-600 tracking-tighter block leading-none"
+                        >
+                          {{ product.finalPrice | currency }}
+                        </data>
+                        <span
+                          class="text-[10px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100"
+                        >
+                          {{ product.discountPercentage }}% DESC
+                        </span>
+                      </div>
+                    } @else {
+                      <data
+                        [value]="product.price"
+                        class="text-xl font-black text-blue-600 tracking-tighter block leading-none"
+                      >
+                        {{ product.price | currency }}
+                      </data>
+                    }
                   </div>
                   <span class="material-icons text-indigo-300 text-sm group-hover:text-indigo-600"
                     >info</span
