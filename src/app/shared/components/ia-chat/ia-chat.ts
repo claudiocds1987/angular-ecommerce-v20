@@ -64,21 +64,19 @@ export class IaChat {
           {
             text: iaResponse.Response,
             sender: 'bot',
-            products: iaResponse.Products.map((product: any) => {
-              const mappedProduct: Product = {
-                id: product.Id,
-                title: product.Title,
-                price: product.Price,
-                discountPercentage: product.DiscountPercentage,
-                image: product.Thumbnail,
-                stock: product.Stock,
-                category: product.Category,
-                rating: product.Rating,
+            products: iaResponse.Products.map((p: any) => {
+              const product = {
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                finalPrice: this._applyDiscount(p),
+                discountPercentage: p.discountPercentage,
+                image: p.thumbnail,
+                stock: p.stock,
+                category: p.category,
+                rating: p.rating,
               };
-              return {
-                ...mappedProduct,
-                finalPrice: this._applyDiscount(mappedProduct),
-              };
+              return product;
             }),
           },
         ]);
