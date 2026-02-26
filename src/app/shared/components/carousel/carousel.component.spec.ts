@@ -2,6 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CarouselComponent } from './carousel.component';
 import { Product } from '../../models/product.model';
 import { ComponentRef } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('CarouselComponent', () => {
   let component: CarouselComponent;
@@ -19,6 +22,7 @@ describe('CarouselComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CarouselComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CarouselComponent);
@@ -36,13 +40,9 @@ describe('CarouselComponent', () => {
   });
 
   it('should calculate maxIndex correctly', () => {
-    // itemsPerView defaults to 4 in desktop (test env usually usually simulates desktop or needs resize mock)
-    // mockProducts length is 5
-    // Default itemsPerView is 4 (since we don't mock window resize yet, assume default if > 1280 or fallback)
-    // We should double check what updateItemsPerView sets initially.
-    // In test env, window.innerWidth might get 0 or default.
-    // Let's force itemsPerView for testing logic
+    // Usamos .set() asumiendo que itemsPerView es un signal
     component.itemsPerView.set(2);
+    fixture.detectChanges(); // Importante para que los signals computados se actualicen
 
     // 5 products, 2 per view. Max index should be 3 (5 - 2)
     expect(component.maxIndex()).toBe(3);
@@ -50,16 +50,19 @@ describe('CarouselComponent', () => {
 
   it('should show controls when products > itemsPerView', () => {
     component.itemsPerView.set(2);
+    fixture.detectChanges();
     expect(component.showControls()).toBeTrue();
   });
 
   it('should NOT show controls when products <= itemsPerView', () => {
     component.itemsPerView.set(5); // 5 products
+    fixture.detectChanges();
     expect(component.showControls()).toBeFalse();
   });
 
   it('should navigate next and prev', () => {
     component.itemsPerView.set(1); // 1 per view, maxIndex = 4
+    fixture.detectChanges();
 
     expect(component.currentIndex()).toBe(0);
 
@@ -75,6 +78,7 @@ describe('CarouselComponent', () => {
 
   it('should not navigate past bounds', () => {
     component.itemsPerView.set(1);
+    fixture.detectChanges();
 
     // Try going prev from 0
     component.prev();
@@ -83,6 +87,7 @@ describe('CarouselComponent', () => {
     // Go to max
     const max = component.maxIndex();
     component.currentIndex.set(max);
+    fixture.detectChanges();
 
     // Try going next
     component.next();

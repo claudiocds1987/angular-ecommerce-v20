@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal } from '@angular/core';
 import { CartItem, Product } from '../models/product.model';
 
 @Injectable({
@@ -10,6 +10,20 @@ export class CartService {
   totalPrice = computed(() =>
     this.cart().reduce((total, item) => total + (item.finalPrice ?? item.price) * item.quantity, 0),
   );
+
+  constructor() {
+    // Cada vez que 'cart' cambie, se guarda en localStorage para que en caso de refrescar la pagina
+    // o cerrar la pestaña, el carrito persista con los productos seleccionados
+    effect(() => {
+      localStorage.setItem('shopping_cart', JSON.stringify(this.cart()));
+    });
+
+    // Al iniciar, cargamos el carrito desde localStorage si existe
+    const savedCart = localStorage.getItem('shopping_cart');
+    if (savedCart) {
+      this.cart.set(JSON.parse(savedCart));
+    }
+  }
 
   addToCart(product: Product) {
     this.cart.update((currentCart) => {
