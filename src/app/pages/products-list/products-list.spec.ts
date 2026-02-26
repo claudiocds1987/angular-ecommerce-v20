@@ -65,7 +65,7 @@ describe('ProductsList', () => {
     ]);
     iaChatServiceSpy = jasmine.createSpyObj('IaChatService', ['showIAchat']);
 
-    productServiceSpy.getDummys.and.returnValue(of(mockResponse as any));
+    productServiceSpy.getProductsPaginated.and.returnValue(of(mockResponse as any));
     productServiceSpy.getFilteredProducts.and.returnValue(of(mockResponse as any));
     productServiceSpy.getProductsCategoryList.and.returnValue(of(['smartphones', 'laptops']));
     iaChatServiceSpy.showIAchat.and.returnValue(false);

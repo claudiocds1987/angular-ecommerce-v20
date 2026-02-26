@@ -60,7 +60,7 @@
                     <p class="text-xs font-bold text-gray-900 truncate">
                       {{ product.title }}
                     </p>
-                    <!--  <p class="text-[10px] text-gray-500 line-clamp-1 italic">Click para detalles</p> -->
+
                     @if (product.discountPercentage! > 0) {
                       <span class="text-[10px] font-bold text-slate-400 block mb-0.5">
                         Antes: <span class="line-through">{{ product.price | currency }}</span>

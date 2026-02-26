@@ -12,7 +12,7 @@ export class ProductService {
   private _apiUrl = 'https://dummyjson.com/products';
 
   // Obtener productos paginados
-  getDummys(limit: number, skip: number) {
+  getProductsPaginated(limit: number, skip: number) {
     return this._http
       .get<DummyResponsePaginated>(`${this._apiUrl}?limit=${limit}&skip=${skip}`)
       .pipe(
@@ -26,7 +26,6 @@ export class ProductService {
             stock: p.stock,
             discountPercentage: p.discountPercentage,
             rating: p.rating,
-            // Usamos el thumbnail como imagen principal
             image: p.thumbnail,
           }));
 

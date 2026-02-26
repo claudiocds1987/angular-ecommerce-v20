@@ -47,7 +47,7 @@ export class ProductsList {
   }
 
   private _loadCarouselProducts() {
-    this._productsService.getDummys(100, 0).subscribe((res) => {
+    this._productsService.getProductsPaginated(100, 0).subscribe((res) => {
       const uniqueCategories = new Set<string>();
       const selectedProducts: Product[] = [];
 

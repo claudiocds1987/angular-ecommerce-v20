@@ -27,7 +27,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
   currentIndex = signal(0);
   itemsPerView = signal(4);
 
-  Math = Math; // Make Math available in template
+  Math = Math;
 
   maxIndex = computed(() => {
     return Math.max(0, this.products().length - this.itemsPerView());
@@ -50,7 +50,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
   autoPlay = input(true);
   autoPlayInterval = input(5000);
-  private _intervalId: any;
+  private _intervalId: unknown;
   private _matDialog = inject(MatDialog);
 
   ngOnInit() {
