@@ -50,7 +50,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
   autoPlay = input(true);
   autoPlayInterval = input(5000);
-  private _intervalId: unknown;
+  private _intervalId: any;
   private _matDialog = inject(MatDialog);
 
   ngOnInit() {
