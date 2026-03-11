@@ -4,15 +4,14 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-products-grid-admin',
-  standalone: true, // Confirmamos que es standalone
-  imports: [CommonModule], // Agregamos CommonModule para usar @if, @for, etc.
+  standalone: true,
+  imports: [CommonModule], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
-  // Activamos OnPush para máxima performance
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsGridAdmin implements OnInit {
-  // Inyeccón del Store product.store que creadocon NgRX Signals
+  // Inyeccón del Store product.store que creado con NgRX Signals
   readonly store = inject(ProductStore);
 
   ngOnInit() {

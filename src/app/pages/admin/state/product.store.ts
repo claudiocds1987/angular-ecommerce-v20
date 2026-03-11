@@ -17,7 +17,11 @@ import { computed } from '@angular/core';
 import { Product } from '../../../shared/models/product.model';
 import { DummyProduct } from '../../../shared/models/dummy-response.model';
 
-// Usando forma moderna "NgRX Signal Store" en lugar de NgRx, para manejar el estado de productos en el admin
+// * Usando forma moderna "NgRX Signal Store" en lugar de NgRx, para manejar el estado de productos en el admin
+// * rxMethod es la forma estándar en el Signal Store porque gestiona automáticamente el ciclo de vida de las suscripciones.
+//   Permite usar operadores de RxJS sin preocuparme por fugas de memoria, manteniendo el código limpio y declarativo.)
+// * patchState: Actualiza de forma parcial, inmutable y reactiva el estado, fusionando solo los cambios enviados.
+//   ATOMICIDAD: Si cambias varias propiedades a la vez (ej. loading y error), la UI solo se actualiza una vez (evita renders innecesarios).
 
 export const ProductStore = signalStore(
   { providedIn: 'root' },
@@ -65,11 +69,12 @@ export const ProductStore = signalStore(
       ),
     ),
 
-    // Método para cargar productos con mapeo (rxMethod es la forma estándar en el Signal Store porque gestiona automáticamente el ciclo de vida de las suscripciones. Me permite usar operadores de RxJS sin preocuparme por fugas de memoria, manteniendo el código limpio y declarativo.)
+    // Método para cargar productos con mapeo
     loadAllProducts: rxMethod<void>(
       pipe(
         tap(() => patchState(state, { loading: true })),
         switchMap(() =>
+          // en vez de la url mejor usar productService.getAll()
           http.get<{ products: DummyProduct[] }>('https://dummyjson.com/products').pipe(
             // Mapeamos los datos de la API a nuestra interfaz Product
             map(({ products }) =>

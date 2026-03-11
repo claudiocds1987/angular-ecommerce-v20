@@ -1,18 +1,23 @@
 // src/app/shared/guards/auth.guard.ts
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthStore } from '../../pages/auth/state/auth.store';
 
-export const authGuard = () => {
+export const authGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
+  const user = authStore.user();
 
-  // Si hay usuario logueado o token en localStorage, permitimos
-  if (authStore.user() || localStorage.getItem('token')) {
-    return true;
+  // 1. Si no hay usuario, al login
+  if (!authStore.user()) {
+    return router.createUrlTree(['/login']);
   }
 
-  // Si no, mandamos al login
-  router.navigate(['/login']);
-  return false;
+  // 2. Si intenta entrar a /admin pero NO es admin, lo mandamos al home
+  if (state.url.startsWith('/admin') && user?.role !== 'admin') {
+    console.warn('Acceso denegado: Se requiere rol de administrador');
+    return router.createUrlTree(['/']);
+  }
+
+  return true;
 };

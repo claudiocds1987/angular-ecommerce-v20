@@ -26,6 +26,6 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // tipiar url: http://localhost:5000/#/admin
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
   },
 ];

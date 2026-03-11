@@ -12,9 +12,9 @@ import { GeminiResponse } from '../models/gemini-response.model';
 export class IaChatService {
   showIAchat = signal<boolean>(false);
 
-  private http = inject(HttpClient);
+  private _http = inject(HttpClient);
 
-  private apiUrl = `${environment.serverUrl}/api/Gemini/ask`;
+  private _apiUrl = `${environment.serverUrl}/api/Gemini/ask`;
 
   openIAChat() {
     this.showIAchat.set(true);
@@ -26,7 +26,7 @@ export class IaChatService {
   // LLama a mi Backend de .NET que ya tiene el catálogo y la seguridad
   async sendPromptToAI(prompt: string): Promise<{ Response: string; Products: Product[] }> {
     const body = { prompt: prompt };
-    return firstValueFrom(this.http.post<GeminiResponse>(this.apiUrl, body));
+    return firstValueFrom(this._http.post<GeminiResponse>(this._apiUrl, body));
   }
 
   async askAboutProduct(prompt: string, productId: number): Promise<string> {
@@ -37,7 +37,7 @@ export class IaChatService {
     };
 
     // Usamos el DTO de respuesta que espera un objeto con { response: "..." }
-    const res = await firstValueFrom(this.http.post<{ response: string }>(expertUrl, body));
+    const res = await firstValueFrom(this._http.post<{ response: string }>(expertUrl, body));
 
     return res.response;
   }
