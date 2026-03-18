@@ -66,7 +66,7 @@ export class ProductService {
 
   // 1. Obtener todos los productos
   getProducts(): Observable<Product[]> {
-    return this._http.get<Product[]>(this._apiUrl);
+    return this._http.get<Product[]>(`${this._apiUrl}?limit=194&skip=0`);
   }
 
   getProductById(id: number): Observable<DummyProduct> {

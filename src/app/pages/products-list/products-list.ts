@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
 import { Product } from '../../shared/models/product.model';
@@ -19,7 +26,7 @@ import { CarouselComponent } from '../../shared/components/carousel/carousel.com
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsList {
+export class ProductsList implements OnInit {
   products = signal<Product[]>([]);
   isLoading = signal(true);
   skip = signal(0); // Número de productos a saltar (paginación offset) para cargar los siguientes ej: Salta los primeros 30 y dame los siguientes 30". (Te da del 31 al 60).
@@ -44,6 +51,12 @@ export class ProductsList {
   constructor() {
     this._listenToQueryChanges();
     this._loadCarouselProducts();
+  }
+
+  ngOnInit() {
+    this._productsService.getProducts().subscribe((products) => {
+      console.log('Productos cargados:', products);
+    });
   }
 
   private _loadCarouselProducts() {
