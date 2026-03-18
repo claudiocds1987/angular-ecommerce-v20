@@ -3,6 +3,9 @@ import { ProductStore } from '../state/product.store';
 import { CommonModule } from '@angular/common';
 import { ExcelUpload } from '../../../shared/components/excel-upload/excel-upload';
 import { ImportResultResponse } from '../../../shared/models/import-result-response.model';
+import { ExcelService } from '../../../shared/services/excel-service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { RawImportResponse } from '../../../shared/models/row-import-response.model';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -17,6 +20,7 @@ export class ProductsGridAdmin implements OnInit {
   readonly store = inject(ProductStore);
   importErrors = signal<string[]>([]);
 
+  private _excelService = inject(ExcelService);
   ngOnInit() {
     // Disparamos la carga inicial de productos desde la API
     this.store.loadAllProducts();
@@ -29,19 +33,38 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   handleImportSuccess(response: ImportResultResponse) {
-    // 1. Limpiamos errores previos
-    this.importErrors.set([]);
-
-    // 2. Notificamos éxito (puedes usar un Toast/SnackBar)
-    alert(`${response.message} (${response.count} productos procesados)`);
-
-    // 3. RECUALGAMOS LA GRILLA
-    // Dependiendo de cómo funcione tu store, deberías llamar al método de carga:
-    this.store.loadAllProducts();
+    this.importErrors.set([]); // Limpiamos errores previos
+    this.store.loadAllProducts(); // Recargamos la grilla
+    alert(response.message);
   }
 
-  handleImportErrors(errors: string[]) {
-    // Seteamos la lista de errores para que se vea en el HTML
-    this.importErrors.set(errors);
+  handleImportErrors(error: any): void {
+    // 1. Si es un array directo (caso raro)
+    if (Array.isArray(error)) {
+      this.importErrors.set(error);
+      return;
+    }
+
+    // 2. Extraer el cuerpo (Response de Network)
+    // En Angular, el JSON del servidor está en error.error
+    const apiResponse = error.error;
+
+    // 3. Buscar la lista de errores (Probamos PascalCase y camelCase)
+
+    const listaDetallada = apiResponse?.Errors || apiResponse?.errors;
+    const mensajeGeneral = apiResponse?.Message || apiResponse?.message || error.message;
+
+    if (listaDetallada && Array.isArray(listaDetallada) && listaDetallada.length > 0) {
+      // ESTO ES LO QUE QUEREMOS: "Fila 95: La BrandId..."
+      this.importErrors.set(listaDetallada);
+    } else {
+      // Si la API no mandó lista, guardamos el mensaje de error
+      this.importErrors.set([mensajeGeneral || 'Error desconocido al procesar el archivo']);
+    }
+  }
+
+  onDownloadErrors(): void {
+    // Reutilizamos la lógica del servicio
+    this._excelService.downloadErrorReport(this.importErrors(), 'errores_productos');
   }
 }

@@ -23,4 +23,28 @@ export class ExcelService {
 
     return this._http.post<ImportResultResponse>(url, formData);
   }
+
+  downloadErrorReport(errors: string[], fileNamePrefix = 'errores_importacion'): void {
+    if (!errors || errors.length === 0) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+    const blobContent =
+      `REPORTE DE ERRORES\n=================\nFecha: ${new Date().toLocaleString()}\n\n` +
+      errors.join('\n');
+
+    const blob = new Blob([blobContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileNamePrefix}_${timestamp}.txt`;
+
+    document.body.appendChild(a);
+    a.click();
+
+    // Limpieza
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
 }

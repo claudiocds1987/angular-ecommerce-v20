@@ -23,8 +23,6 @@ import { DummyProduct } from '../../../shared/models/dummy-response.model';
 // * patchState: Actualiza de forma parcial, inmutable y reactiva el estado, fusionando solo los cambios enviados.
 //   ATOMICIDAD: Si cambias varias propiedades a la vez (ej. loading y error), la UI solo se actualiza una vez (evita renders innecesarios).
 
-const API_URL = 'https://localhost:44364/api/products';
-
 export const ProductStore = signalStore(
   { providedIn: 'root' },
   withState({

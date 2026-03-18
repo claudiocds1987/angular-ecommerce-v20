@@ -81,6 +81,7 @@ export class ProductService {
     return this._http.put<Product>(`${this._apiUrl}/${id}`, product);
   }
 
+  // que no haga delete de de baja
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deleteProduct(id: number): Observable<any> {
     return this._http.delete(`${this._apiUrl}/${id}`);
