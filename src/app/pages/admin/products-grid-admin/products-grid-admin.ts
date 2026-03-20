@@ -33,38 +33,17 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   handleImportSuccess(response: ImportResultResponse) {
+    console.log('Respuesta real recibida:', response);
     this.importErrors.set([]); // Limpiamos errores previos
     this.store.loadAllProducts(); // Recargamos la grilla
-    alert(response.message);
+    alert(`${response.Message}\nTotal: ${response.Count} productos.`);
   }
 
-  handleImportErrors(error: any): void {
-    // 1. Si es un array directo (caso raro)
-    if (Array.isArray(error)) {
-      this.importErrors.set(error);
-      return;
-    }
-
-    // 2. Extraer el cuerpo (Response de Network)
-    // En Angular, el JSON del servidor está en error.error
-    const apiResponse = error.error;
-
-    // 3. Buscar la lista de errores (Probamos PascalCase y camelCase)
-
-    const listaDetallada = apiResponse?.Errors || apiResponse?.errors;
-    const mensajeGeneral = apiResponse?.Message || apiResponse?.message || error.message;
-
-    if (listaDetallada && Array.isArray(listaDetallada) && listaDetallada.length > 0) {
-      // ESTO ES LO QUE QUEREMOS: "Fila 95: La BrandId..."
-      this.importErrors.set(listaDetallada);
-    } else {
-      // Si la API no mandó lista, guardamos el mensaje de error
-      this.importErrors.set([mensajeGeneral || 'Error desconocido al procesar el archivo']);
-    }
+  handleImportErrors(errorMessages: string[]): void {
+    this.importErrors.set(errorMessages);
   }
 
   onDownloadErrors(): void {
-    // Reutilizamos la lógica del servicio
     this._excelService.downloadErrorReport(this.importErrors(), 'errores_productos');
   }
 }

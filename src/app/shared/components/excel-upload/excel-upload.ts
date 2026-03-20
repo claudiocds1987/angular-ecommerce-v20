@@ -15,7 +15,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ExcelUpload {
   endpointUrl = input.required<string>();
   @Output() uploadSuccess = new EventEmitter<ImportResultResponse>();
-  @Output() uploadError = new EventEmitter<HttpErrorResponse | string[]>();
+  @Output() uploadError = new EventEmitter<string[]>(); // Emitiremos el array de mensajes directamente
+
+  @Output() importError = new EventEmitter<HttpErrorResponse>();
   loading = signal<boolean>(false);
 
   private _excelService = inject(ExcelService);
@@ -40,20 +42,15 @@ export class ExcelUpload {
         this._spinnerService.hide();
       },
       error: (err: HttpErrorResponse) => {
-        // Usamos el tipo real para mayor seguridad
         this.loading.set(false);
-
-        // Buscamos la lista de errores en PascalCase (lo que manda tu .NET) o camelCase
-        const apiResponse = err.error;
-        const errorList = apiResponse?.Errors ||
-          apiResponse?.errors || [err.message || 'Error desconocido al procesar el archivo'];
-
-        // Emitimos la lista real (las 79 filas fallidas que vimos en Network)
-        this.uploadError.emit(errorList);
-
-        inputElement.value = '';
         this._spinnerService.hide();
-        console.error('Error capturado en el hijo:', err);
+
+        const apiResponse = err.error;
+        // Extraemos las filas con error (Fila 2: ya existe...)
+        const errorList: string[] = apiResponse?.Errors || apiResponse?.errors || [err.message];
+
+        this.uploadError.emit(errorList);
+        inputElement.value = '';
       },
     });
   }

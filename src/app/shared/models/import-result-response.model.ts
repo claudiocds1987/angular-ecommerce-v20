@@ -1,6 +1,6 @@
 export interface ImportResultResponse {
-  success: boolean;
-  message: string;
-  count: number;
-  errors: string[];
+  Success: boolean;
+  Message: string;
+  Count: number;
+  Errors: string[];
 }
