@@ -1,0 +1,1 @@
+import{V as o,oa as e}from"./chunk-72MRA5E6.js";var t=class i{isLoading=e(!1);show(){this.isLoading.set(!0)}hide(){this.isLoading.set(!1)}static \u0275fac=function(a){return new(a||i)};static \u0275prov=o({token:i,factory:i.\u0275fac,providedIn:"root"})};export{t as a};
