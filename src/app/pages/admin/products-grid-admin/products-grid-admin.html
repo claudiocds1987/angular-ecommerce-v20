@@ -18,7 +18,7 @@
       </div>
       <!-- [endpointUrl] cambiarla a ulr de mosnterasp -->
       <app-excel-upload
-        [endpointUrl]="'https://localhost:44364/api/import/products'"
+        [endpointUrl]="apiURL"
         (uploadSuccess)="handleImportSuccess($event)"
         (uploadError)="handleImportErrors($event)"
       >

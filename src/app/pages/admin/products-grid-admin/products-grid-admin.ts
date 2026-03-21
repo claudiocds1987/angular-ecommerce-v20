@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ExcelUpload } from '../../../shared/components/excel-upload/excel-upload';
 import { ImportResultResponse } from '../../../shared/models/import-result-response.model';
 import { ExcelService } from '../../../shared/services/excel-service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { RawImportResponse } from '../../../shared/models/row-import-response.model';
+
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -19,8 +19,10 @@ export class ProductsGridAdmin implements OnInit {
   // Inyeccón del Store product.store que creado con NgRX Signals
   readonly store = inject(ProductStore);
   importErrors = signal<string[]>([]);
+  apiURL = `${environment.serverUrl}/api/import/products`;
 
   private _excelService = inject(ExcelService);
+
   ngOnInit() {
     // Disparamos la carga inicial de productos desde la API
     this.store.loadAllProducts();
