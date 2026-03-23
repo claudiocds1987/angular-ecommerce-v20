@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { inject } from '@angular/core';
-import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
-  pipe,
-  switchMap,
-  tap,
-  catchError,
-  map,
-  EMPTY,
-  debounceTime,
-  distinctUntilChanged,
-} from 'rxjs'; // Importamos 'map'
-import { HttpClient } from '@angular/common/http';
+  signalStore,
+  withState,
+  withComputed,
+  withMethods,
+  patchState,
+  withHooks,
+} from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, switchMap, tap, catchError, EMPTY, debounceTime, distinctUntilChanged } from 'rxjs'; // Importamos 'map'
+
 import { computed } from '@angular/core';
 import { Product } from '../../../shared/models/product.model';
-import { DummyProduct } from '../../../shared/models/dummy-response.model';
+import { ProductService } from '../../../shared/services/product-service';
+import { ProductBrand } from '../../../shared/models/product-brand.model';
+import { ProductCategory } from '../../../shared/models/product-category.model';
+import { BrandService } from '../../../shared/services/brand-service';
+import { CategoryService } from '../../../shared/services/category-service';
 
 // * Usando forma moderna "NgRX Signal Store" en lugar de NgRx, para manejar el estado de productos en el admin
 // * rxMethod es la forma estándar en el Signal Store porque gestiona automáticamente el ciclo de vida de las suscripciones.
@@ -24,6 +26,131 @@ import { DummyProduct } from '../../../shared/models/dummy-response.model';
 //   ATOMICIDAD: Si cambias varias propiedades a la vez (ej. loading y error), la UI solo se actualiza una vez (evita renders innecesarios).
 
 export const ProductStore = signalStore(
+  { providedIn: 'root' },
+  withState({
+    items: [] as Product[],
+    brands: [] as ProductBrand[],
+    categories: [] as ProductCategory[],
+    totalItems: 0,
+    filterQuery: '',
+    loading: false,
+  }),
+
+  // UNIFICAMOS LOS COMPUTED PARA MAYOR CLARIDAD
+  withComputed((state) => ({
+    // Crea mapa: { 1: 'Calvin Klein', 2: 'Essence', ... }
+    brandMap: computed(() =>
+      state.brands().reduce(
+        (acc, b) => {
+          acc[b.id] = b.name;
+          return acc;
+        },
+        {} as Record<number, string>,
+      ),
+    ),
+    // Crea un mapa: { 1: 'Beauty', 2: 'Fragrances', ... }
+    categoryMap: computed(() =>
+      state.categories().reduce(
+        (acc, c) => {
+          acc[c.id] = c.name;
+          return acc;
+        },
+        {} as Record<number, string>,
+      ),
+    ),
+    filteredProducts: computed(() => {
+      const query = state.filterQuery().toLowerCase();
+      return state.items().filter((p) => p.title.toLowerCase().includes(query));
+    }),
+    productsCount: computed(() => state.items().length),
+  })),
+
+  withMethods(
+    (
+      state,
+      // Mantenemos la inyección aquí, que es la forma correcta en las últimas versiones
+      productService = inject(ProductService),
+      brandService = inject(BrandService),
+      categoryService = inject(CategoryService),
+    ) => ({
+      loadBrands: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            brandService.getBrands().pipe(
+              tap((brands) => patchState(state, { brands })),
+              catchError(() => EMPTY),
+            ),
+          ),
+        ),
+      ),
+
+      loadCategories: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            categoryService.getCategories().pipe(
+              tap((categories) => patchState(state, { categories })),
+              catchError(() => EMPTY),
+            ),
+          ),
+        ),
+      ),
+
+      updateQuery: (query: string) => patchState(state, { filterQuery: query }),
+
+      removeProduct: (id: number) => {
+        patchState(state, { items: state.items().filter((p) => p.id !== id) });
+      },
+
+      searchProducts: rxMethod<{ query: string; page: number; size: number }>(
+        pipe(
+          debounceTime(300),
+          distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+          tap(({ query }) => patchState(state, { filterQuery: query, loading: true })),
+          switchMap(({ query, page, size }) =>
+            productService.getFilteredProducts(page, size, query).pipe(
+              tap((res) => {
+                patchState(state, {
+                  items: page === 1 ? res.items : [...state.items(), ...res.items],
+                  totalItems: res.totalItems,
+                  loading: false,
+                });
+              }),
+              catchError(() => {
+                patchState(state, { loading: false });
+                return EMPTY;
+              }),
+            ),
+          ),
+        ),
+      ),
+
+      loadAllProducts: rxMethod<void>(
+        pipe(
+          tap(() => patchState(state, { loading: true })),
+          switchMap(() =>
+            productService.getProducts().pipe(
+              tap((products) => patchState(state, { items: products, loading: false })),
+              catchError(() => {
+                patchState(state, { loading: false });
+                return EMPTY;
+              }),
+            ),
+          ),
+        ),
+      ),
+    }),
+  ),
+
+  // CARGA AUTOMÁTICA AL INICIAR
+  withHooks({
+    onInit(store) {
+      store.loadBrands();
+      store.loadCategories();
+    },
+  }),
+);
+
+/* export const ProductStore = signalStore(
   { providedIn: 'root' },
   withState({
     items: [] as Product[],
@@ -95,3 +222,4 @@ export const ProductStore = signalStore(
     ),
   })),
 );
+ */

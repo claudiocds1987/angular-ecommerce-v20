@@ -1,7 +1,10 @@
 import { Component, Output, EventEmitter, OnInit, inject, Input, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
-import { ProductService } from '../../../shared/services/product-service';
+//import { ProductService } from '../../../shared/services/product-service';
+import { CategoryService } from '../../../shared/services/category-service';
+//import { Product } from '../../../shared/models/product.model';
+import { ProductCategory } from '../../../shared/models/product-category.model';
 
 @Component({
   selector: 'app-product-filter',
@@ -15,10 +18,10 @@ export class ProductFilter implements OnInit {
   @Output() emitFilterChange = new EventEmitter<ProductFilterData>();
 
   filterForm!: FormGroup;
-  productCategories = signal<string[]>([]);
+  productCategories = signal<ProductCategory[]>([]);
 
   private _fb = inject(FormBuilder);
-  private _productService = inject(ProductService);
+  private _categoryService = inject(CategoryService);
 
   ngOnInit() {
     this._createForm();
@@ -53,7 +56,7 @@ export class ProductFilter implements OnInit {
   }
 
   private _getProductsCategoryList() {
-    this._productService.getProductsCategoryList().subscribe((res) => {
+    this._categoryService.getCategories().subscribe((res) => {
       this.productCategories.set(res);
     });
   }

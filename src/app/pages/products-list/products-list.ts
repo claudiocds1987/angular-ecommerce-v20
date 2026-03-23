@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { map, switchMap } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs';
 import { Product } from '../../shared/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '../../shared/services/product-service';
@@ -17,6 +10,7 @@ import { IaChatService } from '../../shared/services/ia-chat-service';
 import { ProductFilterData } from '../../shared/models/product-filter-data.model';
 import { ProductFilter } from './product-filter/product-filter';
 import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
+import { ProductStore } from '../admin/state/product.store';
 
 @Component({
   selector: 'app-products-list',
@@ -26,7 +20,79 @@ import { CarouselComponent } from '../../shared/components/carousel/carousel.com
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsList implements OnInit {
+export class ProductsList {
+  //isLoading = signal(true);
+  isLoading = computed(() => this.productStore.loading());
+  totalProducts = computed(() => this.productStore.totalItems());
+  // 1. Refactorizamos nombres de variables
+  pageSize = 30; // Cantidad de productos por página
+
+  currentPage = signal(1); // Empezamos en la página 1
+  showFilter = signal(false);
+  currentFilters = signal<ProductFilterData | null>(null);
+  carouselProducts = signal<Product[]>([]);
+
+  readonly productStore = inject(ProductStore);
+  iaChatService = inject(IaChatService);
+  private _productsService = inject(ProductService);
+
+  // 2. Actualizamos el estado computado
+  private _queryState = computed(() => ({
+    filters: this.currentFilters(),
+    page: this.currentPage(),
+  }));
+
+  constructor() {
+    this._syncProductsWithFilters();
+    this._loadCarouselProducts();
+  }
+
+  private _loadCarouselProducts() {
+    // 3. CORRECCIÓN CRÍTICA: Pedimos página 1, con un tamaño decente (ej: 50 o 100)
+    // para extraer las categorías únicas para el carousel.
+    this._productsService.getProductsPaginated(1, 100).subscribe((res) => {
+      const uniqueCategories = new Set<number>();
+      const selectedProducts: Product[] = [];
+
+      if (res.items) {
+        for (const product of res.items) {
+          if (product.categoryId && !uniqueCategories.has(product.categoryId)) {
+            uniqueCategories.add(product.categoryId);
+            selectedProducts.push(product);
+            if (selectedProducts.length === 8) break;
+          }
+        }
+      }
+      this.carouselProducts.set(selectedProducts);
+    });
+  }
+
+  private _syncProductsWithFilters() {
+    toObservable(this._queryState)
+      .pipe(
+        // distinctUntilChanged evita que no haga nada si el valor nuevo es igual al anterior
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+      )
+      .subscribe(({ filters, page }) => {
+        this.productStore.searchProducts({
+          query: filters?.search || '',
+          page: page,
+          size: this.pageSize,
+        });
+      });
+  }
+
+  handleFilter(filters: ProductFilterData) {
+    this.currentFilters.set(filters);
+    this.currentPage.set(1); // Reset a la primera página al filtrar
+    this.productStore.updateQuery(filters.search || '');
+  }
+
+  loadMore() {
+    this.currentPage.update((p) => p + 1);
+  }
+}
+/* export class ProductsList implements OnInit {
   products = signal<Product[]>([]);
   isLoading = signal(true);
   skip = signal(0); // Número de productos a saltar (paginación offset) para cargar los siguientes ej: Salta los primeros 30 y dame los siguientes 30". (Te da del 31 al 60).
@@ -169,4 +235,4 @@ export class ProductsList implements OnInit {
     }
     return product.price;
   }
-}
+} */

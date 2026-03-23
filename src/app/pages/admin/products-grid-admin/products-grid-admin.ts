@@ -24,20 +24,22 @@ export class ProductsGridAdmin implements OnInit {
   private _excelService = inject(ExcelService);
 
   ngOnInit() {
-    // Disparamos la carga inicial de productos desde la API
-    this.store.loadAllProducts();
+    //this.store.searchProducts({ query: '', page: 1, size: 50 });
+    // Carga inicial de productos del store para mostrar en la grilla
+    //this.store.loadAllProducts();
+    this._loadData();
   }
 
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
-    // Actualizamos la query en el store; esto disparará el computed automáticamente
-    this.store.searchProducts(input.value);
+    this._loadData(input.value);
   }
 
   handleImportSuccess(response: ImportResultResponse) {
     console.log('Respuesta real recibida:', response);
     this.importErrors.set([]); // Limpiamos errores previos
-    this.store.loadAllProducts(); // Recargamos la grilla
+    this._loadData();
+    //this.store.loadAllProducts(); // Recargamos la grilla
     alert(`${response.Message}\nTotal: ${response.Count} productos.`);
   }
 
@@ -47,5 +49,13 @@ export class ProductsGridAdmin implements OnInit {
 
   onDownloadErrors(): void {
     this._excelService.downloadErrorReport(this.importErrors(), 'errores_productos');
+  }
+
+  private _loadData(query = '') {
+    this.store.searchProducts({
+      query: query,
+      page: 1,
+      size: 50,
+    });
   }
 }

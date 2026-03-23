@@ -32,6 +32,109 @@ export class IaChat {
   userInput = signal<string>('');
   isTyping = signal<boolean>(false);
 
+  // Tipado corregido de any a Product
+  selectedProduct = signal<Product | null>(null);
+
+  constructor() {
+    effect(() => {
+      this.messages();
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
+  }
+
+  async sendMessage() {
+    const text = this.userInput().trim();
+    if (!text || this.isTyping()) return;
+
+    this.messages.update((prev) => [...prev, { text, sender: 'user' }]);
+    this.userInput.set('');
+    this.isTyping.set(true);
+
+    try {
+      const currentSelected = this.selectedProduct();
+
+      if (currentSelected) {
+        // --- MODO: Vendedor Experto ---
+        const respuesta = await this.iaChatService.askAboutProduct(text, currentSelected.id);
+        this.messages.update((prev) => [...prev, { text: respuesta, sender: 'bot' }]);
+      } else {
+        // --- MODO: Búsqueda General ---
+        const iaResponse: GeminiResponse = await this.iaChatService.sendPromptToAI(text);
+
+        this.messages.update((prev) => [
+          ...prev,
+          {
+            text: iaResponse.Response,
+            sender: 'bot',
+            products: iaResponse.Products.map((p: any) => ({
+              ...p,
+
+              finalPrice:
+                p.price && p.discountPercentage
+                  ? Number((p.price * (1 - p.discountPercentage / 100)).toFixed(2))
+                  : p.price,
+              image: p.thumbnail,
+            })),
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error('Error en el chat:', error);
+      this.messages.update((prev) => [
+        ...prev,
+        { text: 'Lo siento, hubo un error. Inténtalo de nuevo.', sender: 'bot' },
+      ]);
+    } finally {
+      this.isTyping.set(false);
+    }
+  }
+
+  selectProduct(product: Product) {
+    this.selectedProduct.set(product);
+    this.messages.update((prev) => [
+      ...prev,
+      {
+        text: `Has seleccionado: ${product.title}. ¿Qué te gustaría saber sobre este producto?`,
+        sender: 'bot',
+      },
+    ]);
+  }
+
+  clearSelection() {
+    this.selectedProduct.set(null);
+    this.messages.update((prev) => [
+      ...prev,
+      {
+        text: 'Selección anulada. ¿Qué otro producto buscas ahora?',
+        sender: 'bot',
+      },
+    ]);
+  }
+
+  closeIAChat() {
+    this.iaChatService.closeIAChat();
+  }
+
+  private scrollToBottom() {
+    if (this.scrollContainer) {
+      this.scrollContainer.nativeElement.scrollTop =
+        this.scrollContainer.nativeElement.scrollHeight;
+    }
+  }
+}
+
+/* export class IaChat {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
+  iaChatService = inject(IaChatService);
+
+  messages = signal<Message[]>([
+    { text: '¡Hola! Soy tu asistente inteligente. ¿En qué puedo ayudarte hoy?', sender: 'bot' },
+  ]);
+
+  userInput = signal<string>('');
+  isTyping = signal<boolean>(false);
+
   selectedProduct = signal<any | null>(null);
 
   constructor() {
@@ -133,4 +236,4 @@ export class IaChat {
     }
     return product.price;
   }
-}
+} */
