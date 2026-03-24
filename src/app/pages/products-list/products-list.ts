@@ -21,10 +21,8 @@ import { ProductStore } from '../admin/state/product.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsList {
-  //isLoading = signal(true);
   isLoading = computed(() => this.productStore.loading());
   totalProducts = computed(() => this.productStore.totalItems());
-  // 1. Refactorizamos nombres de variables
   pageSize = 30; // Cantidad de productos por página
 
   currentPage = signal(1); // Empezamos en la página 1
@@ -36,7 +34,6 @@ export class ProductsList {
   iaChatService = inject(IaChatService);
   private _productsService = inject(ProductService);
 
-  // 2. Actualizamos el estado computado
   private _queryState = computed(() => ({
     filters: this.currentFilters(),
     page: this.currentPage(),
@@ -48,8 +45,8 @@ export class ProductsList {
   }
 
   private _loadCarouselProducts() {
-    // 3. CORRECCIÓN CRÍTICA: Pedimos página 1, con un tamaño decente (ej: 50 o 100)
-    // para extraer las categorías únicas para el carousel.
+    // Obtiene una muestra amplia, trae los productos del 1 al 100 (1, 100) para filtrar y mostrar en el Carousel
+    // hasta 8 productos, asegurando que cada uno pertenezca a una categoría distinta.
     this._productsService.getProductsPaginated(1, 100).subscribe((res) => {
       const uniqueCategories = new Set<number>();
       const selectedProducts: Product[] = [];
@@ -59,6 +56,7 @@ export class ProductsList {
           if (product.categoryId && !uniqueCategories.has(product.categoryId)) {
             uniqueCategories.add(product.categoryId);
             selectedProducts.push(product);
+            // Límite visual del Carousel, con 8 productos es suficiente para mostrar variedad sin abrumar al usuario.
             if (selectedProducts.length === 8) break;
           }
         }
@@ -92,147 +90,3 @@ export class ProductsList {
     this.currentPage.update((p) => p + 1);
   }
 }
-/* export class ProductsList implements OnInit {
-  products = signal<Product[]>([]);
-  isLoading = signal(true);
-  skip = signal(0); // Número de productos a saltar (paginación offset) para cargar los siguientes ej: Salta los primeros 30 y dame los siguientes 30". (Te da del 31 al 60).
-  limit = 30; // Número de productos por página
-  totalProducts = signal(0);
-  showFilter = signal(false);
-
-  // signal para guardar los filtros actuales
-  currentFilters = signal<ProductFilterData | null>(null);
-
-  carouselProducts = signal<Product[]>([]);
-
-  iaChatService = inject(IaChatService);
-  private _productsService = inject(ProductService);
-
-  // Combinamos el estado para reaccionar a cambios en filtros o paginación
-  private _queryState = computed(() => ({
-    filters: this.currentFilters(),
-    skip: this.skip(),
-  }));
-
-  constructor() {
-    this._listenToQueryChanges();
-    this._loadCarouselProducts();
-  }
-
-  ngOnInit() {
-    this._productsService.getProducts().subscribe((products) => {
-      console.log('Productos cargados:', products);
-    });
-  }
-
-  private _loadCarouselProducts() {
-    this._productsService.getProductsPaginated(100, 0).subscribe((res) => {
-      const uniqueCategories = new Set<string>();
-      const selectedProducts: Product[] = [];
-
-      for (const product of res.products) {
-        if (product.category && !uniqueCategories.has(product.category)) {
-          uniqueCategories.add(product.category);
-          selectedProducts.push({
-            ...product,
-            finalPrice: this._applyDiscount(product),
-          });
-          if (selectedProducts.length === 8) break;
-        }
-      }
-      this.carouselProducts.set(selectedProducts);
-    });
-  }
-
-  private _listenToQueryChanges() {
-    // Reacción automática ante cambios en filtros o skip
-    toObservable(this._queryState)
-      .pipe(
-        switchMap(({ filters, skip }) => {
-          this.isLoading.set(true);
-          const searchTerm = filters?.search || '';
-          const category = filters?.category || '';
-
-          return this._productsService
-            .getFilteredProducts(this.limit, skip, searchTerm, category)
-            .pipe(
-              map((res) => {
-                // 1. Mapeamos y aplicamos descuento
-                let processed = res.products.map((product: Product) => ({
-                  ...product,
-                  finalPrice: this._applyDiscount(product),
-                }));
-
-                // 2. Filtros adicionales en el cliente
-                // NOTA: DummyJSON no permite filtrar por categoría y búsqueda simultáneamente,
-                // por lo que aplicamos el filtrado por búsqueda, precio y ordenamiento aca.
-                if (filters) {
-                  // Filtrar por término de búsqueda (insensible a mayúsculas/minúsculas)
-                  if (filters.search) {
-                    const term = filters.search.toLowerCase();
-                    processed = processed.filter((p) => p.title.toLowerCase().includes(term));
-                  }
-
-                  // Filtrar por rango de precio
-                  if (filters.minPrice !== null && filters.minPrice !== undefined) {
-                    processed = processed.filter((p) => p.price >= filters.minPrice!);
-                  }
-                  if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
-                    processed = processed.filter((p) => p.price <= filters.maxPrice!);
-                  }
-
-                  // Ordenar dinámicamente según el selector
-
-                  // Si el usuario elige ordenar por "precio", usamos el precio final (con descuento)
-                  // que es el que el usuario ve en la interfaz.
-                  const effectiveSortKey: keyof Product =
-                    filters.sortBy === 'price' ? 'finalPrice' : (filters.sortBy as keyof Product);
-
-                  processed.sort((a, b) => {
-                    const valA = a[effectiveSortKey];
-                    const valB = b[effectiveSortKey];
-
-                    if (valA! < valB!) return filters.order === 'desc' ? 1 : -1;
-                    if (valA! > valB!) return filters.order === 'desc' ? -1 : 1;
-                    return 0;
-                  });
-                }
-
-                return { processed, total: res.total, skip };
-              }),
-            );
-        }),
-      )
-      .subscribe(({ processed, total, skip }) => {
-        // 3. Actualizando el signal
-        if (skip === 0) {
-          this.products.set(processed);
-        } else {
-          this.products.update((prev) => [...prev, ...processed]);
-        }
-
-        this.totalProducts.set(total);
-        this.isLoading.set(false);
-      });
-  }
-
-  handleFilter(filters: ProductFilterData) {
-    // Al setear currentFilters, el computed _queryState cambia y dispara el switchMap
-    this.currentFilters.set(filters);
-    this.skip.set(0);
-  }
-
-  // Función para cargar más productos (paginación)
-  loadMore() {
-    this.skip.update((current) => current + this.limit);
-  }
-
-  private _applyDiscount(product: Product): number {
-    if (product.discountPercentage && product.discountPercentage > 0) {
-      const discount = (product.price * product.discountPercentage) / 100;
-      const price = product.price - discount;
-      return Number(price.toFixed(2));
-    }
-    return product.price;
-  }
-} */

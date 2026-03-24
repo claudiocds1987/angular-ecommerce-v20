@@ -38,7 +38,7 @@ export const ProductStore = signalStore(
 
   // UNIFICAMOS LOS COMPUTED PARA MAYOR CLARIDAD
   withComputed((state) => ({
-    // Crea mapa: { 1: 'Calvin Klein', 2: 'Essence', ... }
+    // Crea un objeto: { 1: 'Calvin Klein', 2: 'Essence', ... }
     brandMap: computed(() =>
       state.brands().reduce(
         (acc, b) => {
@@ -48,7 +48,7 @@ export const ProductStore = signalStore(
         {} as Record<number, string>,
       ),
     ),
-    // Crea un mapa: { 1: 'Beauty', 2: 'Fragrances', ... }
+    // Crea un objeto: { 1: 'Beauty', 2: 'Fragrances', ... }
     categoryMap: computed(() =>
       state.categories().reduce(
         (acc, c) => {
@@ -58,6 +58,7 @@ export const ProductStore = signalStore(
         {} as Record<number, string>,
       ),
     ),
+
     filteredProducts: computed(() => {
       const query = state.filterQuery().toLowerCase();
       return state.items().filter((p) => p.title.toLowerCase().includes(query));
@@ -149,77 +150,3 @@ export const ProductStore = signalStore(
     },
   }),
 );
-
-/* export const ProductStore = signalStore(
-  { providedIn: 'root' },
-  withState({
-    items: [] as Product[],
-    filterQuery: '',
-    loading: false,
-  }),
-
-  // SELECTORES COMPUTADOS
-  withComputed((state) => ({
-    filteredProducts: computed(() => {
-      const query = state.filterQuery().toLowerCase();
-      return state.items().filter((p) => p.title.toLowerCase().includes(query));
-    }),
-    productsCount: computed(() => state.items().length),
-  })),
-
-  withMethods((state, http = inject(HttpClient)) => ({
-    // Método para actualizar el texto de búsqueda
-    updateQuery: (query: string) => patchState(state, { filterQuery: query }),
-
-    // Método para eliminar un producto localmente
-    removeProduct: (id: number) => {
-      const updatedItems = state.items().filter((p) => p.id !== id);
-      patchState(state, { items: updatedItems });
-    },
-
-    // Método para buscar productos
-    searchProducts: rxMethod<string>(
-      pipe(
-        debounceTime(300),
-        distinctUntilChanged(), // No dispara si el texto es el mismo que el anterior
-        tap((query) => patchState(state, { filterQuery: query, loading: true })),
-        switchMap((query) =>
-          http.get<{ products: any[] }>(`https://dummyjson.com/products/search?q=${query}`).pipe(
-            map(({ products }) => products.map((p) => ({ ...p, image: p.thumbnail }))),
-            tap((mappedProducts) => patchState(state, { items: mappedProducts, loading: false })),
-            catchError(() => {
-              patchState(state, { loading: false });
-              return EMPTY;
-            }),
-          ),
-        ),
-      ),
-    ),
-
-    // Método para cargar productos con mapeo
-    loadAllProducts: rxMethod<void>(
-      pipe(
-        tap(() => patchState(state, { loading: true })),
-        switchMap(() =>
-          // en vez de la url mejor usar productService.getAll()
-          http.get<{ products: DummyProduct[] }>('https://dummyjson.com/products').pipe(
-            // Mapeamos los datos de la API a nuestra interfaz Product
-            map(({ products }) =>
-              products.map((product) => ({
-                ...product,
-                image: product.thumbnail,
-              })),
-            ),
-            tap((mappedProducts) => patchState(state, { items: mappedProducts, loading: false })),
-            catchError((error) => {
-              console.error('Error cargando productos:', error);
-              patchState(state, { loading: false });
-              return EMPTY;
-            }),
-          ),
-        ),
-      ),
-    ),
-  })),
-);
- */
