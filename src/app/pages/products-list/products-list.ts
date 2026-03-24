@@ -42,6 +42,10 @@ export class ProductsList {
   constructor() {
     this._syncProductsWithFilters();
     this._loadCarouselProducts();
+
+    fetch('https://dummyjson.com/products/7')
+      .then((res) => res.json())
+      .then(console.log);
   }
 
   private _loadCarouselProducts() {
@@ -81,6 +85,7 @@ export class ProductsList {
   }
 
   handleFilter(filters: ProductFilterData) {
+    console.log('Filtros aplicados:', filters); // Verifica que los filtros se reciben correctamente
     this.currentFilters.set(filters);
     this.currentPage.set(1); // Reset a la primera página al filtrar
     this.productStore.updateQuery(filters.search || '');

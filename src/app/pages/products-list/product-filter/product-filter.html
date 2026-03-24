@@ -105,7 +105,7 @@
       >
         <option value="">Todas</option>
         @for (category of productCategories(); track category) {
-          <option [value]="category">{{ category }}</option>
+          <option [value]="category.id">{{ category.name }}</option>
         }
       </select>
     </label>

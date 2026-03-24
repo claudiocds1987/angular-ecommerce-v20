@@ -36,7 +36,7 @@
         </div>
 
         <div class="grid grid-cols-4 gap-3">
-          @for (img of safeGallery(); track $index) {
+          @for (img of safeGallery(); track img) {
             <button
               type="button"
               (click)="changeImage(img)"

@@ -18,6 +18,7 @@ import { ProductBrand } from '../../../shared/models/product-brand.model';
 import { ProductCategory } from '../../../shared/models/product-category.model';
 import { BrandService } from '../../../shared/services/brand-service';
 import { CategoryService } from '../../../shared/services/category-service';
+import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
 
 // * Usando forma moderna "NgRX Signal Store" en lugar de NgRx, para manejar el estado de productos en el admin
 // * rxMethod es la forma estándar en el Signal Store porque gestiona automáticamente el ciclo de vida de las suscripciones.
@@ -99,24 +100,40 @@ export const ProductStore = signalStore(
       updateQuery: (query: string) => patchState(state, { filterQuery: query }),
 
       removeProduct: (id: number) => {
+        // Aquí  agregar una llamada al servicio para dar de baja (que no lo elimine) el producto del backend antes de actualizar el estado localmente
         patchState(state, { items: state.items().filter((p) => p.id !== id) });
       },
 
       searchProducts: rxMethod<{ query: string; page: number; size: number }>(
         pipe(
+          // 1. ESPERA: Si el usuario escribe rápido, espera 300ms antes de disparar la búsqueda.
           debounceTime(300),
+
+          // 2. distinctUntilChanged: Si los parámetros (texto, página, tamaño) son iguales a los anteriores, no hace nada.
           distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+
+          // 3. ESTADO INICIAL: Actualiza el término de búsqueda en el Store y activa el spinner de carga.
           tap(({ query }) => patchState(state, { filterQuery: query, loading: true })),
+
+          // 4. CAMBIO DE FLUJO: Cancela la petición anterior si el usuario inicia una nueva búsqueda.
           switchMap(({ query, page, size }) =>
+            // Llamada al servicio de productos filtrados
             productService.getFilteredProducts(page, size, query).pipe(
+              // 5. ÉXITO: Cuando llegan los datos del servidor...
               tap((res) => {
                 patchState(state, {
+                  // Si es página 1, reemplaza todo. Si es página 2+, concatena los nuevos al final.
                   items: page === 1 ? res.items : [...state.items(), ...res.items],
+                  // Actualiza el total de productos existentes para la paginación.
                   totalItems: res.totalItems,
+                  // Apaga el spinner de carga.
                   loading: false,
                 });
               }),
+
+              // 6. ERROR: Si la API falla (ej: sin internet o error de servidor)...
               catchError(() => {
+                // Apaga el spinner para no bloquear la pantalla y detiene el flujo con EMPTY.
                 patchState(state, { loading: false });
                 return EMPTY;
               }),

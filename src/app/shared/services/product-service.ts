@@ -65,7 +65,6 @@ export class ProductService {
       url += `&searchTerm=${query}`;
     }
 
-    // Especificamos <ProductPaginated> para eliminar el 'any'
     return this._http.get<ProductPaginated>(url).pipe(
       map((res: ProductPaginated): ProductPaginated => {
         return {
@@ -77,7 +76,7 @@ export class ProductService {
   }
 
   getProducts(): Observable<Product[]> {
-    // Si no enviamos page/size, tu backend devuelve todo según ProductService.cs
+    // Si no enviamos page/size, el backend devuelve todo según ProductService.cs
     return this._http
       .get<ProductPaginated>(this._apiURL)
       .pipe(map((res) => res.items.map((p) => this._mapToProduct(p))));
