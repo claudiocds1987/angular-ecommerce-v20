@@ -104,36 +104,24 @@ export const ProductStore = signalStore(
         patchState(state, { items: state.items().filter((p) => p.id !== id) });
       },
 
-      searchProducts: rxMethod<{ query: string; page: number; size: number }>(
+      // En tu ProductStore (withMethods)
+      searchProducts: rxMethod<{ filters: ProductFilterData; page: number; size: number }>(
         pipe(
-          // 1. ESPERA: Si el usuario escribe rápido, espera 300ms antes de disparar la búsqueda.
           debounceTime(300),
-
-          // 2. distinctUntilChanged: Si los parámetros (texto, página, tamaño) son iguales a los anteriores, no hace nada.
           distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
-
-          // 3. ESTADO INICIAL: Actualiza el término de búsqueda en el Store y activa el spinner de carga.
-          tap(({ query }) => patchState(state, { filterQuery: query, loading: true })),
-
-          // 4. CAMBIO DE FLUJO: Cancela la petición anterior si el usuario inicia una nueva búsqueda.
-          switchMap(({ query, page, size }) =>
-            // Llamada al servicio de productos filtrados
-            productService.getFilteredProducts(page, size, query).pipe(
-              // 5. ÉXITO: Cuando llegan los datos del servidor...
+          tap(() => patchState(state, { loading: true })),
+          switchMap(({ filters, page, size }) =>
+            // Cambiamos la llamada para pasar TODO el objeto de filtros
+            productService.getFilteredProducts(page, size, filters).pipe(
               tap((res) => {
                 patchState(state, {
-                  // Si es página 1, reemplaza todo. Si es página 2+, concatena los nuevos al final.
                   items: page === 1 ? res.items : [...state.items(), ...res.items],
-                  // Actualiza el total de productos existentes para la paginación.
                   totalItems: res.totalItems,
-                  // Apaga el spinner de carga.
                   loading: false,
+                  filterQuery: filters.search || '', // Mantenemos el query para el filtro local si hace falta
                 });
               }),
-
-              // 6. ERROR: Si la API falla (ej: sin internet o error de servidor)...
               catchError(() => {
-                // Apaga el spinner para no bloquear la pantalla y detiene el flujo con EMPTY.
                 patchState(state, { loading: false });
                 return EMPTY;
               }),

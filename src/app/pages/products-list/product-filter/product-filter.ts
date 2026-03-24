@@ -57,7 +57,6 @@ export class ProductFilter implements OnInit {
 
   private _getProductsCategoryList() {
     this._categoryService.getCategories().subscribe((res) => {
-      console.log('Categorías obtenidas:', res); // Verifica que estás recibiendo las categorías
       this.productCategories.set(res);
     });
   }

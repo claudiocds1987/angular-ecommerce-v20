@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { Product } from '../models/product.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 //import { DummyResponsePaginated } from '../models/dummy-response.model';
 import { environment } from '../../../environments/environment';
 import { ProductPaginated } from '../models/product-paginated.model';
+import { ProductFilterData } from '../models/product-filter-data.model';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +35,6 @@ export class ProductService {
 
     // 2. Tipamos el GET con la estructura real del JSON (BackendResponse)
     return this._http.get<ProductPaginated>(url).pipe(
-      tap((res) => console.log('🔎 Datos verificados:', res)),
       map((res): ProductPaginated => {
         // 3. Retornamos el modelo de Angular (ProductPaginated) mapeando las mayúsculas
         return {
@@ -51,28 +51,21 @@ export class ProductService {
   // 3. Obtener filtrados (también debe devolver ProductPaginated)
   getFilteredProducts(
     page: number,
-    pageSize: number,
-    query = '',
-    category = '',
+    size: number,
+    filters: ProductFilterData,
   ): Observable<ProductPaginated> {
-    // Construimos los parámetros de búsqueda exactos que espera tu C#
-    let url = `${this._apiURL}?page=${page}&size=${pageSize}`;
+    let params = new HttpParams()
+      .set('page', page.toString()) // Cambia a 'pageNo' si tu C# espera ese nombre
+      .set('size', size.toString());
 
-    if (category) {
-      url += `&categoryId=${category}`;
-    }
-    if (query) {
-      url += `&searchTerm=${query}`;
-    }
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.category) params = params.set('categoryId', filters.category);
+    if (filters.minPrice) params = params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
+    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+    if (filters.order) params = params.set('order', filters.order);
 
-    return this._http.get<ProductPaginated>(url).pipe(
-      map((res: ProductPaginated): ProductPaginated => {
-        return {
-          ...res,
-          items: res.items.map((p) => this._mapToProduct(p)),
-        };
-      }),
-    );
+    return this._http.get<ProductPaginated>(`${this._apiURL}`, { params });
   }
 
   getProducts(): Observable<Product[]> {

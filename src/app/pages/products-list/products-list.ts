@@ -42,10 +42,6 @@ export class ProductsList {
   constructor() {
     this._syncProductsWithFilters();
     this._loadCarouselProducts();
-
-    fetch('https://dummyjson.com/products/7')
-      .then((res) => res.json())
-      .then(console.log);
   }
 
   private _loadCarouselProducts() {
@@ -77,7 +73,8 @@ export class ProductsList {
       )
       .subscribe(({ filters, page }) => {
         this.productStore.searchProducts({
-          query: filters?.search || '',
+          // ⬇️ Si filters es null o undefined, mandamos un objeto vacío con el tipo correcto
+          filters: filters ?? ({} as ProductFilterData),
           page: page,
           size: this.pageSize,
         });
@@ -85,10 +82,14 @@ export class ProductsList {
   }
 
   handleFilter(filters: ProductFilterData) {
-    console.log('Filtros aplicados:', filters); // Verifica que los filtros se reciben correctamente
     this.currentFilters.set(filters);
-    this.currentPage.set(1); // Reset a la primera página al filtrar
-    this.productStore.updateQuery(filters.search || '');
+    this.currentPage.set(1);
+
+    this.productStore.searchProducts({
+      filters: filters,
+      page: 1,
+      size: 30,
+    });
   }
 
   loadMore() {

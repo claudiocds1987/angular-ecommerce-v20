@@ -6,6 +6,7 @@ import { ImportResultResponse } from '../../../shared/models/import-result-respo
 import { ExcelService } from '../../../shared/services/excel-service';
 
 import { environment } from '../../../../environments/environment';
+import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -36,10 +37,8 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   handleImportSuccess(response: ImportResultResponse) {
-    console.log('Respuesta real recibida:', response);
-    this.importErrors.set([]); // Limpiamos errores previos
+    this.importErrors.set([]); // Limpieza errores previos
     this._loadData();
-    //this.store.loadAllProducts(); // Recargamos la grilla
     alert(`${response.Message}\nTotal: ${response.Count} productos.`);
   }
 
@@ -53,9 +52,16 @@ export class ProductsGridAdmin implements OnInit {
 
   private _loadData(query = '') {
     this.store.searchProducts({
-      query: query,
+      filters: {
+        search: query,
+        category: '',
+        minPrice: null,
+        maxPrice: null,
+        sortBy: 'title',
+        order: 'asc',
+      } as ProductFilterData,
       page: 1,
-      size: 50,
+      size: 30,
     });
   }
 }

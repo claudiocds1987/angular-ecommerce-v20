@@ -103,7 +103,6 @@ export class ProductDetail implements OnInit {
     }
 
     if (data.images && data.images.length > 0) {
-      console.log('Imagen original:', data.images[0]);
       const images = data.images.map((img) =>
         this._sanitizer.bypassSecurityTrustResourceUrl(img.imageUrl),
       );
