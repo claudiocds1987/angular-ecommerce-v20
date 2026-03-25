@@ -1,10 +1,6 @@
-import { Component, Output, EventEmitter, OnInit, inject, Input, signal } from '@angular/core';
+import { Component, Output, EventEmitter, inject, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
-//import { ProductService } from '../../../shared/services/product-service';
-import { CategoryService } from '../../../shared/services/category-service';
-//import { Product } from '../../../shared/models/product.model';
-import { ProductCategory } from '../../../shared/models/product-category.model';
 import { ProductStore } from '../../admin/state/product.store';
 
 @Component({
