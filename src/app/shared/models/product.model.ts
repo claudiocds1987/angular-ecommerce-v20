@@ -23,6 +23,7 @@ export interface Product {
   tags: ProductTag[];
   reviews: ProductReview[];
   finalPrice?: number;
+  isActive: boolean;
 }
 
 export interface ProductImage {
