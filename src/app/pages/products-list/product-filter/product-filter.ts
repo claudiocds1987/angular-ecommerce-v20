@@ -5,6 +5,7 @@ import { ProductFilterData } from '../../../shared/models/product-filter-data.mo
 import { CategoryService } from '../../../shared/services/category-service';
 //import { Product } from '../../../shared/models/product.model';
 import { ProductCategory } from '../../../shared/models/product-category.model';
+import { ProductStore } from '../../admin/state/product.store';
 
 @Component({
   selector: 'app-product-filter',
@@ -12,20 +13,19 @@ import { ProductCategory } from '../../../shared/models/product-category.model';
   templateUrl: './product-filter.html',
   styleUrl: './product-filter.scss',
 })
-export class ProductFilter implements OnInit {
+export class ProductFilter {
   @Input() isFilterVisible = true;
   @Output() toggleSidebar = new EventEmitter<boolean>();
   @Output() emitFilterChange = new EventEmitter<ProductFilterData>();
 
   filterForm!: FormGroup;
-  productCategories = signal<ProductCategory[]>([]);
+
+  readonly productStore = inject(ProductStore);
 
   private _fb = inject(FormBuilder);
-  private _categoryService = inject(CategoryService);
 
-  ngOnInit() {
+  constructor() {
     this._createForm();
-    this._getProductsCategoryList();
   }
 
   applyFilters() {
@@ -41,7 +41,7 @@ export class ProductFilter implements OnInit {
       sortBy: 'title',
       order: 'asc',
     });
-    this.emitFilterChange.emit(this.filterForm.value);
+    this.applyFilters();
   }
 
   private _createForm() {
@@ -52,12 +52,6 @@ export class ProductFilter implements OnInit {
       category: [''],
       sortBy: ['title'],
       order: ['asc'],
-    });
-  }
-
-  private _getProductsCategoryList() {
-    this._categoryService.getCategories().subscribe((res) => {
-      this.productCategories.set(res);
     });
   }
 }
