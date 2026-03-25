@@ -39,24 +39,25 @@ export const ProductStore = signalStore(
 
   // UNIFICAMOS LOS COMPUTED PARA MAYOR CLARIDAD
   withComputed((state) => ({
-    // Crea un objeto: { 1: 'Calvin Klein', 2: 'Essence', ... }
+    // Mapeo completo de Marcas: { 1: {id: 1, name: 'Apple'}, ... }
     brandMap: computed(() =>
       state.brands().reduce(
-        (acc, b) => {
-          acc[b.id] = b.name;
-          return acc;
+        (accumulator, brand) => {
+          accumulator[brand.id] = brand; // Guardamos el objeto completo 'brand'
+          return accumulator;
         },
-        {} as Record<number, string>,
+        {} as Record<number, ProductBrand>,
       ),
     ),
-    // Crea un objeto: { 1: 'Beauty', 2: 'Fragrances', ... }
+
+    // Mapeo completo de Categorías: { 1: {id: 1, name: 'Beauty'}, ... }
     categoryMap: computed(() =>
       state.categories().reduce(
-        (acc, c) => {
-          acc[c.id] = c.name;
-          return acc;
+        (accumulator, category) => {
+          accumulator[category.id] = category; // Guardamos el objeto completo 'category'
+          return accumulator;
         },
-        {} as Record<number, string>,
+        {} as Record<number, ProductCategory>,
       ),
     ),
 
@@ -100,25 +101,24 @@ export const ProductStore = signalStore(
       updateQuery: (query: string) => patchState(state, { filterQuery: query }),
 
       removeProduct: (id: number) => {
-        // Aquí  agregar una llamada al servicio para dar de baja (que no lo elimine) el producto del backend antes de actualizar el estado localmente
+        // Aca  agregar una llamada al servicio para dar de baja (que no lo elimine) el producto del backend antes de actualizar el estado localmente
         patchState(state, { items: state.items().filter((p) => p.id !== id) });
       },
 
-      // En tu ProductStore (withMethods)
+      // Función para buscar productos con filtros.
       searchProducts: rxMethod<{ filters: ProductFilterData; page: number; size: number }>(
         pipe(
           debounceTime(300),
           distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
           tap(() => patchState(state, { loading: true })),
           switchMap(({ filters, page, size }) =>
-            // Cambiamos la llamada para pasar TODO el objeto de filtros
             productService.getFilteredProducts(page, size, filters).pipe(
               tap((res) => {
                 patchState(state, {
                   items: page === 1 ? res.items : [...state.items(), ...res.items],
                   totalItems: res.totalItems,
                   loading: false,
-                  filterQuery: filters.search || '', // Mantenemos el query para el filtro local si hace falta
+                  filterQuery: filters.search || '',
                 });
               }),
               catchError(() => {
