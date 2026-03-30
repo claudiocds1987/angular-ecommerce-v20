@@ -1,0 +1,76 @@
+<div class="filter-panel" [class.collapsed]="isCollapsedSig()">
+  <form [formGroup]="filterFormSig()" class="form" (ngSubmit)="applyFilter()">
+    <div class="form-header">
+      <button
+        type="button"
+        mat-icon-button
+        class="toggle-button"
+        (click)="toggleCollapse()"
+        matTooltip="{{ isCollapsedSig() ? 'Mostrar Filtro' : 'Ocultar Filtro' }}"
+        matTooltipPosition="left"
+      >
+        <mat-icon class="collapsed-icon">{{
+          isCollapsedSig() ? 'chevron_left' : 'chevron_right'
+        }}</mat-icon>
+      </button>
+      <h3 class="title">FILTRO</h3>
+    </div>
+    <div class="form-content" [class.hidden]="isCollapsedSig()">
+      <div class="form-fields">
+        @for (filter of configSig(); track filter.fieldName) {
+          @switch (filter.fieldType) {
+            <!-- Campo de texto -->
+            @case ('text') {
+              <mat-form-field class="width" appearance="outline" [appSkeleton]="isLoadingSig()">
+                <mat-label>{{ filter.label }}</mat-label>
+                <input matInput [formControlName]="filter.fieldName" />
+              </mat-form-field>
+            }
+            <!-- Caso Select -->
+            @case ('select') {
+              <mat-form-field class="width" appearance="outline" [appSkeleton]="isLoadingSig()">
+                <mat-label>{{ filter.label }}</mat-label>
+                <mat-select [formControlName]="filter.fieldName">
+                  @for (item of filter.selectItems; track item.id) {
+                    <mat-option [value]="item.id">
+                      {{ item.name }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
+            <!-- Caso de fecha única se utiliza el componente date-input-->
+            @case ('date') {
+              <app-date-input
+                [formControlName]="filter.fieldName"
+                [label]="filter.label"
+                [placeholder]="filter.label"
+                [isDisabled]="false"
+                [appSkeleton]="isLoadingSig()"
+              ></app-date-input>
+            }
+            <!-- Caso de rango de fechas se utiliza el component date-range -->
+            @case ('dateRangeComponent') {
+              @if (getFormGroupByName(filter.fieldName); as dateRangeFormGroup) {
+                <app-date-range
+                  [dateRangeFormGroup]="dateRangeFormGroup"
+                  [label]="filter.label"
+                  [appSkeleton]="isLoadingSig()"
+                ></app-date-range>
+              }
+            }
+          }
+        }
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="isReadyToApply()">
+          Aplicar Filtro
+        </button>
+        <button mat-button color="primary" (click)="clearFilter()" [disabled]="!hasActiveFilters()">
+          Limpiar Filtro
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

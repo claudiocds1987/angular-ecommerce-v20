@@ -1,0 +1,12 @@
+.feedback-image {
+    width: auto;
+    height: auto;
+    object-fit: contain; // Asegura que la imagen se ajuste sin distorsionarse
+    margin-bottom: 15px;
+}
+
+.feedback-message {
+    font-size: 1.2rem;
+    color: #757575;
+    font-weight: 500;
+}
