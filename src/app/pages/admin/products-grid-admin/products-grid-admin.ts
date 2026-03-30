@@ -7,6 +7,7 @@ import { ExcelService } from '../../../shared/services/excel-service';
 
 import { environment } from '../../../../environments/environment';
 import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
+import { ProductAdminStore } from '../state/product-admin.store';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -17,17 +18,14 @@ import { ProductFilterData } from '../../../shared/models/product-filter-data.mo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsGridAdmin implements OnInit {
-  // Inyeccón del Store product.store que creado con NgRX Signals
-  readonly store = inject(ProductStore);
+  // Inyeccón del Store product-admin.store que creado con NgRX Signals
+  readonly productAdminStore = inject(ProductAdminStore);
   importErrors = signal<string[]>([]);
   apiURL = `${environment.serverUrl}/api/import/products`;
 
   private _excelService = inject(ExcelService);
 
   ngOnInit() {
-    //this.store.searchProducts({ query: '', page: 1, size: 50 });
-    // Carga inicial de productos del store para mostrar en la grilla
-    //this.store.loadAllProducts();
     this._loadData();
   }
 
@@ -51,17 +49,21 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _loadData(query = '') {
-    this.store.searchProducts({
-      filters: {
-        search: query,
-        category: '',
-        minPrice: null,
-        maxPrice: null,
-        sortBy: 'title',
-        order: 'asc',
-      } as ProductFilterData,
-      page: 1,
-      size: 30,
+    // Para GraphQL, "page 1" es simplemente no enviar el parámetro 'after'
+    this.productAdminStore.loadProducts({
+      search: query,
+      first: 25, // 'First' es la cantidad de registros a cargar por pagina
+      // No enviamos 'after' para que siempre resetee a la primera página en cada búsqueda
     });
+  }
+
+  loadMore() {
+    if (this.productAdminStore.hasNextPage()) {
+      this.productAdminStore.loadProducts({
+        search: this.productAdminStore.filterQuery(),
+        first: 30,
+        after: this.productAdminStore.endCursor(), // Aquí es donde GraphQL sabe dónde quedó
+      });
+    }
   }
 }

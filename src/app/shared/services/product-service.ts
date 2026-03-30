@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Product } from '../models/product.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 //import { DummyResponsePaginated } from '../models/dummy-response.model';
