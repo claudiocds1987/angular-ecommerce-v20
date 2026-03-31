@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { ProductStore } from '../state/product.store';
+
 import { CommonModule } from '@angular/common';
 import { ExcelUpload } from '../../../shared/components/excel-upload/excel-upload';
 import { ImportResultResponse } from '../../../shared/models/import-result-response.model';
 import { ExcelService } from '../../../shared/services/excel-service';
 
 import { environment } from '../../../../environments/environment';
-import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
+
 import { ProductAdminStore } from '../state/product-admin.store';
 
 @Component({
