@@ -65,7 +65,13 @@ export class ProductService {
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
     if (filters.order) params = params.set('order', filters.order);
 
-    return this._http.get<ProductPaginated>(`${this._apiURL}`, { params });
+    return this._http.get<ProductPaginated>(`${this._apiURL}`, { params }).pipe(
+      map((res) => ({
+        ...res,
+        // Mapeamos cada producto dentro del array 'items' para calcular el finalPrice
+        items: res.items.map((p) => this._mapToProduct(p)),
+      })),
+    );
   }
 
   getProducts(): Observable<Product[]> {
@@ -93,100 +99,3 @@ export class ProductService {
     return this._http.delete(`${this._apiURL}/${id}`);
   }
 }
-
-/* import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { Product } from '../models/product.model';
-import { HttpClient } from '@angular/common/http';
-import { DummyProduct, DummyResponsePaginated } from '../models/dummy-response.model';
-import { environment } from '../../../environments/environment';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class ProductService {
-  private _http = inject(HttpClient);
-  //private _apiUrl = 'https://dummyjson.com/products';
-  private _apiURL = `${environment.serverUrl}/api/products`;
-
-  // Obtener productos paginados
-  getProductsPaginated(limit: number, skip: number) {
-    return this._http
-      .get<DummyResponsePaginated>(`${this._apiURL}?limit=${limit}&skip=${skip}`)
-      .pipe(
-        map((res) => {
-          // Transformamos cada producto de la API al modelo Product
-          const mappedProducts: Product[] = res.products.map((p) => ({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            category: p.category,
-            stock: p.stock,
-            discountPercentage: p.discountPercentage,
-            rating: p.rating,
-            image: p.thumbnail,
-          }));
-
-          return {
-            products: mappedProducts,
-            total: res.total,
-          };
-        }),
-      );
-  }
-
-  getFilteredProducts(limit: number, skip: number, query = '', category = '') {
-    let url = `${this._apiURL}?limit=${limit}&skip=${skip}`;
-
-    if (category) {
-      // Prioridad a la categoría sobre la búsqueda (limitación de DummyJSON)
-      url = `${this._apiURL}/category/${category}?limit=${limit}&skip=${skip}`;
-    } else if (query) {
-      url = `${this._apiURL}/search?q=${query}&limit=${limit}&skip=${skip}`;
-    }
-
-    return this._http.get<DummyResponsePaginated>(url).pipe(
-      map((res) => ({
-        total: res.total,
-        products: res.products.map((p) => ({
-          id: p.id,
-          title: p.title,
-          price: p.price,
-          category: p.category,
-          stock: p.stock,
-          discountPercentage: p.discountPercentage,
-          rating: p.rating,
-          image: p.thumbnail,
-        })),
-      })),
-    );
-  }
-
-  // 1. Obtener todos los productos
-  getProducts(): Observable<Product[]> {
-    return this._http.get<Product[]>(`${this._apiURL}?limit=194&skip=0`);
-  }
-
-  getProductById(id: number): Observable<DummyProduct> {
-    return this._http.get<DummyProduct>(`${this._apiURL}/${id}`);
-  }
-
-  createProduct(product: Product): Observable<Product> {
-    return this._http.post<Product>(`${this._apiURL}/add`, product);
-  }
-
-  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
-    return this._http.put<Product>(`${this._apiURL}/${id}`, product);
-  }
-
-  // que no haga delete de de baja
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  deleteProduct(id: number): Observable<any> {
-    return this._http.delete(`${this._apiURL}/${id}`);
-  }
-
-  getProductsCategoryList(): Observable<string[]> {
-    return this._http.get<string[]>(`${this._apiURL}/category-list`);
-  }
-}
- */

@@ -14,6 +14,8 @@ import { Product } from '../../shared/models/product.model';
 import { CartService } from '../../shared/services/cart-service';
 import { ToastService } from '../../shared/services/toast-service';
 import { ProductStore } from '../admin/state/product.store';
+import { BrandStore } from '../admin/state/brand.store';
+import { CategoryStore } from '../admin/state/category.store';
 
 @Component({
   selector: 'app-product-detail',
@@ -25,6 +27,8 @@ import { ProductStore } from '../admin/state/product.store';
 })
 export class ProductDetail implements OnInit {
   readonly productStore = inject(ProductStore);
+  readonly brandStore = inject(BrandStore);
+  readonly categoryStore = inject(CategoryStore);
   product = signal<Product | undefined>(undefined);
   safeThumbnail = signal<SafeResourceUrl>('');
   safeGallery = signal<SafeResourceUrl[]>([]);
@@ -32,14 +36,16 @@ export class ProductDetail implements OnInit {
 
   brandName = computed(() => {
     const id = this.product()?.brandId;
-    // Si el ID existe, lo busca en el mapa del Store, si no, muestra 'Cargando...'
-    return id ? this.productStore.brandMap()[id] : 'Sin Marca';
+    const brandObj = id ? this.brandStore.brandMap()[id] : null;
+    // Extraemos solo el name del objeto encontrado
+    return brandObj ? brandObj.name : 'Sin Marca';
   });
 
-  // Selector reactivo para la categoría
   categoryName = computed(() => {
     const id = this.product()?.categoryId;
-    return id ? this.productStore.categoryMap()[id] : 'Sin Categoría';
+    const catObj = id ? this.categoryStore.categoryMap()[id] : null;
+    // Extraemos solo el name del objeto encontrado
+    return catObj ? catObj.name : 'Sin Categoría';
   });
 
   // Inyectamos la data (que es un Product completo o solo el ID)
@@ -58,6 +64,13 @@ export class ProductDetail implements OnInit {
       const productId = typeof this._data === 'object' ? this._data.id : this._data;
       this._getProduct(productId);
     }
+    // CARGA BAJO DEMANDA (Lazy Loading):
+    // Verificamos si los catálogos ya existen en memoria antes de pedirlos.
+    // Esto optimiza el rendimiento al evitar peticiones HTTP duplicadas al servidor
+    // cada vez que el usuario entra a este componente, especialmente útil si
+    // las listas de marcas y categorías llegan a tener cientos de registros.
+    if (this.brandStore.items().length === 0) this.brandStore.loadAll();
+    if (this.categoryStore.items().length === 0) this.categoryStore.loadAll();
   }
 
   closeModal(): void {
@@ -114,7 +127,7 @@ export class ProductDetail implements OnInit {
 
   private _updateSeo(p: Product) {
     // Usamos ?. por seguridad en caso de que brand sea opcional
-    this._titleService.setTitle(`${p.title} ${p.brandId ? '| ' + p.brandId : ''}`);
+    this._titleService.setTitle(`${p.title} | ${this.brandName()}`);
 
     if (p.description) {
       this._metaService.updateTag({ name: 'description', content: p.description });

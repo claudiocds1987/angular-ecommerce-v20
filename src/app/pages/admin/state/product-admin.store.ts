@@ -32,7 +32,7 @@ export const ProductAdminStore = signalStore(
       // recibir filtros y el cursor
       loadProducts: rxMethod<{ search?: string; first: number; after?: string }>(
         pipe(
-          // Opcional: puedes agregar debounceTime aquí si quieres que el store maneje la espera de escritura
+          // agregar debounceTime aquí para que el store maneje la espera de escritura
           tap(() => patchState(state, { loading: true })),
           switchMap(({ search, first, after }) =>
             graphqlService.getProducts(first, after).pipe(
@@ -75,7 +75,7 @@ export const ProductAdminStore = signalStore(
                   totalItems: state.totalItems() - 1,
                   loading: false,
                 });
-
+                // agregar toast de éxito
                 console.log('Producto desactivado con éxito');
               }),
               catchError(() => {

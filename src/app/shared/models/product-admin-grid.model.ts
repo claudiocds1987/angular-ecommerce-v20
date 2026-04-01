@@ -2,6 +2,8 @@ export interface ProductAdminGrid {
   id: string | number;
   title: string;
   price: number;
+  discountPercentage: number;
+  finalPrice: number;
   sku: string;
   stock: number;
   thumbnail: string;
@@ -9,6 +11,4 @@ export interface ProductAdminGrid {
   categoryName: string;
   brandId: number | string;
   brandName: string;
-  discountPercentage: number;
-  finalPrice: number;
 }

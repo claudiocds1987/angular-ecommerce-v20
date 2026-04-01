@@ -59,7 +59,7 @@
         <header class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-blue-600 text-xs font-bold uppercase tracking-widest">
-              {{ productStore.brandMap()[product()?.brandId!] || 'Cargando marca...' }}
+              {{ brandName() }}
             </span>
             <span class="text-gray-400 text-xs font-mono">SKU: {{ product()?.sku }}</span>
           </div>
@@ -69,7 +69,7 @@
           </h1>
 
           <p class="text-gray-400 text-xs font-bold uppercase tracking-tighter">
-            Categoría: {{ productStore.categoryMap()[product()?.categoryId!] || 'General' }}
+            Categoría: {{ categoryName() }}
           </p>
 
           <div class="flex items-center space-x-2 mt-2">
