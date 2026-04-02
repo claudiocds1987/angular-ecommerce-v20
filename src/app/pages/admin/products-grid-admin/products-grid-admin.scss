@@ -1,0 +1,52 @@
+.wrapper {
+  height: calc(100vh - 100px);
+  background-color: #fafbfc;
+}
+
+// Elemento: Contenedor de contenido (Grid + Filtro)
+.wrapper__content-area {
+  display: grid;
+  grid-template-columns: 1fr 260px; // 1fr para componente Grilla | 260px para componente Filtro
+  gap: 16px;
+  width: 100%;
+  height: 100%; // Ocupa todo el alto del contenedor wrapper
+  overflow: hidden; // Evita el scroll externo de esta columna
+}
+
+// --filter-collapsed Modificador: Estado colapsado
+.wrapper__content-area--filter-collapsed {
+  grid-template-columns: 1fr 50px; // Al colapsar el filtro, 1fr para componente Grilla | 50px para componente Filtro
+}
+
+// Elemento: Área de la Grilla (Contiene breadcrumb, alert, grid)
+.wrapper__grid-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden; // Evita desbordamiento
+}
+
+// Elementos de espaciado (aplicados a los componentes)
+.wrapper__breadcrumb-spacing {
+  margin-top: 20px;
+}
+.wrapper__alert-spacing {
+  margin-bottom: 16px;
+}
+
+// Estilo para que el grid ocupe el espacio restante
+.wrapper__grid-component {
+  flex: 1;
+  min-height: 0;
+}
+
+// Elemento: Contenedor del Filtro
+.wrapper__filter-container {
+  width: 95%; // no uso 100% para que se note el efecto box-shadow flotante
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 99.7%; // no uso 100% para que se note el efecto box-shadow flotante
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}

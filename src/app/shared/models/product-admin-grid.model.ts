@@ -11,4 +11,5 @@ export interface ProductAdminGrid {
   categoryName: string;
   brandId: number | string;
   brandName: string;
+  isActive: boolean;
 }

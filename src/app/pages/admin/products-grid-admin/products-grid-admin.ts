@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { ExcelUpload } from '../../../shared/components/excel-upload/excel-upload';
@@ -20,11 +28,19 @@ import { GridFilterConfig } from '../../../shared/models/grid-filter-configurati
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Chip } from '../../../shared/components/chips/chips.component';
 import { ProductCategory } from '../../../shared/models/product-category.model';
+import { GridComponent } from '../../../shared/components/grid/grid.component';
+import { GridFilterComponent } from '../../../shared/components/grid/grid-filter/grid-filter.component';
+import { PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { SpinnerService } from '../../../shared/services/spinner-service';
+import { ProductService } from '../../../shared/services/product-service';
+import { map } from 'rxjs';
+import { ExportService } from '../../../shared/services/export-service';
 
 @Component({
   selector: 'app-products-grid-admin',
   standalone: true,
-  imports: [CommonModule, ExcelUpload], // CommonModule para usar @if, @for, etc.
+  imports: [CommonModule, ExcelUpload, GridComponent, GridFilterComponent], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,18 +51,262 @@ export class ProductsGridAdmin implements OnInit {
   gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
+  isFilterCollapsedSig = signal<boolean>(false);
   // Inyeccón del Store product-admin.store que creado con NgRX Signals
   readonly productAdminStore = inject(ProductAdminStore);
   importErrors = signal<string[]>([]);
   apiURL = `${environment.serverUrl}/api/import/products`;
 
   private _productFilterParams: ProductFilterParams = {};
-  private _categories: ProductCategory[] = [];
+  //private _categories: ProductCategory[] = [];
 
   private _excelService = inject(ExcelService);
+  private _spinnerService = inject(SpinnerService);
+  private _productServices = inject(ProductService);
+  private _exportService = inject(ExportService);
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
+  // Mapeo reactivo: Transforma la data del Store al formato de las columnas de tu Grid
+  mappedProductsSig = computed<GridData[]>(() => {
+    const products = this.productAdminStore.items();
+
+    return products.map((product) => {
+      // Aseguramos que el ID sea un número para que coincida con el tipado del componente
+      const productId = Number(product.id);
+
+      return {
+        id: productId,
+        imgUrl: product.thumbnail,
+        titulo: product.title,
+        precio: product.price,
+        descuento: product.discountPercentage,
+        'precio/final': product.finalPrice,
+        sku: product.sku,
+        stock: product.stock,
+        categoria: product.categoryName || 'N/A',
+        marca: product.brandName || 'N/A',
+        active: product.isActive,
+        elipsisActions: [
+          {
+            label: 'Editar',
+            icon: 'edit',
+            // Cambiamos el parámetro a number para que no proteste el ElipsisAction
+            action: (id: number) => console.log('Edit', id),
+          },
+          {
+            label: 'Eliminar',
+            icon: 'delete',
+            action: (id: number) => console.log('Delete', id),
+          },
+        ],
+      } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
+    });
+  });
+
+  // Paginación reactiva: Mezcla la config base con el total del store
+  gridConfigWithTotalSig = computed(() => {
+    const config = this.gridConfigSig();
+    if (!config.paginator) return config;
+    return {
+      ...config,
+      paginator: {
+        ...config.paginator,
+        totalCount: this.productAdminStore.totalItems(),
+      },
+    };
+  });
+
+  constructor() {
+    this.gridConfigSig.set(this._setGridConfiguration());
+    this._initializeGridFilter();
+  }
 
   ngOnInit() {
     this._loadData();
+  }
+
+  onFilterCollapseChange(isCollapsed: boolean): void {
+    this.isFilterCollapsedSig.set(isCollapsed);
+  }
+
+  onGridPageChange(event: PageEvent): void {
+    const currentPageIndex = Number(this.gridConfigSig().paginator?.pageIndex || 0);
+    const totalPages = Math.ceil(event.length / event.pageSize);
+
+    const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
+    const isForward = event.pageIndex > currentPageIndex;
+    const isFirstPage = event.pageIndex === 0;
+
+    if (isLastPage) {
+      // IR AL FINAL
+      this.productAdminStore.loadProducts({
+        last: event.pageSize,
+      });
+    } else if (isFirstPage) {
+      // IR AL INICIO
+      this._loadData();
+    } else if (isForward) {
+      // IR ADELANTE
+      this.productAdminStore.loadProducts({
+        first: event.pageSize,
+        after: this.productAdminStore.endCursor(),
+      });
+    } else {
+      // IR ATRÁS (Botón <)
+      // Pedimos los 25 que están ANTES del primer elemento actual
+      this.productAdminStore.loadProducts({
+        last: event.pageSize,
+        before: this.productAdminStore.startCursor(),
+      });
+    }
+
+    this.gridConfigSig.update((config) => ({
+      ...config,
+      paginator: {
+        ...config.paginator!,
+        pageIndex: event.pageIndex,
+        pageSize: event.pageSize,
+      },
+    }));
+  }
+
+  applyFilter(): void {
+    // Lógica de filtros...
+    this._loadData();
+  }
+
+  /*   applyFilter(filterValues: Record<string, unknown>): void {
+    this._productFilterParams = {};
+    this._setProductFilterParameters();
+    const isFilterClear = Object.values(filterValues).every(
+      (value): boolean =>
+        value === null ||
+        value === '' ||
+        value === 'all' ||
+        (typeof value === 'object' &&
+          value !== null &&
+          Object.values(value).every((val): boolean => val === null || val === '')),
+    );
+    if (isFilterClear) {
+      this._createChips(this._defaultChips);
+      this._initializeGridFilter();
+    } else {
+      this._createChips(filterValues);
+      const filterParamsForBackend =
+                this._mapToProductFilterParams(filterValues);
+            Object.assign(this._productFilterParams, filterParamsForBackend);
+   
+    }
+    if (this.gridConfigSig().paginator) {
+      this.gridConfigSig().paginator.pageIndex = 0;
+    }
+    this._loadData();
+  } */
+
+  onGridSortChange(sortEvent: Sort): void {
+    this._updateGridConfigOnSortChange(sortEvent);
+    this._loadData();
+  }
+
+  private _updateGridConfigOnSortChange(sortEvent: Sort): void {
+    const basePaginationConfig = this.gridConfigSig().paginator || this._defaultPaginatorOptions;
+    // cambio de referencia de un objeto signal
+    this.gridConfigSig.update(
+      (currentValue): GridConfiguration => ({
+        ...currentValue,
+        OrderBy: {
+          columnName: sortEvent.active,
+          direction: sortEvent.direction,
+        },
+        paginator: {
+          ...basePaginationConfig,
+          pageIndex: 0,
+        },
+      }),
+    );
+  }
+
+  private _mapToExcelRows(products: Product[]): any[] {
+    return products.map((product: Product): any => {
+      return {
+        id: product.id,
+        titulo: product.title,
+        precio: product.price,
+        descuento: product.discountPercentage,
+        precioFinal: product.finalPrice,
+        sku: product.sku,
+        stock: product.stock,
+        categoria: product.categoryId,
+        marca: product.brandId,
+        estado:
+          typeof product.isActive === 'boolean' ? (product.isActive ? 'Activo' : 'Inactivo') : null,
+      };
+    });
+  }
+
+  onExportToExcel(): void {
+    /* this._spinnerService.show();
+    const filterValues = this.gridFilterFormSig().value;
+    const exportParams = { ...filterValues };
+    if (this._productFilterParams.sortColumn) {
+      exportParams.sortColumn = this._productFilterParams.sortColumn;
+    }
+    if (this._productFilterParams.sortOrder) {
+      exportParams.sortOrder = this._productFilterParams.sortOrder;
+    }
+
+    this._productServices
+      .getFilteredProducts(exportParams)
+      .pipe(map((products: Product[]): any => this._mapToExcelRows(products)))
+      .subscribe({
+        next: (processedData: any[]): void => {
+          const fileName = 'Productos.xlsx';
+          // hago simular tiempo de descarga con setTimeout porque json-server responde muy rapido por ser local
+          setTimeout((): void => {
+            this._exportService.exportToExcel(processedData, fileName);
+            this._spinnerService.hide();
+            this._cdr.markForCheck();
+          }, 1500);
+        },
+        error: (): void => {
+          this._spinnerService.hide();
+          this._cdr.markForCheck();
+           this._alertService.showDanger(
+                        "Error al descargar el archivo de Excel",
+                    );
+        },
+      }); */
+  }
+
+  onRemoveChip(chip: Chip): void {
+    /* const fieldName = chip.key;
+        const resetStrategies = {
+            position: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
+            country: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
+            active: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
+            gender: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
+            birthDateRange: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue({
+                    startDate: null,
+                    endDate: null,
+                }),
+            default: (): void =>
+                this.gridFilterFormSig().get(fieldName)?.patchValue(null),
+        };
+        const resetAction =
+            resetStrategies[fieldName as keyof typeof resetStrategies] ||
+            resetStrategies.default;
+        resetAction();
+
+        this.applyFilter(this.gridFilterFormSig().value); */
+  }
+
+  private _createChips(filterValues: Record<string, unknown>): void {
+    //this.chipsSig.set(this._mapToChipsDescription(filterValues));
   }
 
   onSearch(event: Event) {
@@ -101,7 +361,7 @@ export class ProductsGridAdmin implements OnInit {
     isServerSide: true,
   };
 
-  private _setEmployeeFilterParameters(): void {
+  private _setProductFilterParameters(): void {
     this._productFilterParams = {};
     this._productFilterParams.page = 1;
     this._productFilterParams.limit = 25;
@@ -110,86 +370,39 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _setGridConfiguration(): GridConfiguration {
-    const config = createDefaultGridConfiguration({
+    return createDefaultGridConfiguration({
       columns: [
-        {
-          name: 'id',
-          width: '100px',
-          isSortable: true,
-        },
-        {
-          name: 'imgUrl',
-          width: '100px',
-          type: 'img',
-          isSortable: false,
-          hasHeader: false,
-        },
-        {
-          name: 'titulo',
-          width: '200px' /*headerTooltip: "nombre completo"*/,
-        },
-        {
-          name: 'precio',
-          width: '200px' /*style: "font-weight: bold;"*/,
-        },
-        {
-          name: 'descuento',
-          width: '100px' /*style: "font-weight: bold;"*/,
-        },
-        {
-          name: 'precio/final',
-          width: '100px' /*style: "font-weight: bold;"*/,
-        },
+        { name: 'imgUrl', width: '100px', type: 'img', isSortable: false, hasHeader: false },
+        { name: 'id', width: '100px', isSortable: true },
+        { name: 'titulo', width: '200px' },
+        { name: 'precio', width: '120px' },
+        { name: 'descuento', width: '100px' },
+        { name: 'precio/final', width: '120px' },
         { name: 'sku' },
-        { name: 'stock', isSortable: false }, // false por que ordenaria por id no alfabeticamente
-        { name: 'categoria', isSortable: false }, // false por que ordenaria por id no alfabeticamente
-        { name: 'marca', isSortable: false }, // false por que ordenaria por id no alfabeticamente
-        {
-          name: 'active',
-          //headerIcon: "/assets/person.svg", si el nombre de la columna aparece cortado darle mas width
-          class: 'status-circle',
-          align: 'center',
-          width: '75px',
-        },
-
+        { name: 'stock', isSortable: false },
+        { name: 'categoria', isSortable: false },
+        { name: 'marca', isSortable: false },
+        { name: 'active', class: 'status-circle', align: 'center', width: '75px' },
         {
           name: 'elipsisActions',
           width: '100px',
           align: 'center',
-          isSortable: false,
           type: 'elipsis',
           hasHeader: false,
         },
       ],
       paginator: {
-        pageSize: this._productFilterParams.limit || 25,
+        pageSize: 25,
         pageSizeOptions: [25, 50],
         totalCount: 0,
         pageIndex: 0,
         isServerSide: true,
       },
       hasSorting: { isServerSide: true },
-      OrderBy: {
-        columnName: this._productFilterParams.sortColumn || 'id',
-        direction: (this._productFilterParams.sortOrder || 'asc') as 'asc' | 'desc',
-      },
+      OrderBy: { columnName: 'id', direction: 'asc' },
       hasChips: true,
-      actionButtons: [
-        {
-          class: 'primary-button',
-          icon: 'assets/person.svg',
-          text: 'Agregar',
-          //action: (): void => this.onCreateEmployee(),
-        },
-        {
-          class: 'download-button',
-          type: 'download',
-          icon: 'assets/download.svg',
-          tooltip: 'Descargar excel',
-        },
-      ],
+      actionButtons: [{ class: 'primary-button', icon: 'assets/person.svg', text: 'Agregar' }],
     });
-    return config;
   }
 
   private _initializeGridFilter(): void {
@@ -239,14 +452,6 @@ export class ProductsGridAdmin implements OnInit {
         case 'select':
           // Inicializa campos de selección con "all" (o null/'' si aplica)
           formControls[filter.fieldName] = new FormControl('all');
-          break;
-
-        case 'dateRangeComponent':
-          // Inicializa grupos de rango de fechas
-          formControls[filter.fieldName] = new FormGroup({
-            startDate: new FormControl(null),
-            endDate: new FormControl(null),
-          });
           break;
       }
     });

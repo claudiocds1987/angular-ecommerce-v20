@@ -14,6 +14,7 @@ export const ProductAdminStore = signalStore(
     items: [] as ProductAdminGrid[],
     totalItems: 0,
     hasNextPage: false,
+    startCursor: '',
     endCursor: '',
     loading: false,
     filterQuery: '',
@@ -30,22 +31,26 @@ export const ProductAdminStore = signalStore(
       productService = inject(ProductService),
     ) => ({
       // recibir filtros y el cursor
-      loadProducts: rxMethod<{ search?: string; first: number; after?: string }>(
+      loadProducts: rxMethod<{
+        search?: string;
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+      }>(
         pipe(
-          // agregar debounceTime aquí para que el store maneje la espera de escritura
           tap(() => patchState(state, { loading: true })),
-          switchMap(({ search, first, after }) =>
-            graphqlService.getProducts(first, after).pipe(
+          switchMap((params) =>
+            graphqlService.getProducts(params).pipe(
               tap((res) => {
                 patchState(state, {
-                  // Si no hay 'after', es una búsqueda nueva o página 1 -> reemplazamos
-                  // Si hay 'after', es scroll -> concatenamos
-                  items: after ? [...state.items(), ...res.items] : res.items,
+                  items: res.items,
                   totalItems: res.totalItems,
                   hasNextPage: res.hasNextPage,
+                  startCursor: res.startCursor,
                   endCursor: res.endCursor,
                   loading: false,
-                  filterQuery: search || '',
+                  filterQuery: params.search || state.filterQuery(),
                 });
               }),
               catchError(() => {

@@ -18,6 +18,7 @@ export interface GQLProductNode {
   discountPercentage: number;
   category: GQLCategory | null;
   brand: GQLBrand | null;
+  isActive: boolean;
 }
 
 export interface GraphQLProductResponse {
@@ -25,6 +26,7 @@ export interface GraphQLProductResponse {
     totalCount: number;
     pageInfo: {
       hasNextPage: boolean;
+      startCursor: string | null;
       endCursor: string | null;
     };
     nodes: GQLProductNode[];

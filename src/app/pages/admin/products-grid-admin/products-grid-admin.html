@@ -1,4 +1,4 @@
-<div class="p-6 bg-gray-50 min-h-screen">
+<!-- <div class="p-6 bg-gray-50 min-h-screen">
   <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
       <h1 class="text-2xl font-bold text-gray-800">Panel de Inventario (Admin)</h1>
@@ -151,116 +151,41 @@
     }
   </div>
 </div>
-<!-- <div class="p-6 bg-gray-50 min-h-screen">
-  <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800">Panel de Inventario</h1>
-      <p class="text-sm text-gray-500">Gestionando {{ store.productsCount() }} artículos totales</p>
+ -->
+<div class="wrapper">
+  <div
+    class="wrapper__content-area"
+    [class.wrapper__content-area--filter-collapsed]="isFilterCollapsedSig()"
+  >
+    <div class="wrapper__grid-area">
+      <!-- <app-breadcrumb
+                class="wrapper__breadcrumb-spacing"
+            ></app-breadcrumb>
+            <app-alert class="wrapper__alert-spacing"></app-alert> -->
+
+      <app-grid
+        class="wrapper__grid-component"
+        [gridConfigSig]="gridConfigWithTotalSig()"
+        [gridDataSig]="mappedProductsSig()"
+        [isLoadingSig]="productAdminStore.loading()"
+        [chipsSig]="chipsSig()"
+        (pageChange)="onGridPageChange($event)"
+        (sortChange)="onGridSortChange($event)"
+        (exportExcel)="onExportToExcel()"
+        (chipRemoved)="onRemoveChip($event)"
+      ></app-grid>
     </div>
 
-    <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-      <div class="relative w-full md:w-80">
-        <input
-          type="text"
-          (input)="onSearch($event)"
-          [value]="store.filterQuery()"
-          placeholder="Buscar producto..."
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-white"
-        />
-        <span class="absolute left-3 top-2.5 text-gray-400"> 🔍 </span>
-      </div>
-      <app-excel-upload
-        [endpointUrl]="apiURL"
-        (uploadSuccess)="handleImportSuccess($event)"
-        (uploadError)="handleImportErrors($event)"
-      >
-      </app-excel-upload>
+    <div class="wrapper__filter-container">
+      <ng-container>
+        <app-grid-filter
+          [configSig]="gridFilterConfigSig()"
+          [filterFormSig]="gridFilterFormSig()"
+          [isLoadingSig]="productAdminStore.loading()"
+          (emitFilterApplied)="applyFilter()"
+          (isCollapsedChange)="onFilterCollapseChange($event)"
+        ></app-grid-filter>
+      </ng-container>
     </div>
   </div>
-
-  @if (importErrors().length > 0) {
-    <div
-      class="mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between"
-    >
-      <div>
-        <h3 class="text-sm font-bold text-red-800">
-          Carga fallida: {{ importErrors().length }} errores detectados.
-        </h3>
-      </div>
-
-      <button
-        (click)="onDownloadErrors()"
-        class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md hover:bg-red-700 transition-all"
-      >
-        Descargar Reporte
-      </button>
-    </div>
-  }
-
-  @if (store.loading()) {
-    <div class="flex justify-center items-center h-64">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-    </div>
-  } @else {
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-      <table class="w-full text-left border-collapse">
-        <thead class="bg-gray-100 border-b border-gray-200">
-          <tr>
-            <th class="px-6 py-4 text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Producto
-            </th>
-            <th class="px-6 py-4 text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Precio
-            </th>
-            <th
-              class="px-6 py-4 text-sm font-semibold text-gray-700 uppercase tracking-wider text-right"
-            >
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          @for (product of store.filteredProducts(); track product.id) {
-            <tr class="hover:bg-blue-50/30 transition-colors group">
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <img
-                    [src]="product.thumbnail"
-                    class="w-10 h-10 rounded-md object-cover border bg-gray-50"
-                    alt=""
-                  />
-                  <span
-                    class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors"
-                    >{{ product.title }}</span
-                  >
-                </div>
-              </td>
-              <td class="px-6 py-4 text-gray-600 font-mono">
-                ${{ product.price | number: '1.2-2' }}
-              </td>
-              <td class="px-6 py-4 text-right">
-                <button
-                  (click)="store.removeProduct(product.id)"
-                  class="text-red-400 hover:text-red-600 font-medium px-3 py-1 rounded-md hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <i class="fa-solid fa-trash-can mr-1"></i>
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="3" class="px-6 py-20 text-center text-gray-500 italic">
-                <div class="flex flex-col items-center gap-2">
-                  <span class="text-4xl text-gray-300">📦</span>
-                  <p>No se encontraron productos que coincidan con "{{ store.filterQuery() }}"</p>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
 </div>
- -->
