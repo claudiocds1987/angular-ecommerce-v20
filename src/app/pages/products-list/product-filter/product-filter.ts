@@ -51,8 +51,8 @@ export class ProductFilter implements OnInit {
       search: '',
       minPrice: null,
       maxPrice: null,
-      category: '',
-      sortBy: 'title',
+      categoryId: '',
+      sortBy: 'rating',
       order: 'asc',
     });
     this.applyFilters();
@@ -63,8 +63,8 @@ export class ProductFilter implements OnInit {
       search: [''],
       minPrice: [null],
       maxPrice: [null],
-      category: [''],
-      sortBy: ['title'],
+      categoryId: [''],
+      sortBy: ['rating'],
       order: ['asc'],
     });
   }

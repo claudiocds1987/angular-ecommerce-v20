@@ -2,7 +2,8 @@ export interface ProductFilterData {
   search: string;
   minPrice: number | null;
   maxPrice: number | null;
-  category: string;
+  categoryId: string;
+  brandId: string;
   sortBy: string;
   order: string;
 }

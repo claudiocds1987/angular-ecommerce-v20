@@ -72,8 +72,9 @@ export class ProductsList {
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       )
       .subscribe(({ filters, page }) => {
+        console.log('Filters or page changed:', filters, 'Page:', page);
         this.productStore.searchProducts({
-          // ⬇️ Si filters es null o undefined, mandamos un objeto vacío con el tipo correcto
+          // Si filters es null o undefined, mandamos un objeto vacío con el tipo correcto
           filters: filters ?? ({} as ProductFilterData),
           page: page,
           size: this.pageSize,
@@ -82,6 +83,7 @@ export class ProductsList {
   }
 
   handleFilter(filters: ProductFilterData) {
+    console.log('Filters applied:', filters);
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 

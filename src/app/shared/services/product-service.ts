@@ -54,12 +54,11 @@ export class ProductService {
     size: number,
     filters: ProductFilterData,
   ): Observable<ProductPaginated> {
-    let params = new HttpParams()
-      .set('page', page.toString()) // Cambia a 'pageNo' si tu C# espera ese nombre
-      .set('size', size.toString());
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (filters.search) params = params.set('search', filters.search);
-    if (filters.category) params = params.set('categoryId', filters.category);
+    if (filters.categoryId) params = params.set('categoryId', filters.categoryId);
+    if (filters.brandId) params = params.set('brandId', filters.brandId);
     if (filters.minPrice) params = params.set('minPrice', filters.minPrice.toString());
     if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
