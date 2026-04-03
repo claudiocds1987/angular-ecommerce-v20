@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  effect,
   inject,
   OnInit,
   signal,
@@ -36,6 +37,9 @@ import { SpinnerService } from '../../../shared/services/spinner-service';
 import { ProductService } from '../../../shared/services/product-service';
 import { map } from 'rxjs';
 import { ExportService } from '../../../shared/services/export-service';
+import { CategoryStore } from '../state/category.store';
+import { BrandStore } from '../state/brand.store';
+import { ProductBrand } from '../../../shared/models/product-brand.model';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -54,6 +58,8 @@ export class ProductsGridAdmin implements OnInit {
   isFilterCollapsedSig = signal<boolean>(false);
   // Inyeccón del Store product-admin.store que creado con NgRX Signals
   readonly productAdminStore = inject(ProductAdminStore);
+  readonly categoryStore = inject(CategoryStore);
+  readonly brandStore = inject(BrandStore);
   importErrors = signal<string[]>([]);
   apiURL = `${environment.serverUrl}/api/import/products`;
 
@@ -118,11 +124,37 @@ export class ProductsGridAdmin implements OnInit {
 
   constructor() {
     this.gridConfigSig.set(this._setGridConfiguration());
-    this._initializeGridFilter();
+    // 1. Creamos el esqueleto del formulario UNA SOLA VEZ
+    this._createFilterGridForm();
+
+    // 2. Este effect SOLO actualiza los selectItems, NO toca el formulario
+    effect(
+      () => {
+        const categories = this.categoryStore.items();
+        const brands = this.brandStore.items();
+
+        this._initializeGridFilter(categories, brands);
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  private _createFilterGridForm() {
+    const controls: any = {
+      id: new FormControl(''),
+      title: new FormControl(''),
+      categoryId: new FormControl('all'),
+      brandId: new FormControl('all'),
+      isActive: new FormControl('all'),
+    };
+    this.gridFilterFormSig.set(new FormGroup(controls));
   }
 
   ngOnInit() {
     this._loadData();
+    // Disparamos las cargas (esto hará que el effect de arriba se ejecute al terminar)
+    this.categoryStore.loadAll();
+    this.brandStore.loadAll();
   }
 
   onFilterCollapseChange(isCollapsed: boolean): void {
@@ -459,58 +491,40 @@ export class ProductsGridAdmin implements OnInit {
     });
   }
 
-  private _initializeGridFilter(): void {
-    // 1. DEFINICIÓN DE LA CONFIGURACIÓN PARA COMPONENTE GRID-FILTER
+  private _initializeGridFilter(categories: ProductCategory[], brands: ProductBrand[]): void {
     const config: GridFilterConfig[] = [
       { fieldName: 'id', fieldType: 'text', label: 'Id' },
       { fieldName: 'title', fieldType: 'text', label: 'Título' },
-      { fieldName: 'category', fieldType: 'text', label: 'Categoría' },
-      { fieldName: 'brand', fieldType: 'text', label: 'Marca' },
       {
         fieldName: 'categoryId',
         fieldType: 'select',
         label: 'Categoría',
-        //selectItems: this._genders,
+        selectItems: [
+          { id: 'all', name: 'Todas' },
+          ...categories.map((c) => ({ id: c.id, name: c.name })),
+        ],
       },
       {
         fieldName: 'brandId',
         fieldType: 'select',
         label: 'Marca',
-        //selectItems: this._brands,
+        selectItems: [
+          { id: 'all', name: 'Todas' },
+          ...brands.map((b) => ({ id: b.id, name: b.name })),
+        ],
       },
-      /* {
-        fieldName: 'active',
+      {
+        fieldName: 'isActive', // Este esta estático en filter
         fieldType: 'select',
         label: 'Estado',
         selectItems: [
-          { description: 'Todos', id: 'all' },
-          { description: 'activo', id: 1 },
-          { description: 'inactivo', id: 0 },
+          { id: 'all', name: 'Todos' },
+          { id: 1, name: 'Activo' },
+          { id: 0, name: 'Inactivo' },
         ],
-      }, */
+      },
     ];
 
-    // 2. ACTUALIZA SIGNAL DE CONFIGURACIÓN
     this.gridFilterConfigSig.set(config);
-
-    // 3. CREACIÓN DINÁMICA DE CONTROLES PARA EL FORMULARIO
-    const formControls: Record<string, FormGroup | FormControl | AbstractControl> = {};
-
-    config.forEach((filter: GridFilterConfig): void => {
-      switch (filter.fieldType) {
-        case 'text':
-          // Inicializa campos de texto con cadena vacía
-          formControls[filter.fieldName] = new FormControl('');
-          break;
-
-        case 'select':
-          // Inicializa campos de selección con "all" (o null/'' si aplica)
-          formControls[filter.fieldName] = new FormControl('all');
-          break;
-      }
-    });
-
-    // ACTUALIZA SIGNAL DEL FORMULARIO
-    this.gridFilterFormSig.set(new FormGroup(formControls));
   }
 }
