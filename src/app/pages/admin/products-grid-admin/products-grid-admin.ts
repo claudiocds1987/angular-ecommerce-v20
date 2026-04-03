@@ -76,7 +76,7 @@ export class ProductsGridAdmin implements OnInit {
 
       return {
         id: productId,
-        thumbnail: product.thumbnail,
+        imgUrl: product.thumbnail,
         title: product.title,
         price: product.price,
         discountPercentage: product.discountPercentage,
@@ -413,17 +413,30 @@ export class ProductsGridAdmin implements OnInit {
   private _setGridConfiguration(): GridConfiguration {
     return createDefaultGridConfiguration({
       columns: [
-        { name: 'thumbnail', width: '100px', type: 'img', isSortable: false, hasHeader: false },
-        { name: 'id', width: '100px', isSortable: true },
-        { name: 'title', width: '200px' },
-        { name: 'price', width: '120px' },
-        { name: 'discountPercentage', width: '100px' },
-        { name: 'finalPrice', width: '120px', isSortable: false },
-        { name: 'sku' },
-        { name: 'stock', isSortable: false },
-        { name: 'categoryId', isSortable: false },
-        { name: 'brandId', isSortable: false },
-        { name: 'isActive', class: 'status-circle', align: 'center', width: '75px' },
+        {
+          name: 'thumbnail',
+          width: '100px',
+          type: 'img',
+          isSortable: false,
+          hasHeader: false,
+          label: 'Img',
+        },
+        { name: 'id', width: '100px', isSortable: true, label: 'ID' },
+        { name: 'title', width: '200px', label: 'Título' },
+        { name: 'price', width: '120px', label: 'Precio' },
+        { name: 'discountPercentage', width: '100px', label: 'Descuento' },
+        { name: 'finalPrice', width: '120px', isSortable: false, label: 'Precio Final' },
+        { name: 'sku', label: 'SKU' },
+        { name: 'stock', isSortable: false, label: 'Stock' },
+        { name: 'categoryId', isSortable: false, label: 'Categoría' },
+        { name: 'brandId', isSortable: false, label: 'Marca' },
+        {
+          name: 'isActive',
+          class: 'status-circle',
+          align: 'center',
+          width: '75px',
+          label: 'Estado',
+        },
         {
           name: 'elipsisActions',
           width: '100px',
