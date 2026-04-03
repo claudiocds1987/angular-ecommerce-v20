@@ -1,10 +1,6 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+// 1. CONFIGURACIÓN DEL TEMA (Material 3)
 html {
   @include mat.theme(
     (
@@ -12,80 +8,87 @@ html {
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
-      typography: Roboto,
+      typography: Inter,
+      // Sincronizado con tu fuente global
       density: 0,
     )
   );
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-}
-/* You can add global styles to this file, and also import other style files */
+// 2. ESTILOS BASE Y TAILWIND
 @import 'tailwindcss';
-/* src/styles.css */
+
+html,
+body {
+  height: 100%;
+}
 
 :root {
   font-family: 'Inter', sans-serif;
 }
 
 body {
+  margin: 0;
+  color-scheme: light;
+
+  // Usamos las variables de sistema de Material 3
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+
+  // Forzamos Inter y suavizado de fuente
   font-family: 'Inter', sans-serif !important;
+  font: var(--mat-sys-body-medium);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+// 3. COMPONENTES PERSONALIZADOS (Efectos y Modales)
 
 // Efecto de brillo que cruza la tarjeta
 .glass-shine {
   position: relative;
   overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -200%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: skewX(-25deg);
+    transition: all 0.7s ease-in-out;
+    z-index: 30;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    left: 200%;
+  }
 }
 
-//-- El rayo de luz
-.glass-shine::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -200%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-  transform: skewX(-25deg);
-  transition: all 0.7s ease-in-out;
-  z-index: 30;
-  pointer-events: none;
-}
-
-// -- Al pasar el mouse, el rayo cruza toda la card
-.glass-shine:hover::after {
-  left: 200%;
-}
-
-// Esto aplica un desenfoque al fondo cuando el modal se abre
+// Fondo desenfocado para modales
 .custom-modal-backdrop {
   background-color: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important; /* Para compatibilidad con Safari */
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
-html,
-body {
-  height: 100%;
+// 4. FIXES DE COMPONENTES (MDC/Material 3)
+
+/* Reparación de bordes duplicados en Angular Material MDC (Input Outline) */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-right: none !important;
+  border-left: none !important;
 }
-body {
-  margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+.mdc-notched-outline__leading {
+  border-left: 1px solid currentColor !important;
+}
+
+.mdc-notched-outline__trailing {
+  border-right: 1px solid currentColor !important;
 }

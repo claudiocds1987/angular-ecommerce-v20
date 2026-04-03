@@ -124,18 +124,24 @@ export class ProductsGridAdmin implements OnInit {
 
   constructor() {
     this.gridConfigSig.set(this._setGridConfiguration());
-    // 1. Creamos el esqueleto del formulario UNA SOLA VEZ
     this._createFilterGridForm();
-
-    // 2. Este effect SOLO actualiza los selectItems, NO toca el formulario
+    // effect es "observador reactivo" (sensor) que queda a la espera:
+    // se activa en el constructor pero se re-ejecuta automáticamente cada vez que
+    // los items de los Stores cambian (cuando loadAll() en ngOnInit recibe la respuesta de la API).
+    // al principio el effect se ejecuta con los arrays categories y brands vacíos, pero una vez que las categorías y marcas se cargan en los Stores,
+    // el effect detecta el cambio y vuelve a ejecutarse.
     effect(
       () => {
+        // -- Obtenemos las categorías y marcas de cada store guardados en su estado interno items --
+        // 1ro se cargaraon vacios (porque el constructor se dispara antes que el ngOnInit), luego cuando se ejecutó ngOnInit y cada store hizo su loadAll()
+        // effect detecta el cambio y se vuelve a activar, esta vez con las categorias y marcas ya cargadas, lo que permite inicializar correctamente el filtro
+        // de la grilla con las opciones de categorías y marcas disponibles.
         const categories = this.categoryStore.items();
         const brands = this.brandStore.items();
-
+        // pasamos las categorias y marcas al método para cargar los selectItems para el componente grid-filter
         this._initializeGridFilter(categories, brands);
       },
-      { allowSignalWrites: true },
+      { allowSignalWrites: true }, // Para Permitir que este effect actualice otras Signals (gridFilterConfigSig) sin disparar errores de ciclo de vida.
     );
   }
 
@@ -151,7 +157,7 @@ export class ProductsGridAdmin implements OnInit {
 
   ngOnInit() {
     this._loadData();
-    // Disparamos las cargas (esto hace que el effect de arriba se ejecute al terminar)
+    // Le decimos a cada Store que cargue los datos, cada store va a guardar sus datos en su estado interno en "items" (esto hace que el effect de arriba se ejecute al terminar)
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
   }
@@ -470,7 +476,7 @@ export class ProductsGridAdmin implements OnInit {
         ],
       },
       {
-        fieldName: 'isActive', // Este esta estático en filter
+        fieldName: 'isActive',
         fieldType: 'select',
         label: 'Estado',
         selectItems: [
