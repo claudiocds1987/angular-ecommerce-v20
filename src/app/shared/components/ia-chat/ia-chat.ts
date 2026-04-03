@@ -64,9 +64,9 @@ export class IaChat {
         this.messages.update((prev) => [
           ...prev,
           {
-            text: iaResponse.Response,
+            text: iaResponse.response,
             sender: 'bot',
-            products: iaResponse.Products.map((p: any) => ({
+            products: iaResponse.products.map((p: any) => ({
               ...p,
 
               finalPrice:

@@ -24,7 +24,7 @@ export class IaChatService {
   }
 
   // LLama a mi Backend de .NET que ya tiene el catálogo y la seguridad
-  async sendPromptToAI(prompt: string): Promise<{ Response: string; Products: Product[] }> {
+  async sendPromptToAI(prompt: string): Promise<{ response: string; products: Product[] }> {
     const body = { prompt: prompt };
     return firstValueFrom(this._http.post<GeminiResponse>(this._apiUrl, body));
   }
