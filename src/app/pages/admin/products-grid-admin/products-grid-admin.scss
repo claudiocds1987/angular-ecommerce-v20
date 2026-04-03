@@ -1,6 +1,9 @@
 .wrapper {
-  height: calc(100vh - 100px);
+  flex: 1 1 0%; // Para Indicar que el contenedor debe crecer para ocupar todo el espacio disponible, permitir encogerse si es necesario y establecer una base de tamaño inicial de 0.
+  min-height: 0; // En contenedores Flex, los hijos a veces no pueden ser más pequeños que su contenido. Forzar min-height a 0 permite que este div se encoja correctamente, activando el scroll interno de la grilla en lugar de empujar el footer hacia afuera.
   background-color: #fafbfc;
+  display: flex;
+  flex-direction: column;
 }
 
 // Elemento: Contenedor de contenido (Grid + Filtro)
@@ -23,8 +26,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0;
-  overflow: hidden; // Evita desbordamiento
+  overflow: hidden; // Importante para que el scroll se quede dentro de la tabla
 }
 
 // Elementos de espaciado (aplicados a los componentes)
@@ -38,6 +40,8 @@
 // Estilo para que el grid ocupe el espacio restante
 .wrapper__grid-component {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
 }
 
