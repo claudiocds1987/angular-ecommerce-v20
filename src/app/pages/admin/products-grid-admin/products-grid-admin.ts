@@ -51,7 +51,7 @@ import { ProductBrand } from '../../../shared/models/product-brand.model';
 })
 export class ProductsGridAdmin implements OnInit {
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
-  gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
+  gridFilterFormSig = signal(this._createFilterGridForm());
   gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
@@ -140,19 +140,18 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _createFilterGridForm() {
-    const controls: any = {
+    return new FormGroup({
       id: new FormControl(''),
       title: new FormControl(''),
-      categoryId: new FormControl('all'),
-      brandId: new FormControl('all'),
-      isActive: new FormControl('all'),
-    };
-    this.gridFilterFormSig.set(new FormGroup(controls));
+      categoryId: new FormControl<string | number>('all'),
+      brandId: new FormControl<string | number>('all'),
+      isActive: new FormControl<string | number>('all'),
+    });
   }
 
   ngOnInit() {
     this._loadData();
-    // Disparamos las cargas (esto hará que el effect de arriba se ejecute al terminar)
+    // Disparamos las cargas (esto hace que el effect de arriba se ejecute al terminar)
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
   }
@@ -197,47 +196,6 @@ export class ProductsGridAdmin implements OnInit {
     }));
   }
 
-  /* onGridPageChange(event: PageEvent): void {
-    const currentPageIndex = Number(this.gridConfigSig().paginator?.pageIndex || 0);
-    const totalPages = Math.ceil(event.length / event.pageSize);
-
-    const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
-    const isForward = event.pageIndex > currentPageIndex;
-    const isFirstPage = event.pageIndex === 0;
-
-    if (isLastPage) {
-      // IR AL FINAL
-      this.productAdminStore.loadProducts({
-        last: event.pageSize,
-      });
-    } else if (isFirstPage) {
-      // IR AL INICIO
-      this._loadData();
-    } else if (isForward) {
-      // IR ADELANTE
-      this.productAdminStore.loadProducts({
-        first: event.pageSize,
-        after: this.productAdminStore.endCursor(),
-      });
-    } else {
-      // IR ATRÁS (Botón <)
-      // Pedimos los 25 que están ANTES del primer elemento actual
-      this.productAdminStore.loadProducts({
-        last: event.pageSize,
-        before: this.productAdminStore.startCursor(),
-      });
-    }
-
-    this.gridConfigSig.update((config) => ({
-      ...config,
-      paginator: {
-        ...config.paginator!,
-        pageIndex: event.pageIndex,
-        pageSize: event.pageSize,
-      },
-    }));
-  } */
-
   applyFilter(): void {
     // Lógica de filtros...
     this._loadData();
@@ -274,10 +232,8 @@ export class ProductsGridAdmin implements OnInit {
   onGridSortChange(sortEvent: Sort): void {
     // 1. Actualizamos el estado de orden en el Store
     this.productAdminStore.updateSort(sortEvent);
-
     // 2. Sincronizamos la UI local
     this._updateGridConfigOnSortChange(sortEvent);
-
     // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
     this._loadData(this.productAdminStore.filterQuery());
   }
