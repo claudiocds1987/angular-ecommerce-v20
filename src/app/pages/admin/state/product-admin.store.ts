@@ -7,6 +7,7 @@ import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.mode
 import { computed } from '@angular/core';
 import { ProductGraphqlService } from '../../../shared/services/product-graphql-service';
 import { ProductService } from '../../../shared/services/product-service';
+import { Sort } from '@angular/material/sort';
 
 export const ProductAdminStore = signalStore(
   { providedIn: 'root' },
@@ -18,6 +19,7 @@ export const ProductAdminStore = signalStore(
     endCursor: '',
     loading: false,
     filterQuery: '',
+    sortConfig: { active: 'id', direction: 'asc' } as Sort, // Estado para el orden
   }),
 
   withComputed((state) => ({
@@ -40,27 +42,51 @@ export const ProductAdminStore = signalStore(
       }>(
         pipe(
           tap(() => patchState(state, { loading: true })),
-          switchMap((params) =>
-            graphqlService.getProducts(params).pipe(
-              tap((res) => {
-                patchState(state, {
-                  items: res.items,
-                  totalItems: res.totalItems,
-                  hasNextPage: res.hasNextPage,
-                  startCursor: res.startCursor,
-                  endCursor: res.endCursor,
-                  loading: false,
-                  filterQuery: params.search || state.filterQuery(),
-                });
-              }),
-              catchError(() => {
-                patchState(state, { loading: false });
-                return EMPTY;
-              }),
-            ),
-          ),
+          switchMap((params) => {
+            // 1. Configuración de Ordenamiento
+            const sort = state.sortConfig();
+            const orderArg = sort.direction
+              ? [{ [sort.active]: sort.direction.toUpperCase() }]
+              : [];
+
+            // 2. Definición del filtro para HotChocolate
+            const whereArg =
+              params.search && params.search.trim() !== ''
+                ? { title: { contains: params.search } }
+                : undefined;
+
+            const graphQlVariables = { ...params };
+            delete (graphQlVariables as any).search;
+
+            return graphqlService
+              .getProducts({
+                ...graphQlVariables,
+                where: whereArg,
+                order: orderArg,
+              })
+              .pipe(
+                tap((res) => {
+                  patchState(state, {
+                    items: res.items,
+                    totalItems: res.totalItems,
+                    hasNextPage: res.hasNextPage,
+                    startCursor: res.startCursor,
+                    endCursor: res.endCursor,
+                    loading: false,
+                    // Mantenemos el valor de búsqueda en el estado del Store
+                    filterQuery: params.search !== undefined ? params.search : state.filterQuery(),
+                  });
+                }),
+                catchError(() => {
+                  patchState(state, { loading: false });
+                  return EMPTY;
+                }),
+              );
+          }),
         ),
       ),
+
+      updateSort: (sort: Sort) => patchState(state, { sortConfig: sort }),
 
       updateFilter: (query: string) => patchState(state, { filterQuery: query }),
 

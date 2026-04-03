@@ -76,16 +76,16 @@ export class ProductsGridAdmin implements OnInit {
 
       return {
         id: productId,
-        imgUrl: product.thumbnail,
-        titulo: product.title,
-        precio: product.price,
-        descuento: product.discountPercentage,
-        'precio/final': product.finalPrice,
+        thumbnail: product.thumbnail,
+        title: product.title,
+        price: product.price,
+        discountPercentage: product.discountPercentage,
+        finalPrice: product.finalPrice,
         sku: product.sku,
         stock: product.stock,
-        categoria: product.categoryName || 'N/A',
-        marca: product.brandName || 'N/A',
-        active: product.isActive,
+        categoryId: product.categoryName || 'N/A',
+        brandId: product.brandName || 'N/A',
+        isActive: product.isActive,
         elipsisActions: [
           {
             label: 'Editar',
@@ -138,6 +138,42 @@ export class ProductsGridAdmin implements OnInit {
     const isFirstPage = event.pageIndex === 0;
 
     if (isLastPage) {
+      this.productAdminStore.loadProducts({
+        last: event.pageSize,
+      });
+    } else if (isFirstPage) {
+      this._loadData();
+    } else if (isForward) {
+      this.productAdminStore.loadProducts({
+        first: event.pageSize,
+        after: this.productAdminStore.endCursor(),
+      });
+    } else {
+      this.productAdminStore.loadProducts({
+        last: event.pageSize,
+        before: this.productAdminStore.startCursor(),
+      });
+    }
+
+    this.gridConfigSig.update((config) => ({
+      ...config,
+      paginator: {
+        ...config.paginator!,
+        pageIndex: event.pageIndex,
+        pageSize: event.pageSize,
+      },
+    }));
+  }
+
+  /* onGridPageChange(event: PageEvent): void {
+    const currentPageIndex = Number(this.gridConfigSig().paginator?.pageIndex || 0);
+    const totalPages = Math.ceil(event.length / event.pageSize);
+
+    const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
+    const isForward = event.pageIndex > currentPageIndex;
+    const isFirstPage = event.pageIndex === 0;
+
+    if (isLastPage) {
       // IR AL FINAL
       this.productAdminStore.loadProducts({
         last: event.pageSize,
@@ -168,7 +204,7 @@ export class ProductsGridAdmin implements OnInit {
         pageSize: event.pageSize,
       },
     }));
-  }
+  } */
 
   applyFilter(): void {
     // Lógica de filtros...
@@ -204,8 +240,14 @@ export class ProductsGridAdmin implements OnInit {
   } */
 
   onGridSortChange(sortEvent: Sort): void {
+    // 1. Actualizamos el estado de orden en el Store
+    this.productAdminStore.updateSort(sortEvent);
+
+    // 2. Sincronizamos la UI local
     this._updateGridConfigOnSortChange(sortEvent);
-    this._loadData();
+
+    // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
+    this._loadData(this.productAdminStore.filterQuery());
   }
 
   private _updateGridConfigOnSortChange(sortEvent: Sort): void {
@@ -339,11 +381,10 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _loadData(query = '') {
-    // Para GraphQL, "page 1" es simplemente no enviar el parámetro 'after'
+    const pageSize = Number(this.gridConfigSig().paginator?.pageSize) || 25;
     this.productAdminStore.loadProducts({
       search: query,
-      first: 25, // 'First' es la cantidad de registros a cargar por pagina
-      // No enviamos 'after' para que siempre resetee a la primera página en cada búsqueda
+      first: pageSize,
     });
   }
 
@@ -372,17 +413,17 @@ export class ProductsGridAdmin implements OnInit {
   private _setGridConfiguration(): GridConfiguration {
     return createDefaultGridConfiguration({
       columns: [
-        { name: 'imgUrl', width: '100px', type: 'img', isSortable: false, hasHeader: false },
+        { name: 'thumbnail', width: '100px', type: 'img', isSortable: false, hasHeader: false },
         { name: 'id', width: '100px', isSortable: true },
-        { name: 'titulo', width: '200px' },
-        { name: 'precio', width: '120px' },
-        { name: 'descuento', width: '100px' },
-        { name: 'precio/final', width: '120px' },
+        { name: 'title', width: '200px' },
+        { name: 'price', width: '120px' },
+        { name: 'discountPercentage', width: '100px' },
+        { name: 'finalPrice', width: '120px', isSortable: false },
         { name: 'sku' },
         { name: 'stock', isSortable: false },
-        { name: 'categoria', isSortable: false },
-        { name: 'marca', isSortable: false },
-        { name: 'active', class: 'status-circle', align: 'center', width: '75px' },
+        { name: 'categoryId', isSortable: false },
+        { name: 'brandId', isSortable: false },
+        { name: 'isActive', class: 'status-circle', align: 'center', width: '75px' },
         {
           name: 'elipsisActions',
           width: '100px',
