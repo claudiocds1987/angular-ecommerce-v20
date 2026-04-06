@@ -8,6 +8,7 @@ import { computed } from '@angular/core';
 import { ProductGraphqlService } from '../../../shared/services/product-graphql-service';
 import { ProductService } from '../../../shared/services/product-service';
 import { Sort } from '@angular/material/sort';
+import { ProductFilterParams } from '../../../shared/models/product-filter-params.model';
 
 export const ProductAdminStore = signalStore(
   { providedIn: 'root' },
@@ -34,6 +35,74 @@ export const ProductAdminStore = signalStore(
     ) => ({
       // recibir filtros y el cursor
       loadProducts: rxMethod<{
+        query?: string;
+        filters?: ProductFilterParams;
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+      }>(
+        pipe(
+          tap(() => patchState(state, { loading: true })),
+          switchMap((params) => {
+            const andConditions: any[] = [];
+
+            // --- FILTRO BÚSQUEDA RÁPIDA ---
+            if (params.query?.trim()) {
+              andConditions.push({ title: { contains: params.query } });
+            }
+
+            // --- FILTROS PANEL LATERAL ---
+            if (params.filters) {
+              const f = params.filters;
+              if (f.id) andConditions.push({ id: { eq: Number(f.id) } });
+              if (f.title) andConditions.push({ title: { contains: f.title } });
+              if (f.categoryId && f.categoryId !== 'all')
+                andConditions.push({ categoryId: { eq: Number(f.categoryId) } });
+              if (f.brandId && f.brandId !== 'all')
+                andConditions.push({ brandId: { eq: Number(f.brandId) } });
+
+              // LÓGICA DE ISACTIVE (Convertimos a booleano real)
+              if (f.isActive !== undefined && f.isActive !== null && String(f.isActive) !== 'all') {
+                const isTrue = String(f.isActive) === 'true' || String(f.isActive) === '1';
+                andConditions.push({ isActive: { eq: isTrue } });
+              }
+            }
+
+            const whereArg = andConditions.length > 0 ? { and: andConditions } : undefined;
+
+            // --- LLAMADA A GRAPHQL (Sin variables fantasmas) ---
+            return graphqlService
+              .getProducts({
+                first: params.first,
+                after: params.after,
+                last: params.last,
+                before: params.before,
+                where: whereArg,
+                order: state.sortConfig().direction
+                  ? [{ [state.sortConfig().active]: state.sortConfig().direction.toUpperCase() }]
+                  : [],
+              })
+              .pipe(
+                tap((res) => {
+                  patchState(state, {
+                    items: res.items,
+                    totalItems: res.totalItems,
+                    hasNextPage: res.hasNextPage,
+                    endCursor: res.endCursor,
+                    loading: false,
+                    filterQuery: params.query ?? state.filterQuery(),
+                  });
+                }),
+                catchError(() => {
+                  patchState(state, { loading: false });
+                  return EMPTY;
+                }),
+              );
+          }),
+        ),
+      ),
+      /* loadProducts: rxMethod<{
         search?: string;
         first?: number;
         after?: string;
@@ -84,7 +153,7 @@ export const ProductAdminStore = signalStore(
               );
           }),
         ),
-      ),
+      ), */
 
       updateSort: (sort: Sort) => patchState(state, { sortConfig: sort }),
 

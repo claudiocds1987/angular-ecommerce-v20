@@ -6,6 +6,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ProductPaginated } from '../models/product-paginated.model';
 import { ProductFilterData } from '../models/product-filter-data.model';
+import { ProductAdminGrid } from '../models/product-admin-grid.model';
+import { ProductFilterParams } from '../models/product-filter-params.model';
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +74,75 @@ export class ProductService {
       })),
     );
   }
+
+  getFilteredProductsAdmin(
+    page: number,
+    size: number,
+    filters: ProductFilterParams,
+  ): Observable<ProductPaginated<ProductAdminGrid>> {
+    const url = `${this._apiURL}/admin`;
+
+    // Iniciamos con los básicos
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    // AGREGAR LOS FILTROS DINÁMICAMENTE
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.id) params = params.set('id', filters.id.toString());
+    if (filters.title) params = params.set('title', filters.title);
+    if (filters.categoryId && filters.categoryId !== 'all')
+      params = params.set('categoryId', filters.categoryId.toString());
+    if (filters.brandId && filters.brandId !== 'all')
+      params = params.set('brandId', filters.brandId.toString());
+
+    // Para isActive manejamos el null/all
+    if (
+      filters.isActive !== undefined &&
+      filters.isActive !== null &&
+      (filters.isActive as any) !== 'all'
+    ) {
+      params = params.set('isActive', filters.isActive.toString());
+    }
+
+    // Ordenamiento
+    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+    if (filters.order) params = params.set('order', filters.order);
+
+    return this._http.get<ProductPaginated<ProductAdminGrid>>(url, { params }).pipe(
+      map((res) => ({
+        ...res,
+        items: res.items.map((item) => ({
+          ...item,
+          finalPrice: Number((item.price * (1 - (item.discountPercentage || 0) / 100)).toFixed(2)),
+        })),
+      })),
+    );
+  }
+
+  /*  getFilteredProductsAdmin(
+    page: number,
+    size: number,
+    filters: ProductFilterParams,
+  ): Observable<ProductPaginated<ProductAdminGrid>> {
+    // <--- Usamos tu interfaz
+    const url = `${this._apiURL}/admin`;
+
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+    if (filters.order) params = params.set('order', filters.order);
+
+    return this._http.get<ProductPaginated<ProductAdminGrid>>(url, { params }).pipe(
+      map((res) => ({
+        ...res,
+        items: res.items.map((item) => ({
+          ...item,
+          // Calculamos el finalPrice porque el DTO de C# probablemente no lo trae
+          finalPrice: Number((item.price * (1 - (item.discountPercentage || 0) / 100)).toFixed(2)),
+        })),
+      })),
+    );
+  } */
 
   getProducts(): Observable<Product[]> {
     // Si no enviamos page/size, el backend devuelve todo según ProductService.cs

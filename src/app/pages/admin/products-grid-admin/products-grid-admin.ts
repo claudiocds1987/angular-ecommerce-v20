@@ -35,11 +35,14 @@ import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { SpinnerService } from '../../../shared/services/spinner-service';
 import { ProductService } from '../../../shared/services/product-service';
-import { map } from 'rxjs';
+import { first, map } from 'rxjs';
 import { ExportService } from '../../../shared/services/export-service';
 import { CategoryStore } from '../state/category.store';
 import { BrandStore } from '../state/brand.store';
 import { ProductBrand } from '../../../shared/models/product-brand.model';
+import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
+import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
+import { ProductGraphqlService } from '../../../shared/services/product-graphql-service';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -51,7 +54,8 @@ import { ProductBrand } from '../../../shared/models/product-brand.model';
 })
 export class ProductsGridAdmin implements OnInit {
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
-  gridFilterFormSig = signal(this._createFilterGridForm());
+  //gridFilterFormSig = signal(this._createFilterGridForm());
+  gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
   gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
@@ -70,6 +74,7 @@ export class ProductsGridAdmin implements OnInit {
   private _spinnerService = inject(SpinnerService);
   private _productServices = inject(ProductService);
   private _exportService = inject(ExportService);
+  private _graphqlService = inject(ProductGraphqlService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   // Mapeo reactivo: Transforma la data del Store al formato de las columnas de tu Grid
@@ -124,7 +129,6 @@ export class ProductsGridAdmin implements OnInit {
 
   constructor() {
     this.gridConfigSig.set(this._setGridConfiguration());
-    this._createFilterGridForm();
     // ¿por qué lo hago asi?, effect es "observador reactivo" (sensor) que queda a la espera:
     // se activa en el constructor pero se re-ejecuta automáticamente cada vez que
     // los items de los Stores cambian (cuando loadAll() en ngOnInit recibe la respuesta de la API).
@@ -203,6 +207,7 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   applyFilter(): void {
+    console.log('Aplicar filtros con parámetros:', this.gridFilterFormSig().value);
     // Lógica de filtros...
     this._loadData();
   }
@@ -242,6 +247,13 @@ export class ProductsGridAdmin implements OnInit {
     this._updateGridConfigOnSortChange(sortEvent);
     // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
     this._loadData(this.productAdminStore.filterQuery());
+    // 4. Parametros para exportar excel con ordenamiento aplicado
+    /* this._productFilterParams = {
+      ...this._productFilterParams,
+      sortColumn: sortEvent.active,
+      sortOrder: sortEvent.direction,
+      page: 1,
+    }; */
   }
 
   private _updateGridConfigOnSortChange(sortEvent: Sort): void {
@@ -262,60 +274,85 @@ export class ProductsGridAdmin implements OnInit {
     );
   }
 
-  private _mapToExcelRows(products: Product[]): any[] {
-    return products.map((product: Product): any => {
-      return {
-        id: product.id,
-        titulo: product.title,
-        precio: product.price,
-        descuento: product.discountPercentage,
-        precioFinal: product.finalPrice,
-        sku: product.sku,
-        stock: product.stock,
-        categoria: product.categoryId,
-        marca: product.brandId,
-        estado:
-          typeof product.isActive === 'boolean' ? (product.isActive ? 'Activo' : 'Inactivo') : null,
-      };
-    });
-  }
-
   onExportToExcel(): void {
-    const filterValues = this.gridFilterFormSig().value;
-    console.log('Exportar con filtros:', filterValues);
-    const exportParams = { ...filterValues };
+    this._spinnerService.show();
 
-    /* this._spinnerService.show();
-    const filterValues = this.gridFilterFormSig().value;
-    const exportParams = { ...filterValues };
-    if (this._productFilterParams.sortColumn) {
-      exportParams.sortColumn = this._productFilterParams.sortColumn;
-    }
-    if (this._productFilterParams.sortOrder) {
-      exportParams.sortOrder = this._productFilterParams.sortOrder;
-    }
+    // 1. Capturamos TODO el estado actual: Orden, Búsqueda Rápida y Filtros del Panel
+    const sortConfig = this.gridConfigSig().OrderBy;
+    const quickSearch = this.productAdminStore.filterQuery(); // El input de arriba
+    const panelFilters = this.gridFilterFormSig().value; // El panel de la derecha
 
+    const exportParams: ProductFilterParams = {
+      // Búsqueda rápida
+      search: quickSearch,
+
+      // Ordenamiento
+      sortBy: sortConfig?.columnName || 'id',
+      order: sortConfig?.direction || 'desc',
+
+      // FILTROS DEL PANEL (Esto es lo que te faltaba conectar)
+      id: panelFilters.id,
+      title: panelFilters.title,
+
+      // Validamos 'all' para Categoría y Marca
+      categoryId:
+        panelFilters.categoryId && panelFilters.categoryId !== 'all'
+          ? panelFilters.categoryId
+          : null,
+
+      brandId: panelFilters.brandId && panelFilters.brandId !== 'all' ? panelFilters.brandId : null,
+
+      // Lógica para isActive (convertir a lo que el Backend REST espera)
+      isActive: panelFilters.isActive === 'all' ? null : panelFilters.isActive,
+    };
+
+    // 2. Llamada al servicio REST enviando todos los filtros
     this._productServices
-      .getFilteredProducts(exportParams)
-      .pipe(map((products: Product[]): any => this._mapToExcelRows(products)))
+      .getFilteredProductsAdmin(1, 1000, exportParams)
+      .pipe(
+        first(),
+        map((res) => res.items || []),
+        map((products) => this._mapToExcelRows(products)),
+      )
       .subscribe({
-        next: (processedData: any[]): void => {
-          const fileName = 'Productos.xlsx';
-          // hago simular tiempo de descarga con setTimeout porque json-server responde muy rapido por ser local
-          setTimeout((): void => {
+        next: (processedData) => {
+          if (processedData.length > 0) {
+            const fileName = `Reporte_Admin_${new Date().getTime()}.xlsx`;
             this._exportService.exportToExcel(processedData, fileName);
-            this._spinnerService.hide();
-            this._cdr.markForCheck();
-          }, 1500);
-        },
-        error: (): void => {
+          }
           this._spinnerService.hide();
           this._cdr.markForCheck();
-           this._alertService.showDanger(
-                        "Error al descargar el archivo de Excel",
-                    );
         },
-      }); */
+        error: () => {
+          this._spinnerService.hide();
+          this._cdr.markForCheck();
+        },
+      });
+  }
+
+  private _mapToExcelRows(products: ProductAdminGrid[]): any[] {
+    // 1. Obtenemos los mapas de los stores
+    const categories = this.categoryStore.categoryMap();
+    const brands = this.brandStore.brandMap();
+
+    return products.map((p) => {
+      // 2. Buscamos el nombre de la categoría y marca usando los mapas de los store
+      const categoryName = categories[Number(p.categoryId)]?.name || 'N/A';
+      const brandName = brands[Number(p.brandId)]?.name || 'N/A';
+
+      return {
+        ID: p.id,
+        Producto: p.title,
+        'Precio Unitario': p.price,
+        'Descuento (%)': p.discountPercentage || 0,
+        'Precio Final': p.finalPrice,
+        SKU: p.sku,
+        'Stock Actual': p.stock,
+        Categoría: categoryName,
+        Marca: brandName,
+        Estado: p.isActive ? 'Activo' : 'Inactivo',
+      };
+    });
   }
 
   onRemoveChip(chip: Chip): void {
@@ -371,18 +408,26 @@ export class ProductsGridAdmin implements OnInit {
   loadMore() {
     if (this.productAdminStore.hasNextPage()) {
       this.productAdminStore.loadProducts({
-        search: this.productAdminStore.filterQuery(),
+        query: this.productAdminStore.filterQuery(),
         first: 30,
         after: this.productAdminStore.endCursor(), // Aquí es donde GraphQL sabe dónde quedó
       });
     }
   }
 
-  private _loadData(query = '') {
+  /* private _loadData(query = '') {
     const pageSize = Number(this.gridConfigSig().paginator?.pageSize) || 25;
     this.productAdminStore.loadProducts({
       search: query,
       first: pageSize,
+    });
+  } */
+
+  private _loadData(quickQuery?: string) {
+    this.productAdminStore.loadProducts({
+      query: quickQuery ?? this.productAdminStore.filterQuery(), // El valor del input superior
+      filters: this.gridFilterFormSig().value, // Los valores del panel lateral
+      first: 25,
     });
   }
 
@@ -400,13 +445,13 @@ export class ProductsGridAdmin implements OnInit {
     isServerSide: true,
   };
 
-  private _setProductFilterParameters(): void {
+  /* private _setProductFilterParameters(): void {
     this._productFilterParams = {};
     this._productFilterParams.page = 1;
     this._productFilterParams.limit = 25;
     this._productFilterParams.sortColumn = 'id';
     this._productFilterParams.sortOrder = 'asc';
-  }
+  } */
 
   private _setGridConfiguration(): GridConfiguration {
     return createDefaultGridConfiguration({
@@ -498,6 +543,26 @@ export class ProductsGridAdmin implements OnInit {
       },
     ];
 
+    // ACTUALIZA SIGNAL DE CONFIGURACIÓN DE FILTROS
     this.gridFilterConfigSig.set(config);
+    // CREACIÓN DINÁMICA DE CONTROLES PARA EL FORMULARIO
+    const formControls: Record<string, FormGroup | FormControl | AbstractControl> = {};
+
+    config.forEach((filter: GridFilterConfig): void => {
+      switch (filter.fieldType) {
+        case 'text':
+          // Inicializa campos de texto con cadena vacía
+          formControls[filter.fieldName] = new FormControl('');
+          break;
+
+        case 'select':
+          // Inicializa campos de selección con "all" (o null/'' si aplica)
+          formControls[filter.fieldName] = new FormControl('all');
+          break;
+      }
+    });
+
+    // ACTUALIZA SIGNAL DEL FORMULARIO DEL FILTRO DE LA GRILLA CON LOS CONTROLES DINÁMICOS CREADOS
+    this.gridFilterFormSig.set(new FormGroup(formControls));
   }
 }
