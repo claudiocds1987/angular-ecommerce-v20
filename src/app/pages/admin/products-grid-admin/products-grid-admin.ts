@@ -125,7 +125,7 @@ export class ProductsGridAdmin implements OnInit {
   constructor() {
     this.gridConfigSig.set(this._setGridConfiguration());
     this._createFilterGridForm();
-    // effect es "observador reactivo" (sensor) que queda a la espera:
+    // ¿por qué lo hago asi?, effect es "observador reactivo" (sensor) que queda a la espera:
     // se activa en el constructor pero se re-ejecuta automáticamente cada vez que
     // los items de los Stores cambian (cuando loadAll() en ngOnInit recibe la respuesta de la API).
     // al principio el effect se ejecuta con los arrays categories y brands vacíos, pero una vez que las categorías y marcas se cargan en los Stores,
@@ -141,7 +141,7 @@ export class ProductsGridAdmin implements OnInit {
         // pasamos las categorias y marcas al método para cargar los selectItems para el componente grid-filter
         this._initializeGridFilter(categories, brands);
       },
-      { allowSignalWrites: true }, // Para Permitir que este effect actualice otras Signals (gridFilterConfigSig) sin disparar errores de ciclo de vida.
+      { allowSignalWrites: true }, // Para Permitir que este effect actualice otras Signals (gridFilterConfigSig dentro del método _initializeGridFilter()) sin disparar errores de ciclo de vida.
     );
   }
 
@@ -281,6 +281,10 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   onExportToExcel(): void {
+    const filterValues = this.gridFilterFormSig().value;
+    console.log('Exportar con filtros:', filterValues);
+    const exportParams = { ...filterValues };
+
     /* this._spinnerService.show();
     const filterValues = this.gridFilterFormSig().value;
     const exportParams = { ...filterValues };
@@ -449,7 +453,14 @@ export class ProductsGridAdmin implements OnInit {
       hasSorting: { isServerSide: true },
       OrderBy: { columnName: 'id', direction: 'asc' },
       hasChips: true,
-      actionButtons: [{ class: 'primary-button', icon: 'assets/person.svg', text: 'Agregar' }],
+      actionButtons: [
+        {
+          class: 'download-button',
+          type: 'download',
+          icon: '/icons/download.svg',
+          tooltip: 'Descargar excel',
+        },
+      ],
     });
   }
 

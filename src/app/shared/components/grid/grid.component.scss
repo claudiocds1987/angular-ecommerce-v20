@@ -1,254 +1,293 @@
-@import "../../../shared/styles/colors.scss";
-@import "../../../shared/styles/status-circle.scss";
+@import '../../../shared/styles/colors.scss';
+@import '../../../shared/styles/status-circle.scss';
 
 :host {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    flex: 1 1 auto;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .chips-and-buttons-container {
-    display: grid;
-    align-items: start;
-    grid-template-columns: 1fr auto;
-    padding-bottom: 15px;
-    flex-wrap: wrap;
+  display: grid;
+  align-items: start;
+  grid-template-columns: 1fr auto;
+  padding-bottom: 15px;
+  flex-wrap: wrap;
 
-    .action-buttons-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: flex-end;
+  .action-buttons-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
 
-        .buttons-actions {
-            align-items: center;
-            gap: 10px;
-        }
+    .buttons-actions {
+      align-items: center;
+      gap: 10px;
     }
+  }
 }
 
 .input-search-container {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  flex-wrap: wrap;
 
-    .action-buttons-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: flex-end;
+  .action-buttons-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
 
-        .buttons-actions {
-            display: flex;
-            align-items: center;
-        }
+    .buttons-actions {
+      display: flex;
+      align-items: center;
     }
+  }
 }
 .table-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    height: 100%;
-    width: 100%;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
 .header-content {
-    display: flex;
-    align-items: baseline;
-    img {
-        margin-right: 5px;
-        width: 14px;
-        height: 14px;
-    }
+  display: flex;
+  align-items: baseline;
+  img {
+    margin-right: 5px;
+    width: 14px;
+    height: 14px;
+  }
 }
 
 .table-header,
 .table-body {
-    width: 100%;
-    table-layout: fixed;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .table-body-scroll {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: 100%;
-    overflow-y: auto;
-    width: 100%;
-    // Estilos scroll
-    &::-webkit-scrollbar {
-        width: 3px;
-        height: 3px;
-    }
-    &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-    @supports not selector(::-webkit-scrollbar) {
-        scrollbar-width: thin;
-        scrollbar-color: #c1c1c1 #f1f1f1;
-    }
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  width: 100%;
+  // Estilos scroll
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+  }
 }
 
 .feedback-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    //background: rgba(255,255,255,0.85); // opcional, para tapar la tabla
-    z-index: 10;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  //background: rgba(255,255,255,0.85); // opcional, para tapar la tabla
+  z-index: 10;
+  pointer-events: none;
 }
 
 .header .grid-cell {
-    background-color: #f0f4f9;
-    color: $primary-material-color;
-    font-weight: bold;
+  background-color: #f0f4f9;
+  color: $primary-material-color;
+  font-weight: bold;
 }
 
 .paginator {
-    background-color: #f0f4f9;
+  background-color: #f0f4f9;
 }
 
 .search-field {
-    margin-top: 5px;
-    width: auto;
-    max-width: 300px;
+  margin-top: 5px;
+  width: auto;
+  max-width: 300px;
 }
 
 .table-img {
-    display: flex;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .infinite-paginator {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: center;
-    font-size: 12px;
-    font-weight: 400px;
-    letter-spacing: 0.4px;
-    background-color: #f0f4f9;
-    padding: 0 8px;
-    height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 400px;
+  letter-spacing: 0.4px;
+  background-color: #f0f4f9;
+  padding: 0 8px;
+  height: 56px;
 }
 
 .header,
 .mat-header-row,
 .table-header th {
-    background: #f0f4f9 !important;
-    color: #1976d2 !important;
-    font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 2;
+  background: #f0f4f9 !important;
+  color: #1976d2 !important;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .skeleton-table {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: 100%;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .skeleton-header-row,
 .skeleton-row {
-    display: flex;
+  display: flex;
 }
 
 .skeleton-header-cell {
-    flex: 1;
-    height: 48px;
-    background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
-    background-color: #f0f0f0;
-    border-right: 1px solid #ddd;
+  flex: 1;
+  height: 48px;
+  background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  background-color: #f0f0f0;
+  border-right: 1px solid #ddd;
 }
 
 .skeleton-header-cell:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .skeleton-cell {
-    flex: 1;
-    padding: 12px 16px;
-    border-top: 1px solid #eee;
-    border-right: 1px solid #eee;
+  flex: 1;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  border-right: 1px solid #eee;
 }
 
 .skeleton-cell:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .skeleton-line {
-    height: 16px;
-    width: 100%;
-    background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
-    border-radius: 4px;
+  height: 16px;
+  width: 100%;
+  background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
 }
 
 .skeleton-search-container {
-    position: relative;
-    width: 212px;
-    height: 56px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    border-radius: 4px;
-    margin-bottom: 20px;
-    padding: 0 12px;
-    box-sizing: border-box;
+  position: relative;
+  width: 212px;
+  height: 56px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 .skeleton-search-label {
-    position: absolute;
-    top: -8px;
-    left: 8px;
-    background-color: white;
-    font-size: 12px;
-    color: #999;
-    padding: 0 4px;
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  background-color: white;
+  font-size: 12px;
+  color: #999;
+  padding: 0 4px;
 }
 
 .skeleton-search-input {
-    margin-top: 16px;
+  margin-top: 16px;
+  height: 20px;
+  background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  width: 40px;
+  height: 40px;
+  line-height: 36px;
+  border-radius: 50px;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background-color: #f0f4f9;
+  border-radius: 50%;
+  font-weight: 400;
+  color: #3f51b5;
+  border: 1px solid #3f51b5;
+  transition: background-color 0.15s ease-in-out;
+
+  img {
+    width: 20px;
     height: 20px;
-    background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
-    border-radius: 4px;
+  }
+}
+
+.download-button:hover {
+  background-color: rgba(63, 81, 181, 0.04);
+}
+
+.download-button:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
 }
 
 @keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 // MEDIA QUERY
@@ -256,11 +295,11 @@
 // DANDO LA SENSACION DE RESPONSIVE
 
 @media (max-width: 1440px) {
-    th,
-    td {
-        //'min-content' con 'width: auto' para permitir que el ancho se adapte al contenido
-        // pero respetando el min-width de la tabla superior.
-        width: auto !important;
-        min-width: min-content;
-    }
+  th,
+  td {
+    //'min-content' con 'width: auto' para permitir que el ancho se adapte al contenido
+    // pero respetando el min-width de la tabla superior.
+    width: auto !important;
+    min-width: min-content;
+  }
 }
