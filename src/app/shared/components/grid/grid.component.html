@@ -137,7 +137,7 @@
               @switch (col.type) {
                 @case ('img') {
                   <img
-                    [ngSrc]="row['imgUrl'] || 'assets/unknown-user.png'"
+                    [ngSrc]="row['imgUrl'] || '/unknown-user.png'"
                     width="40"
                     height="40"
                     class="table-img"
@@ -218,7 +218,7 @@
         ></tr>
       </table>
       @if (showFeeback()) {
-        <app-feedback class="feedback-container" [imageUrl]="'assets/no-result.svg'"></app-feedback>
+        <app-feedback class="feedback-container" [imageUrl]="'icons/no-result.svg'"></app-feedback>
       }
     </div>
   </div>
