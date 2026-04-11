@@ -274,6 +274,10 @@ export class ProductsGridAdmin implements OnInit {
     );
   }
 
+  onSearchInputValue(searchValue: string): void {
+    this._loadData(searchValue);
+  }
+
   onExportToExcel(): void {
     this._spinnerService.show();
 
@@ -386,11 +390,6 @@ export class ProductsGridAdmin implements OnInit {
     //this.chipsSig.set(this._mapToChipsDescription(filterValues));
   }
 
-  onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this._loadData(input.value);
-  }
-
   handleImportSuccess(response: ImportResultResponse) {
     this.importErrors.set([]); // Limpieza errores previos
     this._loadData();
@@ -496,6 +495,7 @@ export class ProductsGridAdmin implements OnInit {
         isServerSide: true,
       },
       hasSorting: { isServerSide: true },
+      hasInputSearch: true,
       OrderBy: { columnName: 'id', direction: 'asc' },
       hasChips: true,
       actionButtons: [

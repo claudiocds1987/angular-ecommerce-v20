@@ -18,17 +18,6 @@
     </div>
   </div>
 
-  <div class="mb-6 relative w-full md:w-96">
-    <input
-      type="text"
-      (input)="onSearch($event)"
-      [value]="productAdminStore.filterQuery()"
-      placeholder="Búsqueda rápida por título..."
-      class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-white shadow-sm"
-    />
-    <span class="absolute left-3 top-2.5 text-gray-400"> 🔍 </span>
-  </div>
-
   @if (importErrors().length > 0) {
     <div
       class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0"
@@ -61,6 +50,7 @@
           (sortChange)="onGridSortChange($event)"
           (exportExcel)="onExportToExcel()"
           (chipRemoved)="onRemoveChip($event)"
+          (searchInputValue)="onSearchInputValue($event)"
         ></app-grid>
       </div>
 
