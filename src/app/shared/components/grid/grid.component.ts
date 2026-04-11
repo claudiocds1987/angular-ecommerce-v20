@@ -275,19 +275,6 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /* onInputSearch(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    const filterText = filterValue.trim().toLowerCase();
-    if (this.gridConfigSig().paginator.isServerSide === true) {
-      this.searchInputValue.emit(filterText);
-      return;
-    }
-    // las reglas de como filtrar se establecieron en _setupSearchFilter()
-    // Actualiza la grilla con el nuevo filtro
-    this.dataSource.filter = filterText;
-  }
- */
-
   onRowDblClick(row: GridData): void {
     this.rowDblClick.emit(row);
   }
