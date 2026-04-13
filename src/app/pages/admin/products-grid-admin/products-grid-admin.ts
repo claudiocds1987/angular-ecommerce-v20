@@ -207,7 +207,6 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   applyFilter(): void {
-    console.log('Aplicar filtros con parámetros:', this.gridFilterFormSig().value);
     // Lógica de filtros...
     this._loadData();
   }
