@@ -23,7 +23,7 @@ import {
   GridData,
   PaginationConfig,
 } from '../../../shared/models/grid-configuration.model';
-import { Product } from '../../../shared/models/product.model';
+
 import { ProductFilterParams } from '../../../shared/models/product-filter-params.model';
 import { GridFilterConfig } from '../../../shared/models/grid-filter-configuration.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
@@ -40,7 +40,6 @@ import { ExportService } from '../../../shared/services/export-service';
 import { CategoryStore } from '../state/category.store';
 import { BrandStore } from '../state/brand.store';
 import { ProductBrand } from '../../../shared/models/product-brand.model';
-import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
 import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
 import { ProductGraphqlService } from '../../../shared/services/product-graphql-service';
 
@@ -54,7 +53,6 @@ import { ProductGraphqlService } from '../../../shared/services/product-graphql-
 })
 export class ProductsGridAdmin implements OnInit {
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
-  //gridFilterFormSig = signal(this._createFilterGridForm());
   gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
   gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
   gridDataSig = signal<GridData[]>([]);
@@ -67,14 +65,10 @@ export class ProductsGridAdmin implements OnInit {
   importErrors = signal<string[]>([]);
   apiURL = `${environment.serverUrl}/api/import/products`;
 
-  private _productFilterParams: ProductFilterParams = {};
-  //private _categories: ProductCategory[] = [];
-
   private _excelService = inject(ExcelService);
   private _spinnerService = inject(SpinnerService);
   private _productServices = inject(ProductService);
   private _exportService = inject(ExportService);
-  private _graphqlService = inject(ProductGraphqlService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   // Mapeo reactivo: Transforma la data del Store al formato de las columnas de tu Grid
@@ -129,6 +123,7 @@ export class ProductsGridAdmin implements OnInit {
 
   constructor() {
     this.gridConfigSig.set(this._setGridConfiguration());
+
     // ¿por qué lo hago asi?, effect es "observador reactivo" (sensor) que queda a la espera:
     // se activa en el constructor pero se re-ejecuta automáticamente cada vez que
     // los items de los Stores cambian (cuando loadAll() en ngOnInit recibe la respuesta de la API).
@@ -142,21 +137,17 @@ export class ProductsGridAdmin implements OnInit {
         // de la grilla con las opciones de categorías y marcas disponibles.
         const categories = this.categoryStore.items();
         const brands = this.brandStore.items();
-        // pasamos las categorias y marcas al método para cargar los selectItems para el componente grid-filter
-        this._initializeGridFilter(categories, brands);
+        if (categories.length > 0 && brands.length > 0) {
+          // pasamos las categorias y marcas al método para cargar los selectItems para el componente grid-filter
+          this._initializeGridFilter(categories, brands);
+
+          // Seteamos los chips iniciales (Todos/Todas)
+          // usando los valores actuales del formulario recién creado
+          this._updateChips(this.gridFilterFormSig().value);
+        }
       },
       { allowSignalWrites: true }, // Para Permitir que este effect actualice otras Signals (gridFilterConfigSig dentro del método _initializeGridFilter()) sin disparar errores de ciclo de vida.
     );
-  }
-
-  private _createFilterGridForm() {
-    return new FormGroup({
-      id: new FormControl(''),
-      title: new FormControl(''),
-      categoryId: new FormControl<string | number>('all'),
-      brandId: new FormControl<string | number>('all'),
-      isActive: new FormControl<string | number>('all'),
-    });
   }
 
   ngOnInit() {
@@ -207,37 +198,89 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   applyFilter(): void {
-    // Lógica de filtros...
-    this._loadData();
+    const values = this.gridFilterFormSig().value;
+    console.log('Aplicando filtros con valores:', values);
+    this._updateChips(values); // Actualizamos los visuales
+    this._loadData(); // Cargamos la data
   }
 
-  /*   applyFilter(filterValues: Record<string, unknown>): void {
-    this._productFilterParams = {};
-    this._setProductFilterParameters();
-    const isFilterClear = Object.values(filterValues).every(
-      (value): boolean =>
-        value === null ||
-        value === '' ||
-        value === 'all' ||
-        (typeof value === 'object' &&
-          value !== null &&
-          Object.values(value).every((val): boolean => val === null || val === '')),
-    );
-    if (isFilterClear) {
-      this._createChips(this._defaultChips);
-      this._initializeGridFilter();
-    } else {
-      this._createChips(filterValues);
-      const filterParamsForBackend =
-                this._mapToProductFilterParams(filterValues);
-            Object.assign(this._productFilterParams, filterParamsForBackend);
-   
+  private _updateChips(filterValues: any): void {
+    const newChips: Chip[] = [];
+
+    // Función auxiliar para normalizar valores null a 'all'
+    const getValue = (val: any) => (val === null || val === undefined ? 'all' : val);
+
+    // 1. Categoría
+    const catVal = getValue(filterValues.categoryId);
+    const isCatAll = catVal === 'all';
+    newChips.push({
+      key: 'categoryId',
+      label: `Categoría: ${isCatAll ? 'Todas' : this.categoryStore.categoryMap()[Number(catVal)]?.name || 'N/A'}`,
+      value: catVal,
+      type: 'select',
+      disabled: isCatAll,
+    });
+
+    // 2. Marca
+    const brandVal = getValue(filterValues.brandId);
+    const isBrandAll = brandVal === 'all';
+    newChips.push({
+      key: 'brandId',
+      label: `Marca: ${isBrandAll ? 'Todas' : this.brandStore.brandMap()[Number(brandVal)]?.name || 'N/A'}`,
+      value: brandVal,
+      type: 'select',
+      disabled: isBrandAll,
+    });
+
+    // 3. Estado (isActive)
+    const activeVal = getValue(filterValues.isActive);
+    const isActiveAll = activeVal === 'all';
+    const statusMap: Record<string | number, string> = { all: 'Todos', 1: 'Activo', 0: 'Inactivo' };
+    newChips.push({
+      key: 'isActive',
+      label: `Estado: ${statusMap[activeVal] || 'Todos'}`,
+      value: activeVal,
+      type: 'select',
+      disabled: isActiveAll,
+    });
+
+    // 4. Título e ID (Solo se muestran si NO son nulos/vacíos)
+    if (filterValues.title) {
+      newChips.push({
+        key: 'title',
+        label: `Título: ${filterValues.title}`,
+        value: filterValues.title,
+        type: 'text',
+      });
     }
-    if (this.gridConfigSig().paginator) {
-      this.gridConfigSig().paginator.pageIndex = 0;
+    if (filterValues.id) {
+      newChips.push({
+        key: 'id',
+        label: `ID: ${filterValues.id}`,
+        value: filterValues.id,
+        type: 'text',
+      });
     }
-    this._loadData();
-  } */
+
+    this.chipsSig.set(newChips);
+  }
+  onRemoveChip(chip: Chip): void {
+    // 1. Obtenemos el control del formulario que corresponde a este chip
+    const form = this.gridFilterFormSig();
+    const control = form.get(chip.key);
+
+    if (!control) return;
+
+    // 2. Definimos el valor de "reset" según el campo
+    // Para los selects volvemos a 'all', para texto a vacío ''
+    const defaultValue = ['categoryId', 'brandId', 'isActive'].includes(chip.key) ? 'all' : '';
+
+    // 3. Actualizamos el formulario
+    control.setValue(defaultValue);
+
+    // 4. Disparamos la lógica de filtrado (esto actualiza los chips y recarga la DB)
+    this.applyFilter();
+  }
 
   onGridSortChange(sortEvent: Sort): void {
     // 1. Actualizamos el estado de orden en el Store
@@ -246,13 +289,6 @@ export class ProductsGridAdmin implements OnInit {
     this._updateGridConfigOnSortChange(sortEvent);
     // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
     this._loadData(this.productAdminStore.filterQuery());
-    // 4. Parametros para exportar excel con ordenamiento aplicado
-    /* this._productFilterParams = {
-      ...this._productFilterParams,
-      sortColumn: sortEvent.active,
-      sortOrder: sortEvent.direction,
-      page: 1,
-    }; */
   }
 
   private _updateGridConfigOnSortChange(sortEvent: Sort): void {
@@ -358,37 +394,6 @@ export class ProductsGridAdmin implements OnInit {
     });
   }
 
-  onRemoveChip(chip: Chip): void {
-    /* const fieldName = chip.key;
-        const resetStrategies = {
-            position: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
-            country: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
-            active: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
-            gender: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue("all"),
-            birthDateRange: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue({
-                    startDate: null,
-                    endDate: null,
-                }),
-            default: (): void =>
-                this.gridFilterFormSig().get(fieldName)?.patchValue(null),
-        };
-        const resetAction =
-            resetStrategies[fieldName as keyof typeof resetStrategies] ||
-            resetStrategies.default;
-        resetAction();
-
-        this.applyFilter(this.gridFilterFormSig().value); */
-  }
-
-  private _createChips(filterValues: Record<string, unknown>): void {
-    //this.chipsSig.set(this._mapToChipsDescription(filterValues));
-  }
-
   handleImportSuccess(response: ImportResultResponse) {
     this.importErrors.set([]); // Limpieza errores previos
     this._loadData();
@@ -413,14 +418,6 @@ export class ProductsGridAdmin implements OnInit {
     }
   }
 
-  /* private _loadData(query = '') {
-    const pageSize = Number(this.gridConfigSig().paginator?.pageSize) || 25;
-    this.productAdminStore.loadProducts({
-      search: query,
-      first: pageSize,
-    });
-  } */
-
   private _loadData(quickQuery?: string) {
     this.productAdminStore.loadProducts({
       query: quickQuery ?? this.productAdminStore.filterQuery(), // El valor del input superior
@@ -429,12 +426,6 @@ export class ProductsGridAdmin implements OnInit {
     });
   }
 
-  private _defaultChips = {
-    categoria: 'all',
-    marca: 'all',
-    active: 'all',
-  };
-
   private _defaultPaginatorOptions: PaginationConfig = {
     pageIndex: 0,
     pageSize: 25,
@@ -442,14 +433,6 @@ export class ProductsGridAdmin implements OnInit {
     totalCount: 0,
     isServerSide: true,
   };
-
-  /* private _setProductFilterParameters(): void {
-    this._productFilterParams = {};
-    this._productFilterParams.page = 1;
-    this._productFilterParams.limit = 25;
-    this._productFilterParams.sortColumn = 'id';
-    this._productFilterParams.sortOrder = 'asc';
-  } */
 
   private _setGridConfiguration(): GridConfiguration {
     return createDefaultGridConfiguration({

@@ -67,7 +67,13 @@
         <button type="submit" mat-raised-button color="primary" [disabled]="isReadyToApply()">
           Aplicar Filtro
         </button>
-        <button mat-button color="primary" (click)="clearFilter()" [disabled]="!hasActiveFilters()">
+        <button
+          type="button"
+          mat-button
+          color="primary"
+          (click)="clearFilter()"
+          [disabled]="!hasActiveFilters()"
+        >
           Limpiar Filtro
         </button>
       </div>
