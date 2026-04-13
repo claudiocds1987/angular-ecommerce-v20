@@ -2,7 +2,7 @@
 import { inject } from '@angular/core';
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
+import { firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -23,6 +23,29 @@ export const AuthStore = signalStore(
     const cartService = inject(CartService);
 
     return {
+      // --- "initializeAuth": PARA NO PERDER LOS DATOS DEL USUARIO AL REFRESCAR (F5) ---
+      // 1. Revisa si hay una "llave" (token) guardada en el navegador.
+      // 2. Si la encuentra, le pregunta al servidor: "¿A quién le pertenece esta llave?".
+      // 3. El servidor responde con los datos del usuario (nombre, rol, etc.) y los guarda en el Store.
+      // 4. Si la llave no sirve (venció), limpia todo para seguridad.
+      initializeAuth: async () => {
+        const token = localStorage.getItem('token');
+        // Si no hay token, no hacemos nada, el estado queda en null
+        if (!token) return;
+
+        try {
+          patchState(state, { loading: true });
+          // Llamamos al endpoint Auth/me del backend
+          const user = await firstValueFrom(http.get<User>(`${apiUrl}/me`));
+          // Llenamos el Store con los datos frescos (incluyendo el rol)
+          patchState(state, { user, loading: false });
+        } catch {
+          // Si el token expiró o es inválido, limpiamos todo
+          localStorage.removeItem('token');
+          patchState(state, { user: null, loading: false });
+        }
+      },
+
       // Método login
       login: rxMethod<{ username: string; password: string }>(
         pipe(

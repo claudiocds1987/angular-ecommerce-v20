@@ -1,4 +1,3 @@
-// src/app/shared/guards/auth.guard.ts
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthStore } from '../../pages/auth/state/auth.store';
@@ -8,15 +7,20 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const user = authStore.user();
 
-  // 1. Si no hay usuario, al login
-  if (!authStore.user()) {
+  // 1. Si no hay usuario en el Store tras la inicialización, redirigir al login
+  if (!user) {
     return router.createUrlTree(['/login']);
   }
 
-  // 2. Si intenta entrar a /admin pero NO es admin, lo mandamos al home
-  if (state.url.startsWith('/admin') && user?.role !== 'admin') {
-    console.warn('Acceso denegado: Se requiere rol de administrador');
-    return router.createUrlTree(['/']);
+  // 2. Validación de Rol para rutas de administración
+  // Usamos state.url para verificar si el destino es admin
+  const isAdminPath = state.url.includes('/admin');
+
+  if (isAdminPath && user.role !== 'admin') {
+    console.warn(
+      `Acceso denegado: El usuario ${user.username} no tiene permisos de administrador.`,
+    );
+    return router.createUrlTree(['/']); // Redirigir al Home o una página de 403
   }
 
   return true;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inject } from '@angular/core';
 import { signalStore, withState, withMethods, patchState, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -46,7 +47,6 @@ export const ProductAdminStore = signalStore(
           tap(() => patchState(state, { loading: true })),
           switchMap((params) => {
             const andConditions: any[] = [];
-
             // --- FILTRO BÚSQUEDA RÁPIDA ---
             if (params.query?.trim()) {
               andConditions.push({ title: { contains: params.query } });

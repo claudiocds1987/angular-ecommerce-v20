@@ -9,8 +9,6 @@ export const routes: Routes = [
     path: '',
     pathMatch: 'full',
     component: ProductsList,
-    /*    loadComponent: () =>
-            import('./pages/products-list/products-list').then((m) => m.ProductsList), */
   },
   {
     path: 'login', // url http://localhost:5000/#/login
