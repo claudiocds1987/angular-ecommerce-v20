@@ -7,7 +7,7 @@ import { ProductService } from '../../shared/services/product-service';
 import { ProductCardSkeleton } from './product-card-skeleton/product-card-skeleton';
 import { IaChat } from '../../shared/components/ia-chat/ia-chat';
 import { IaChatService } from '../../shared/services/ia-chat-service';
-import { ProductFilterData } from '../../shared/models/product-filter-data.model';
+import { CustomerProductFilter } from '../../shared/models/costumer-product-filter.model';
 import { ProductFilter } from './product-filter/product-filter';
 import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 import { ProductStore } from '../admin/state/product.store';
@@ -27,7 +27,7 @@ export class ProductsList {
 
   currentPage = signal(1); // Empezamos en la página 1
   showFilter = signal(false);
-  currentFilters = signal<ProductFilterData | null>(null);
+  currentFilters = signal<CustomerProductFilter | null>(null);
   carouselProducts = signal<Product[]>([]);
 
   readonly productStore = inject(ProductStore);
@@ -74,14 +74,14 @@ export class ProductsList {
       .subscribe(({ filters, page }) => {
         this.productStore.searchProducts({
           // Si filters es null o undefined, mandamos un objeto vacío con el tipo correcto
-          filters: filters ?? ({} as ProductFilterData),
+          filters: filters ?? ({} as CustomerProductFilter),
           page: page,
           size: this.pageSize,
         });
       });
   }
 
-  handleFilter(filters: ProductFilterData) {
+  handleFilter(filters: CustomerProductFilter) {
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 

@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
+import { CustomerProductFilter } from '../../../shared/models/costumer-product-filter.model';
 import { ProductStore } from '../../admin/state/product.store';
 import { BrandStore } from '../../admin/state/brand.store';
 import { CategoryStore } from '../../admin/state/category.store';
@@ -14,7 +14,7 @@ import { CategoryStore } from '../../admin/state/category.store';
 export class ProductFilter implements OnInit {
   @Input() isFilterVisible = true;
   @Output() toggleSidebar = new EventEmitter<boolean>();
-  @Output() emitFilterChange = new EventEmitter<ProductFilterData>();
+  @Output() emitFilterChange = new EventEmitter<CustomerProductFilter>();
 
   filterForm!: FormGroup;
 

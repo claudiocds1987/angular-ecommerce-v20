@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 //import { DummyResponsePaginated } from '../models/dummy-response.model';
 import { environment } from '../../../environments/environment';
 import { ProductPaginated } from '../models/product-paginated.model';
-import { ProductFilterData } from '../models/product-filter-data.model';
+import { CustomerProductFilter } from '../models/costumer-product-filter.model';
 import { ProductAdminGrid } from '../models/product-admin-grid.model';
 import { ProductFilterParams } from '../models/product-filter-params.model';
 
@@ -54,7 +54,7 @@ export class ProductService {
   getFilteredProducts(
     page: number,
     size: number,
-    filters: ProductFilterData,
+    filters: CustomerProductFilter,
   ): Observable<ProductPaginated> {
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 

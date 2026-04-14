@@ -41,7 +41,7 @@ import { CategoryStore } from '../state/category.store';
 import { BrandStore } from '../state/brand.store';
 import { ProductBrand } from '../../../shared/models/product-brand.model';
 import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
-import { ProductGraphqlService } from '../../../shared/services/product-graphql-service';
+import { AdminProductFilter } from '../../../shared/models/admin-product-filter.model';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -204,7 +204,7 @@ export class ProductsGridAdmin implements OnInit {
     this._loadData(); // Cargamos la data
   }
 
-  private _updateChips(filterValues: any): void {
+  private _updateChips(filterValues: AdminProductFilter): void {
     const newChips: Chip[] = [];
 
     // Función auxiliar para normalizar valores null a 'all'

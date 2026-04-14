@@ -48,6 +48,7 @@ src/environments/environment.production.ts
 correr-proyecto.md
 explicacion-product-store.md
 explicacion-graphql.md
+explicacion-auth-store.md
 
 # Evitar archivos compilados de JavaScript y sus mapas
 *.js.map

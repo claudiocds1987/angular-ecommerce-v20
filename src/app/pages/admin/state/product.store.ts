@@ -8,7 +8,7 @@ import { computed } from '@angular/core';
 import { Product } from '../../../shared/models/product.model';
 import { ProductService } from '../../../shared/services/product-service';
 
-import { ProductFilterData } from '../../../shared/models/product-filter-data.model';
+import { CustomerProductFilter } from '../../../shared/models/costumer-product-filter.model';
 
 //  Usando forma moderna "NgRX Signal Store" en lugar de NgRx, para manejar el estado de productos en el admin
 //  rxMethod es la forma estándar en el Signal Store porque gestiona automáticamente el ciclo de vida de las suscripciones.
@@ -41,7 +41,7 @@ export const ProductStore = signalStore(
       patchState(state, { items: state.items().filter((p) => p.id !== id) });
     },
 
-    searchProducts: rxMethod<{ filters: ProductFilterData; page: number; size: number }>(
+    searchProducts: rxMethod<{ filters: CustomerProductFilter; page: number; size: number }>(
       pipe(
         debounceTime(300),
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
