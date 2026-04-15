@@ -2,7 +2,7 @@
 import { inject } from '@angular/core';
 import { signalStore, withState, withMethods, patchState, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
+import { pipe, switchMap, tap, catchError, EMPTY, delay } from 'rxjs';
 import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model'; // Ajusta la ruta
 
 import { computed } from '@angular/core';
@@ -45,6 +45,7 @@ export const ProductAdminStore = signalStore(
       }>(
         pipe(
           tap(() => patchState(state, { loading: true })),
+          delay(300), // Pequeño delay para evitar llamadas excesivas en búsquedas rápidas
           switchMap((params) => {
             const andConditions: any[] = [];
             // --- FILTRO BÚSQUEDA RÁPIDA ---
@@ -90,10 +91,14 @@ export const ProductAdminStore = signalStore(
                     totalItems: res.totalItems,
                     hasNextPage: res.hasNextPage,
                     endCursor: res.endCursor,
-                    loading: false,
+                    //loading: false,
                     filterQuery: params.query ?? state.filterQuery(),
                   });
+                  setTimeout(() => {
+                    patchState(state, { loading: false });
+                  }, 0);
                 }),
+
                 catchError(() => {
                   patchState(state, { loading: false });
                   return EMPTY;
