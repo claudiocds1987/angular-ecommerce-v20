@@ -42,6 +42,7 @@ import { BrandStore } from '../state/brand.store';
 import { ProductBrand } from '../../../shared/models/product-brand.model';
 import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
 import { AdminProductFilter } from '../../../shared/models/admin-product-filter.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -70,6 +71,7 @@ export class ProductsGridAdmin implements OnInit {
   private _productServices = inject(ProductService);
   private _exportService = inject(ExportService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private _router = inject(Router);
 
   // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
   mappedProductsSig = computed<GridData[]>(() => {
@@ -557,6 +559,7 @@ export class ProductsGridAdmin implements OnInit {
 
   private _editProduct(id: number): void {
     console.log('Edit product with ID:', id);
+    this._router.navigate(['/product/edit', id]);
   }
 
   private _deleteProduct(id: number): void {

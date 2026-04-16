@@ -1,0 +1,360 @@
+<div class="min-h-screen bg-slate-50 p-4 md:p-8">
+  <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Producto</h1>
+      <p class="text-slate-500 text-sm">Panel de administración avanzada de catálogo.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        (click)="onSubmit()"
+        [disabled]="productForm.invalid"
+        class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all disabled:opacity-50"
+      >
+        Guardar Producto
+      </button>
+    </div>
+  </header>
+
+  <form [formGroup]="productForm" class="space-y-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-indigo-600 rounded-full"></span>
+            Detalles Principales
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label class="block">
+                <span class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Título del Producto</span
+                >
+                <input
+                  type="text"
+                  formControlName="title"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all"
+                />
+              </label>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block">
+                <span class="block text-sm font-semibold text-slate-700 mb-2">Descripción</span>
+                <textarea
+                  formControlName="description"
+                  rows="3"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all resize-none"
+                ></textarea>
+              </label>
+            </div>
+
+            <div>
+              <label class="block">
+                <span class="block text-sm font-semibold text-slate-700 mb-2">SKU</span>
+                <input
+                  type="text"
+                  formControlName="sku"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-mono text-sm"
+                />
+              </label>
+            </div>
+
+            <div>
+              <label class="block">
+                <span class="block text-sm font-semibold text-slate-700 mb-2">Estado</span>
+                <select
+                  formControlName="availabilityStatus"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-indigo-50 transition-all appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
+                >
+                  <option value="instock">En Stock</option>
+                  <option value="lowstock">Poco Stock</option>
+                  <option value="outofstock">Agotado</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+            Inventario y Medidas
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
+                >Stock</span
+              >
+              <input
+                type="number"
+                formControlName="stock"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
+                >Min. Orden</span
+              >
+              <input
+                type="number"
+                formControlName="minimumOrderQuantity"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
+                >Peso (kg)</span
+              >
+              <input
+                type="number"
+                formControlName="weight"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
+                >Rating (AI)</span
+              >
+              <input
+                type="number"
+                formControlName="rating"
+                readonly
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500"
+              />
+            </label>
+          </div>
+
+          <div
+            class="mt-8 grid grid-cols-3 gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center"
+          >
+            <label class="block">
+              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
+                >Ancho (cm)</span
+              >
+              <input
+                type="number"
+                formControlName="width"
+                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
+                >Alto (cm)</span
+              >
+              <input
+                type="number"
+                formControlName="height"
+                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
+                >Profundidad (cm)</span
+              >
+              <input
+                type="number"
+                formControlName="depth"
+                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+            Garantía y Políticas
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <label class="block">
+              <span class="block text-sm font-semibold text-slate-700 mb-2"
+                >Información de Garantía</span
+              >
+              <input
+                type="text"
+                formControlName="warrantyInformation"
+                placeholder="Ej: 1 año de garantía oficial"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50 focus:border-amber-500"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-sm font-semibold text-slate-700 mb-2"
+                >Información de Envío</span
+              >
+              <input
+                type="text"
+                formControlName="shippingInformation"
+                placeholder="Ej: Envío gratis en 24h"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50 focus:border-amber-500"
+              />
+            </label>
+            <div class="md:col-span-2">
+              <label class="block">
+                <span class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Política de Devolución</span
+                >
+                <input
+                  type="text"
+                  formControlName="returnPolicy"
+                  placeholder="Ej: 30 días de devolución gratuita"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50"
+                />
+              </label>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="space-y-6">
+        <section
+          class="bg-indigo-900 p-8 rounded-3xl shadow-xl shadow-indigo-100 text-white overflow-hidden relative"
+        >
+          <div
+            class="absolute -top-10 -right-10 w-24 h-24 bg-indigo-800 rounded-full opacity-30"
+          ></div>
+
+          <h2 class="text-lg font-semibold mb-6">Finanzas</h2>
+
+          <div class="space-y-5 relative z-10">
+            <label class="block">
+              <span class="block text-xs font-medium text-indigo-200 mb-2">Precio Base ($)</span>
+              <input
+                type="text"
+                formControlName="price"
+                inputmode="decimal"
+                placeholder="0.00"
+                (keydown)="onNumberKeydown($event)"
+                class="w-full px-4 py-3 rounded-xl bg-indigo-800/50 border border-indigo-700 text-white outline-none focus:ring-2 focus:ring-white transition-all appearance-none"
+              />
+            </label>
+
+            <label class="block">
+              <span class="block text-xs font-medium text-indigo-200 mb-2">Descuento (%)</span>
+              <input
+                type="text"
+                formControlName="discountPercentage"
+                inputmode="numeric"
+                placeholder="0"
+                (keydown)="onNumberKeydown($event)"
+                class="w-full px-4 py-3 rounded-xl bg-indigo-800/50 border border-indigo-700 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all appearance-none"
+              />
+            </label>
+
+            <div class="pt-6 border-t border-indigo-800/60 flex justify-between items-end">
+              <div>
+                <span
+                  class="block text-[10px] uppercase tracking-widest text-indigo-300 font-bold mb-1"
+                  >Precio Final</span
+                >
+                <div class="flex items-baseline gap-2">
+                  <span class="text-4xl font-black tracking-tighter transition-all duration-300">
+                    ${{ finalPriceSig() | number: '1.2-2' }}
+                  </span>
+
+                  @if (productForm.get('discountPercentage')?.value > 0) {
+                    <span
+                      class="text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded font-bold animate-pulse"
+                    >
+                      OFF
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <div
+                class="text-indigo-300 text-[10px] font-mono bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-700"
+              >
+                ARS
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 font-display">Clasificación</h2>
+          <div class="space-y-5">
+            <label class="block">
+              <span class="block text-sm font-semibold text-slate-700 mb-2">Categoría</span>
+              <select
+                formControlName="categoryId"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
+              >
+                <option [ngValue]="null">Elegir Categoría...</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-sm font-semibold text-slate-700 mb-2">Marca</span>
+              <select
+                formControlName="brandId"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
+              >
+                <option [ngValue]="null">Elegir Marca...</option>
+              </select>
+            </label>
+            <div class="pt-2">
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  formControlName="isActive"
+                  class="w-6 h-6 text-indigo-600 rounded-lg border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                />
+                <span
+                  class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors"
+                  >Producto Activo</span
+                >
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-4">Imagen Principal (Thumbnail)</h2>
+          <div
+            class="aspect-video w-full bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden"
+          >
+            @if (productForm.get('thumbnail')?.value) {
+              <img
+                [src]="productForm.get('thumbnail')?.value"
+                class="w-full h-full object-cover"
+                alt="Thumbnail"
+              />
+            } @else {
+              <div class="text-center p-4">
+                <svg
+                  class="w-10 h-10 text-slate-300 mx-auto mb-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </div>
+            }
+          </div>
+          <label class="block mt-4">
+            <span class="sr-only">URL</span>
+            <input
+              type="text"
+              formControlName="thumbnail"
+              placeholder="URL de la imagen..."
+              class="w-full text-xs px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </label>
+        </section>
+      </div>
+    </div>
+  </form>
+</div>

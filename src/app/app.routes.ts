@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import { ProductsList } from './pages/products-list/products-list';
 import { PaymentResult } from './pages/payment-result/payment-result';
 import { ProductDetail } from './pages/product-detail/product-detail';
+
 import { authGuard } from './shared/guards/auth.guard';
+import { ProductFormAdmin } from './pages/admin/product-form-admin/product-form-admin/product-form-admin';
 
 export const routes: Routes = [
   {
@@ -26,4 +28,6 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // tipiar url: http://localhost:5000/#/admin
     canActivate: [authGuard],
   },
+  { path: 'product/create', component: ProductFormAdmin, data: { operation: 'create' } },
+  { path: 'product/edit/:id', component: ProductFormAdmin, data: { operation: 'edit' } },
 ];

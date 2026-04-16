@@ -135,6 +135,12 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     const paginator = this.gridConfigSig().paginator;
     return typeof paginator === 'object' && paginator !== null ? paginator : null;
   });
+  // Mostramos feedback solo si no está cargando y no hay datos
+  showFeedbackSig = computed(() => {
+    const isLoading = this._productAdminStore.loading();
+    const hasNoData = this.gridDataSig().length === 0;
+    return !isLoading && hasNoData;
+  });
 
   private _ngZone = inject(NgZone);
   private _scrollListener: (() => void) | undefined;
@@ -148,15 +154,6 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef);
   private _searchInputSubject = new Subject<string>();
   private _productAdminStore = inject(ProductAdminStore);
-
-  // En tu clase ProductsGridAdmin
-  showFeedbackSig = computed(() => {
-    const isLoading = this._productAdminStore.loading();
-    const hasNoData = this.gridDataSig().length === 0;
-
-    // Mostramos feedback solo si no está cargando y no hay datos
-    return !isLoading && hasNoData;
-  });
 
   constructor() {
     // Inicialización del Effect para leer cambios en signal data y loading:
