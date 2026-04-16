@@ -43,6 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Chip, ChipsComponent } from '../chips/chips.component';
 import { FeedbackComponent } from '../feedback/feedback.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { ProductAdminStore } from '../../../pages/admin/state/product-admin.store';
 
 // --- función para el setear paginador ---
 export function getPaginatorIntl(): MatPaginatorIntl {
@@ -146,6 +147,16 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly ROW_HEIGHT_PIXELS = 40; // Altura de cada fila configurable (ej. 40px) Basado en el cálculo: scrollTop = scrollHeight - clientHeight - (nuevasFilas * altoFila)
   private _changeDetectorRef = inject(ChangeDetectorRef);
   private _searchInputSubject = new Subject<string>();
+  private _productAdminStore = inject(ProductAdminStore);
+
+  // En tu clase ProductsGridAdmin
+  showFeedbackSig = computed(() => {
+    const isLoading = this._productAdminStore.loading();
+    const hasNoData = this.gridDataSig().length === 0;
+
+    // Mostramos feedback solo si no está cargando y no hay datos
+    return !isLoading && hasNoData;
+  });
 
   constructor() {
     // Inicialización del Effect para leer cambios en signal data y loading:
@@ -221,13 +232,13 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     return `Mostrando ${Math.min(loadedCount, length)} de ${length}`;
   }
 
-  showFeeback(): boolean {
+  /* showFeeback(): boolean {
     return (
       !this.isLoadingSig() &&
       (this.gridDataSig().length === 0 || this.dataSource.filteredData.length === 0)
     );
   }
-
+ */
   getCellValue(row: GridData, colName: string): string {
     const value = row[colName];
     if (colName === 'elipsisActions' && Array.isArray(value)) {
