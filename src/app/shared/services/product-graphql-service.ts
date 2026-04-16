@@ -67,6 +67,7 @@ export class ProductGraphqlService {
     items: ProductAdminGrid[];
     totalItems: number;
     hasNextPage: boolean;
+    hasPreviousPage: boolean;
     startCursor: string;
     endCursor: string;
   }> {
@@ -85,6 +86,7 @@ export class ProductGraphqlService {
             ),
             totalItems: data?.totalCount || 0,
             hasNextPage: data?.pageInfo?.hasNextPage || false,
+            hasPreviousPage: data?.pageInfo?.hasPreviousPage || false,
             endCursor: data?.pageInfo?.endCursor || '',
             startCursor: data?.pageInfo?.startCursor || '',
           };

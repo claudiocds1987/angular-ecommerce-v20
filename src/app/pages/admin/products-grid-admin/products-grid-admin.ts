@@ -71,7 +71,7 @@ export class ProductsGridAdmin implements OnInit {
   private _exportService = inject(ExportService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  // Mapeo reactivo: Transforma la data del Store al formato de las columnas de tu Grid
+  // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
   mappedProductsSig = computed<GridData[]>(() => {
     const products = this.productAdminStore.items();
 
@@ -96,12 +96,12 @@ export class ProductsGridAdmin implements OnInit {
             label: 'Editar',
             icon: 'edit',
             // Cambiamos el parámetro a number para que no proteste el ElipsisAction
-            action: (id: number) => console.log('Edit', id),
+            action: (id: number) => this._editProduct(id),
           },
           {
             label: 'Eliminar',
             icon: 'delete',
-            action: (id: number) => console.log('Delete', id),
+            action: (id: number) => this._deleteProduct(id),
           },
         ],
       } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
@@ -166,27 +166,34 @@ export class ProductsGridAdmin implements OnInit {
     const totalPages = Math.ceil(event.length / event.pageSize);
 
     const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
-    const isForward = event.pageIndex > currentPageIndex;
     const isFirstPage = event.pageIndex === 0;
+    const isForward = event.pageIndex > currentPageIndex;
 
-    if (isLastPage) {
+    if (isFirstPage) {
+      // Caso 1: Primera página -> Usamos la carga inicial (first)
+      this._loadData();
+    } else if (isLastPage) {
+      // Caso 2: Última página -> GraphQL requiere LAST sin AFTER ni FIRST
       this.productAdminStore.loadProducts({
         last: event.pageSize,
+        // Importante: Asegúrate de que tu Store limpie 'first' y 'after'
+        // al recibir el parámetro 'last'
       });
-    } else if (isFirstPage) {
-      this._loadData();
     } else if (isForward) {
+      // Caso 3: Siguiente -> first + after
       this.productAdminStore.loadProducts({
         first: event.pageSize,
-        after: this.productAdminStore.endCursor(),
+        after: this.productAdminStore.endCursor() || undefined,
       });
     } else {
+      // Caso 4: Anterior -> last + before
       this.productAdminStore.loadProducts({
         last: event.pageSize,
-        before: this.productAdminStore.startCursor(),
+        before: this.productAdminStore.startCursor() || undefined,
       });
     }
 
+    // Actualizamos el índice localmente para que el paginador sepa dónde está
     this.gridConfigSig.update((config) => ({
       ...config,
       paginator: {
@@ -546,5 +553,13 @@ export class ProductsGridAdmin implements OnInit {
 
     // ACTUALIZA SIGNAL DEL FORMULARIO DEL FILTRO DE LA GRILLA CON LOS CONTROLES DINÁMICOS CREADOS
     this.gridFilterFormSig.set(new FormGroup(formControls));
+  }
+
+  private _editProduct(id: number): void {
+    console.log('Edit product with ID:', id);
+  }
+
+  private _deleteProduct(id: number): void {
+    console.log('Delete product with ID:', id);
   }
 }

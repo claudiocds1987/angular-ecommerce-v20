@@ -17,8 +17,9 @@ export const ProductAdminStore = signalStore(
     items: [] as ProductAdminGrid[],
     totalItems: 0,
     hasNextPage: false,
-    startCursor: '',
-    endCursor: '',
+    hasPreviousPage: false,
+    startCursor: '', // 1er registro de la página actual
+    endCursor: '', // último registro de la página actual
     loading: false,
     filterQuery: '',
     sortConfig: { active: 'id', direction: 'asc' } as Sort, // Estado para el orden
@@ -45,9 +46,10 @@ export const ProductAdminStore = signalStore(
       }>(
         pipe(
           tap(() => patchState(state, { loading: true })),
-          delay(300), // Pequeño delay para evitar llamadas excesivas en búsquedas rápidas
+          delay(300),
           switchMap((params) => {
             const andConditions: any[] = [];
+
             // --- FILTRO BÚSQUEDA RÁPIDA ---
             if (params.query?.trim()) {
               andConditions.push({ title: { contains: params.query } });
@@ -55,55 +57,61 @@ export const ProductAdminStore = signalStore(
 
             // --- FILTROS PANEL LATERAL ---
             if (params.filters) {
-              const f = params.filters;
-              if (f.id) andConditions.push({ id: { eq: Number(f.id) } });
-              if (f.title) andConditions.push({ title: { contains: f.title } });
-              if (f.categoryId && f.categoryId !== 'all')
-                andConditions.push({ categoryId: { eq: Number(f.categoryId) } });
-              if (f.brandId && f.brandId !== 'all')
-                andConditions.push({ brandId: { eq: Number(f.brandId) } });
+              const filter = params.filters;
+              if (filter.id) andConditions.push({ id: { eq: Number(filter.id) } });
+              if (filter.title) andConditions.push({ title: { contains: filter.title } });
+              if (filter.categoryId && filter.categoryId !== 'all')
+                andConditions.push({ categoryId: { eq: Number(filter.categoryId) } });
+              if (filter.brandId && filter.brandId !== 'all')
+                andConditions.push({ brandId: { eq: Number(filter.brandId) } });
 
-              // LÓGICA DE ISACTIVE (Convertimos a booleano real)
-              if (f.isActive !== undefined && f.isActive !== null && String(f.isActive) !== 'all') {
-                const isTrue = String(f.isActive) === 'true' || String(f.isActive) === '1';
+              if (
+                filter.isActive !== undefined &&
+                filter.isActive !== null &&
+                String(filter.isActive) !== 'all'
+              ) {
+                const isTrue =
+                  String(filter.isActive) === 'true' || String(filter.isActive) === '1';
                 andConditions.push({ isActive: { eq: isTrue } });
               }
             }
 
             const whereArg = andConditions.length > 0 ? { and: andConditions } : undefined;
 
-            // --- LLAMADA A GRAPHQL (Sin variables fantasmas) ---
-            return graphqlService
-              .getProducts({
-                first: params.first,
-                after: params.after,
-                last: params.last,
-                before: params.before,
-                where: whereArg,
-                order: state.sortConfig().direction
-                  ? [{ [state.sortConfig().active]: state.sortConfig().direction.toUpperCase() }]
-                  : [],
-              })
-              .pipe(
-                tap((res) => {
-                  patchState(state, {
-                    items: res.items,
-                    totalItems: res.totalItems,
-                    hasNextPage: res.hasNextPage,
-                    endCursor: res.endCursor,
-                    //loading: false,
-                    filterQuery: params.query ?? state.filterQuery(),
-                  });
-                  setTimeout(() => {
-                    patchState(state, { loading: false });
-                  }, 0);
-                }),
+            // --- CONSTRUCCIÓN DINÁMICA DE VARIABLES (Limpieza de null/undefined) ---
+            // Esto evita enviar "first: undefined" o "after: null" al servidor
+            const variables: any = {
+              where: whereArg,
+              order: state.sortConfig().direction
+                ? [{ [state.sortConfig().active]: state.sortConfig().direction.toUpperCase() }]
+                : [],
+            };
 
-                catchError(() => {
-                  patchState(state, { loading: false });
-                  return EMPTY;
-                }),
-              );
+            if (params.first) variables.first = params.first;
+            if (params.after) variables.after = params.after;
+            if (params.last) variables.last = params.last;
+            if (params.before) variables.before = params.before;
+
+            // --- LLAMADA A GRAPHQL ---
+            return graphqlService.getProducts(variables).pipe(
+              tap((res) => {
+                patchState(state, {
+                  items: res.items,
+                  totalItems: res.totalItems,
+                  hasNextPage: res.hasNextPage,
+                  hasPreviousPage: res.hasPreviousPage, // Guardamos estado para navegar atrás
+                  endCursor: res.endCursor, // Cursor para "Siguiente"
+                  startCursor: res.startCursor, // VITAL: Cursor para "Anterior"
+                  filterQuery: params.query ?? state.filterQuery(),
+                  loading: false,
+                });
+              }),
+              catchError((err) => {
+                console.error('Error cargando productos:', err);
+                patchState(state, { loading: false });
+                return EMPTY;
+              }),
+            );
           }),
         ),
       ),
