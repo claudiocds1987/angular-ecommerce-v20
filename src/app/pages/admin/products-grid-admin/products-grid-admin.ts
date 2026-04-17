@@ -491,6 +491,12 @@ export class ProductsGridAdmin implements OnInit {
       hasChips: true,
       actionButtons: [
         {
+          class: 'primary-button',
+          icon: 'icons/product-icon.svg',
+          text: 'Agregar',
+          action: (): void => this._onCreateProduct(),
+        },
+        {
           class: 'download-button',
           type: 'download',
           icon: '/icons/download.svg',
@@ -499,6 +505,10 @@ export class ProductsGridAdmin implements OnInit {
       ],
     });
   }
+
+  private _onCreateProduct = (): void => {
+    this._router.navigate(['/product/create']);
+  };
 
   private _initializeGridFilter(categories: ProductCategory[], brands: ProductBrand[]): void {
     const config: GridFilterConfig[] = [

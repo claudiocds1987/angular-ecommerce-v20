@@ -18,6 +18,10 @@ html {
 // 2. ESTILOS BASE Y TAILWIND
 @import 'tailwindcss';
 
+// Mis estilos despues de Tailwind
+@import './app/shared/styles/buttons/primary-button.scss';
+@import './app/shared/styles/buttons/download-button.scss';
+
 html,
 body {
   height: 100%;
