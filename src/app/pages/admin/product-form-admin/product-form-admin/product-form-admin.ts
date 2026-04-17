@@ -39,6 +39,7 @@ export class ProductFormAdmin {
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
 
+  // cargando categorías y marcas cuando _initData() prende el motor en ambos stores con loadAll()
   categoriesSig = this.categoryStore.items;
   brandsSig = this.brandStore.items;
 
@@ -149,10 +150,4 @@ export class ProductFormAdmin {
       images: new FormArray([]),
     });
   }
-
-  /* private _getOperation() {
-    this._activeRoute.data.subscribe((data) => {
-      this._operation = data['operation'];
-    });
-  } */
 }
