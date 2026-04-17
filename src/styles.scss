@@ -39,16 +39,28 @@ body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 
-  // Forzamos Inter y suavizado de fuente
+  // Forzar Inter y suavizado de fuente
   font-family: 'Inter', sans-serif !important;
   font: var(--mat-sys-body-medium);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-// 3. COMPONENTES PERSONALIZADOS (Efectos y Modales)
+// COLOR DE LOS PLACEHOLDERS DE LOS INPUTS
 
-// Efecto de brillo que cruza la tarjeta (card)
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    /* En lugar de @apply, usamos los valores directos */
+    color: #94a3b8; /* Este es text-slate-400 */
+    opacity: 0.6; /* Este es opacity-60 */
+    font-weight: 300; /* Este es font-light */
+  }
+}
+
+// COMPONENTES PERSONALIZADOS (Efectos y Modales)
+
+// Efecto de brillo que cruza la tarjeta (card) en componente products-list
 .glass-shine {
   position: relative;
   overflow: hidden;

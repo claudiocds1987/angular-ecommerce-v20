@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   inject,
-  OnInit,
   signal,
   untracked,
 } from '@angular/core';
@@ -58,7 +57,7 @@ export class ProductFormAdmin {
   private readonly _productService = inject(ProductService);
   private _activeRoute = inject(ActivatedRoute);
   private _operation = this._activeRoute.snapshot.data['operation'];
-  // Convirtiendo price y discountPercentage a signals para calcular precio final de forma reactiva
+  // Convirtiendo price y discountPercentage del form a signals para calcular precio final de forma reactiva
   private _priceValue = toSignal(this.productForm.get('price')!.valueChanges, {
     initialValue: this.productForm.get('price')?.value ?? 0,
   });
@@ -70,12 +69,14 @@ export class ProductFormAdmin {
   constructor() {
     this._initData();
 
-    // 2. effect para actualizar el formulario cuando se cargue todo el producto (en edición) con categorías y marcas estén disponibles
+    // 2. effect para actualizar el formulario cuando se cargue todo el producto (en edición) cuando categorías y marcas estén disponibles (simil a forkJoin)
     effect(() => {
       const product = this._productDataSig();
-      console.log('product', product);
 
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
+        // untracked, le dice a Angular: "Ejecuta este código, pero no te quedes vigilando lo que pase aca adentro,
+        // solo quiero que este effect reaccione a los cambios de product, categoriesSig y brandsSig que están afuera".
+        // Evita disparar el effect si el formulario cambia internamente. (evitaría un loop infinito)
         untracked(() => {
           this.productForm.patchValue(product);
         });
