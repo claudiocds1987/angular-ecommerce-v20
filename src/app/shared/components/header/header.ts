@@ -55,6 +55,10 @@ export class Header {
     this._router.navigate(['/']);
   }
 
+  redirectToAdminPanel() {
+    this._router.navigate(['/admin']);
+  }
+
   toggleMenu() {
     this.isMenuOpen.update((prev) => !prev);
   }

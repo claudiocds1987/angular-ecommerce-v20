@@ -488,9 +488,7 @@ export class ProductsGridAdmin implements OnInit {
       hasSorting: { isServerSide: true },
       hasInputSearch: true,
       OrderBy: { columnName: 'id', direction: 'asc' },
-      //hasChips: true,
       actionButtons: [
-        // aca poner type: massiveImport
         {
           class: 'primary-button',
           icon: 'icons/product-icon.svg',

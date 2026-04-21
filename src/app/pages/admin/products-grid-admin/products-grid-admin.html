@@ -19,16 +19,39 @@
 
         @if (importErrors().length > 0) {
           <div
-            class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0"
+            class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0 relative group"
           >
-            <h3 class="text-sm font-bold text-red-800">
-              Carga fallida: {{ importErrors().length }} errores detectados.
-            </h3>
+            <div class="flex items-center gap-4">
+              <h3 class="text-sm font-bold text-red-800">
+                Carga fallida: {{ importErrors().length }} errores detectados.
+              </h3>
+              <button
+                (click)="onDownloadErrors()"
+                class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md hover:bg-red-700 transition-colors"
+              >
+                Descargar reporte
+              </button>
+            </div>
+
             <button
-              (click)="onDownloadErrors()"
-              class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md"
+              (click)="importErrors.set([])"
+              class="ml-4 p-1 text-red-400 hover:text-red-800 hover:bg-red-100 rounded-full transition-all"
+              title="Cerrar mensaje"
             >
-              Reporte
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
           </div>
         }
