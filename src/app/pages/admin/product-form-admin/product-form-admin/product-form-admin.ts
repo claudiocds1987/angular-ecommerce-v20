@@ -87,8 +87,25 @@ export class ProductFormAdmin {
 
   onSubmit() {
     console.log('Form submitted with values:', this.productForm.value);
-    /* if (this.productForm.valid) {
-      if (this._operation === 'create') {} */
+
+    if (this.productForm.invalid) return;
+
+    const formValue = this.productForm.getRawValue();
+
+    // Mapeo de la estructura plana de Angular a la estructura de objetos de C#
+    const productToSave = {
+      ...formValue,
+      // Si el ID es 0 o null, lo enviamos como null para que el Backend lo cree
+      id: formValue.id === 0 ? null : formValue.id,
+
+      // Transformamos [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
+      tags: formValue.tags.map((tag: string) => ({
+        tagName: tag,
+        // El productId no hace falta enviarlo aquí,
+        // EF Core lo asigna automáticamente al guardar el producto principal.
+      })),
+    };
+    //this._productService.saveProduct(productToSave).subscribe(...);
   }
 
   onNumberKeydown(event: KeyboardEvent) {
@@ -148,6 +165,23 @@ export class ProductFormAdmin {
       brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       isActive: new FormControl<boolean>(true, { nonNullable: true }),
       images: new FormArray([]),
+      tags: new FormArray([]),
     });
+  }
+
+  // getter para obtener los tags
+  get tagsArray() {
+    return this.productForm.get('tags') as FormArray;
+  }
+
+  addTag(tagName: string) {
+    const cleanTag = tagName.trim();
+    if (cleanTag) {
+      this.tagsArray.push(new FormControl(cleanTag, { nonNullable: true }));
+    }
+  }
+
+  removeTag(index: number) {
+    this.tagsArray.removeAt(index);
   }
 }

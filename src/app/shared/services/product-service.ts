@@ -118,32 +118,6 @@ export class ProductService {
     );
   }
 
-  /*  getFilteredProductsAdmin(
-    page: number,
-    size: number,
-    filters: ProductFilterParams,
-  ): Observable<ProductPaginated<ProductAdminGrid>> {
-    // <--- Usamos tu interfaz
-    const url = `${this._apiURL}/admin`;
-
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-
-    if (filters.search) params = params.set('search', filters.search);
-    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-    if (filters.order) params = params.set('order', filters.order);
-
-    return this._http.get<ProductPaginated<ProductAdminGrid>>(url, { params }).pipe(
-      map((res) => ({
-        ...res,
-        items: res.items.map((item) => ({
-          ...item,
-          // Calculamos el finalPrice porque el DTO de C# probablemente no lo trae
-          finalPrice: Number((item.price * (1 - (item.discountPercentage || 0) / 100)).toFixed(2)),
-        })),
-      })),
-    );
-  } */
-
   getProducts(): Observable<Product[]> {
     // Si no enviamos page/size, el backend devuelve todo según ProductService.cs
     return this._http
@@ -156,7 +130,7 @@ export class ProductService {
   }
 
   createProduct(product: Product): Observable<Product> {
-    return this._http.post<Product>(`${this._apiURL}/add`, product);
+    return this._http.post<Product>(`${this._apiURL}`, product);
   }
 
   updateProduct(id: number, product: Partial<Product>): Observable<Product> {

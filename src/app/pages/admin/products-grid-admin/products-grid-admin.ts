@@ -27,7 +27,7 @@ import {
 import { ProductFilterParams } from '../../../shared/models/product-filter-params.model';
 import { GridFilterConfig } from '../../../shared/models/grid-filter-configuration.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
-import { Chip } from '../../../shared/components/chips/chips.component';
+import { Chip, ChipsComponent } from '../../../shared/components/chips/chips.component';
 import { ProductCategory } from '../../../shared/models/product-category.model';
 import { GridComponent } from '../../../shared/components/grid/grid.component';
 import { GridFilterComponent } from '../../../shared/components/grid/grid-filter/grid-filter.component';
@@ -47,7 +47,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-products-grid-admin',
   standalone: true,
-  imports: [CommonModule, ExcelUpload, GridComponent, GridFilterComponent], // CommonModule para usar @if, @for, etc.
+  imports: [CommonModule, ExcelUpload, GridComponent, GridFilterComponent, ChipsComponent], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,7 +64,7 @@ export class ProductsGridAdmin implements OnInit {
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
   importErrors = signal<string[]>([]);
-  apiURL = `${environment.serverUrl}/api/import/products`;
+  apiURL = `${environment.serverUrl}/api/massiveImport/products`;
 
   private _excelService = inject(ExcelService);
   private _spinnerService = inject(SpinnerService);
@@ -488,8 +488,9 @@ export class ProductsGridAdmin implements OnInit {
       hasSorting: { isServerSide: true },
       hasInputSearch: true,
       OrderBy: { columnName: 'id', direction: 'asc' },
-      hasChips: true,
+      //hasChips: true,
       actionButtons: [
+        // aca poner type: massiveImport
         {
           class: 'primary-button',
           icon: 'icons/product-icon.svg',

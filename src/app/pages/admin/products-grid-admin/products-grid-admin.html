@@ -1,61 +1,67 @@
-<div class="p-6 bg-gray-50 h-full flex flex-col overflow-hidden">
-  <div class="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800">Panel de Inventario (Admin)</h1>
-      <p class="text-sm text-gray-500">
-        Mostrando {{ productAdminStore.productsCount() }} de
-        {{ productAdminStore.totalItems() }} artículos
-      </p>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <app-excel-upload
-        [endpointUrl]="apiURL"
-        (uploadSuccess)="handleImportSuccess($event)"
-        (uploadError)="handleImportErrors($event)"
-      >
-      </app-excel-upload>
-    </div>
-  </div>
-
-  @if (importErrors().length > 0) {
-    <div
-      class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0"
-    >
-      <h3 class="text-sm font-bold text-red-800">
-        Carga fallida: {{ importErrors().length }} errores detectados.
-      </h3>
-      <button
-        (click)="onDownloadErrors()"
-        class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md hover:bg-red-700 transition-all"
-      >
-        Descargar Reporte
-      </button>
-    </div>
-  }
-
-  <div class="wrapper">
+<div class="bg-gray-50 h-full flex flex-col overflow-hidden">
+  <div class="wrapper flex-1 min-h-0">
     <div
       class="wrapper__content-area h-full"
       [class.wrapper__content-area--filter-collapsed]="isFilterCollapsedSig()"
     >
-      <div class="wrapper__grid-area h-full">
+      <div class="wrapper__grid-area h-full min-h-0 p-6 overflow-hidden flex flex-col">
+        <div
+          class="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4 shrink-0"
+        >
+          <div>
+            <h1 class="text-2xl font-bold text-gray-800">Panel de Inventario (Admin)</h1>
+            <p class="text-sm text-gray-500">
+              Mostrando {{ productAdminStore.productsCount() }} de
+              {{ productAdminStore.totalItems() }} artículos
+            </p>
+          </div>
+        </div>
+
+        @if (importErrors().length > 0) {
+          <div
+            class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0"
+          >
+            <h3 class="text-sm font-bold text-red-800">
+              Carga fallida: {{ importErrors().length }} errores detectados.
+            </h3>
+            <button
+              (click)="onDownloadErrors()"
+              class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md"
+            >
+              Reporte
+            </button>
+          </div>
+        }
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 shrink-0">
+          <div class="flex-1 min-w-0">
+            <app-chips [chips]="chipsSig()" (chipRemoved)="onRemoveChip($event)"> </app-chips>
+          </div>
+          <div class="flex shrink-0">
+            <app-excel-upload
+              [text]="'Carga Masiva'"
+              [endpointUrl]="apiURL"
+              (uploadSuccess)="handleImportSuccess($event)"
+              (uploadError)="handleImportErrors($event)"
+            ></app-excel-upload>
+          </div>
+        </div>
+
         <app-grid
-          class="wrapper__grid-component"
+          class="wrapper__grid-component flex-1 min-h-0 overflow-hidden"
           [gridConfigSig]="gridConfigWithTotalSig()"
           [gridDataSig]="mappedProductsSig()"
           [isLoadingSig]="productAdminStore.loading()"
-          [chipsSig]="chipsSig()"
           (pageChange)="onGridPageChange($event)"
           (sortChange)="onGridSortChange($event)"
           (exportExcel)="onExportToExcel()"
-          (chipRemoved)="onRemoveChip($event)"
           (searchInputValue)="onSearchInputValue($event)"
         ></app-grid>
       </div>
 
-      <div class="wrapper__filter-container">
+      <div class="wrapper__filter-container border-l border-gray-200 bg-white h-full shadow-xl">
         <app-grid-filter
+          class="h-full block overflow-y-auto"
           [configSig]="gridFilterConfigSig()"
           [filterFormSig]="gridFilterFormSig()"
           [isLoadingSig]="productAdminStore.loading()"

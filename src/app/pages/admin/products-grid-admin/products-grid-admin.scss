@@ -1,56 +1,59 @@
+// Contenedor principal de tu componente
+// Cambiamos h-full por calc para asegurar que no empuje al footer
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
 .wrapper {
-  flex: 1 1 0%; // Para Indicar que el contenedor debe crecer para ocupar todo el espacio disponible, permitir encogerse si es necesario y establecer una base de tamaño inicial de 0.
-  min-height: 0; // En contenedores Flex, los hijos a veces no pueden ser más pequeños que su contenido. Forzar min-height a 0 permite que este div se encoja correctamente, activando el scroll interno de la grilla en lugar de empujar el footer hacia afuera.
+  flex: 1;
+  min-height: 0;
   background-color: #fafbfc;
   display: flex;
   flex-direction: column;
+  height: 100%; // Ocupa todo el main
 }
 
-// Elemento: Contenedor de contenido (Grid + Filtro)
 .wrapper__content-area {
   display: grid;
-  grid-template-columns: 1fr 260px; // 1fr para componente Grilla | 260px para componente Filtro
+  grid-template-columns: 1fr 260px;
   gap: 16px;
   width: 100%;
-  height: 100%; // Ocupa todo el alto del contenedor wrapper
-  overflow: hidden; // Evita el scroll externo de esta columna
+  flex: 1; // IMPORTANTE: hace que esta área use todo el alto disponible
+  min-height: 0;
+  overflow: hidden;
 }
 
-// --filter-collapsed Modificador: Estado colapsado
 .wrapper__content-area--filter-collapsed {
-  grid-template-columns: 1fr 50px; // Al colapsar el filtro, 1fr para componente Grilla | 50px para componente Filtro
+  grid-template-columns: 1fr 50px;
 }
 
-// Elemento: Área de la Grilla (Contiene breadcrumb, alert, grid)
 .wrapper__grid-area {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; // Importante para que el scroll se quede dentro de la tabla
+  min-height: 0;
+  overflow: hidden;
 }
 
-// Elementos de espaciado (aplicados a los componentes)
-.wrapper__breadcrumb-spacing {
-  margin-top: 20px;
-}
-.wrapper__alert-spacing {
-  margin-bottom: 16px;
-}
-
-// Estilo para que el grid ocupe el espacio restante
 .wrapper__grid-component {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden; // El scroll se queda dentro de la tabla
 }
 
-// Elemento: Contenedor del Filtro
 .wrapper__filter-container {
-  width: 95%; // no uso 100% para que se note el efecto box-shadow flotante
+  // Quitamos el width: 95% y height: 99.7% para que sea una columna sólida
+  width: 100%;
+  height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  height: 99.7%; // no uso 100% para que se note el efecto box-shadow flotante
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden; // Para que el app-grid-filter controle su propio scroll
 }

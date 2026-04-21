@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, input, Output, signal } from '@angular/core';
 import { ExcelService } from '../../services/excel-service';
 import { ImportResultResponse } from '../../models/import-result-response.model';
 import { SpinnerService } from '../../services/spinner-service';
@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ExcelUpload {
   endpointUrl = input.required<string>();
+  @Input() text = 'Importar Excel'; // Texto del botón, con valor por defecto
   @Output() uploadSuccess = new EventEmitter<ImportResultResponse>();
   @Output() uploadError = new EventEmitter<string[]>(); // Emitiremos el array de mensajes directamente
 

@@ -40,7 +40,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Chip, ChipsComponent } from '../chips/chips.component';
+//import { Chip, ChipsComponent } from '../chips/chips.component';
 import { FeedbackComponent } from '../feedback/feedback.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { ProductAdminStore } from '../../../pages/admin/state/product-admin.store';
@@ -80,7 +80,7 @@ export function getPaginatorIntl(): MatPaginatorIntl {
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    ChipsComponent,
+    //ChipsComponent,
     FeedbackComponent,
     NgOptimizedImage,
   ],
@@ -109,13 +109,13 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
   gridConfigSig = input.required<GridConfiguration>();
   gridDataSig = input.required<GridData[]>();
   isLoadingSig = input.required<boolean>();
-  chipsSig = input<Chip[]>([]);
+  //chipsSig = input<Chip[]>([]);
 
   @Output() pageChange = new EventEmitter<PageEvent>();
   @Output() sortChange = new EventEmitter<Sort>();
   @Output() exportExcel = new EventEmitter<Sort | void>();
   @Output() exportExcelClientSide = new EventEmitter<GridData[]>();
-  @Output() chipRemoved = new EventEmitter<Chip>();
+  // @Output() chipRemoved = new EventEmitter<Chip>();
   @Output() createButtonClicked = new EventEmitter<void>();
   @Output() infiniteScroll = new EventEmitter<void>();
   @Output() rowDblClick = new EventEmitter<GridData>();
@@ -334,9 +334,9 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     this.exportExcelClientSide.emit(dataReadyForExport);
   }
 
-  onChipRemoved(chip: Chip): void {
+  /* onChipRemoved(chip: Chip): void {
     this.chipRemoved.emit(chip);
-  }
+  } */
 
   // Función que ordena la data para exportar excel si se aplica mat-sort (solo para lado cliente)
   private _getSortedData(data: GridData[], sort: MatSort): GridData[] {
