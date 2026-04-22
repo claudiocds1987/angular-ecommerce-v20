@@ -23,11 +23,12 @@ import { CategoryStore } from '../../state/category.store';
 import { BrandStore } from '../../state/brand.store';
 import { ProductService } from '../../../../shared/services/product-service';
 import { Product } from '../../../../shared/models/product.model';
+import { UploadImageComponent } from '../../../../shared/components/upload-image/upload-image';
 
 @Component({
   selector: 'app-product-form-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UploadImageComponent],
   templateUrl: './product-form-admin.html',
   styleUrl: './product-form-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +87,7 @@ export class ProductFormAdmin {
   }
 
   onSubmit() {
-    console.log('Form submitted with values:', this.productForm.value);
+    //console.log('Form submitted with values:', this.productForm.value);
 
     if (this.productForm.invalid) return;
 
@@ -98,13 +99,23 @@ export class ProductFormAdmin {
       // Si el ID es 0 o null, lo enviamos como null para que el Backend lo cree
       id: formValue.id === 0 ? null : formValue.id,
 
-      // Transformamos [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
+      // Mapeo images
+      // Mapeo de Imágenes:
+      // Aseguramos que si son nuevas, el productId sea el actual (opcional en EF Core)
+      images: formValue.images.map((img: any) => ({
+        id: img.id || null, // Si es nueva es null, si viene de DB se mantiene
+        imageUrl: img.imageUrl,
+        productId: formValue.id === 0 ? null : formValue.id,
+      })),
+
+      // Mapeo tags [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
       tags: formValue.tags.map((tag: string) => ({
         tagName: tag,
         // El productId no hace falta enviarlo aquí,
         // EF Core lo asigna automáticamente al guardar el producto principal.
       })),
     };
+    console.log('Form submitted with values:', productToSave);
     //this._productService.saveProduct(productToSave).subscribe(...);
   }
 
@@ -164,7 +175,9 @@ export class ProductFormAdmin {
       categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       isActive: new FormControl<boolean>(true, { nonNullable: true }),
-      images: new FormArray([]),
+      // Esto permite que el componente 'upload-image' gestione el array completo
+      images: new FormControl<any[]>([], { nonNullable: true }),
+      //images: new FormArray([]),
       tags: new FormArray([]),
     });
   }
