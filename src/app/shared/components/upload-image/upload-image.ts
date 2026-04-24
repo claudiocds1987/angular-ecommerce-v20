@@ -1,13 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Component, Input, forwardRef, inject, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { CommonModule } from '@angular/common';
 
-/**
- * Interfaz Genérica: Permite que el componente sea usado para Productos,
- * Usuarios o cualquier entidad que maneje una URL de imagen.
- */
+//Interfaz Genérica: Permite que el componente sea usado para Productos, Usuarios o cualquier entidad que maneje una URL de imagen.
 export interface IImageResource {
   imageUrl: string;
   id?: number | string | null;
@@ -42,13 +40,11 @@ export class UploadImageComponent implements ControlValueAccessor {
 
   private _imageCompress = inject(NgxImageCompressService);
 
-  // Funciones de ControlValueAccessor tipadas
+  // Funciones de ControlValueAccessor
   onChange: (value: IImageResource[] | string) => void = () => {};
   onTouched: () => void = () => {};
 
-  /**
-   * Actualiza el valor desde el formulario padre (ej. al cargar el producto a editar)
-   */
+  // writeValue para actualizar el valor desde el formulario padre (ej. al cargar el producto a editar)
   writeValue(value: IImageResource[] | string): void {
     if (value) {
       // Si el valor es un string (una sola URL)
@@ -91,20 +87,34 @@ export class UploadImageComponent implements ControlValueAccessor {
   }
 
   async processFile(file: File) {
+    // 1.Check si la imagen pesa mas de 2MB
     if (file.size > this.maxFileSizeMB * 1024 * 1024) {
-      alert(`La imagen ${file.name} supera los ${this.maxFileSizeMB}MB`);
+      this.errorMessage.set(`La imagen ${file.name} supera los ${this.maxFileSizeMB}MB`);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async (e: any) => {
-      const content = e.target?.result as string;
-      if (content) {
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = async () => {
+        const content = reader.result as string;
+
+        // Calculamos el tamaño antes para loguear (opcional, útil para debug)
+        const sizeBefore = this._imageCompress.byteCount(content);
+
+        // 3. COMPRESIÓN: // '80' de calidad es excelente. '50' de ratio es agresivo pero efectivo.
         const result = await this._imageCompress.compressFile(content, -1, 50, 80);
+
+        const sizeAfter = this._imageCompress.byteCount(result);
+        console.log(`Compresión terminada: de ${sizeBefore} a ${sizeAfter} bytes.`);
+
         this.addImageToList(result);
-      }
-    };
-    reader.readAsDataURL(file);
+      };
+    } catch (error) {
+      this.errorMessage.set('Error al procesar la imagen.');
+      console.error(error);
+    }
   }
 
   addImageFromUrl() {

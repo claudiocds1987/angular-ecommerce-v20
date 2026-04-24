@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -24,6 +25,8 @@ import { BrandStore } from '../../state/brand.store';
 import { ProductService } from '../../../../shared/services/product-service';
 import { Product } from '../../../../shared/models/product.model';
 import { UploadImageComponent } from '../../../../shared/components/upload-image/upload-image';
+import { finalize, Observable } from 'rxjs';
+import { SpinnerService } from '../../../../shared/services/spinner-service';
 
 @Component({
   selector: 'app-product-form-admin',
@@ -36,6 +39,7 @@ import { UploadImageComponent } from '../../../../shared/components/upload-image
 export class ProductFormAdmin {
   productForm: FormGroup = this._createProductForm();
 
+  private _spinnerService = inject(SpinnerService);
   // Inyección de stores
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
@@ -81,42 +85,68 @@ export class ProductFormAdmin {
         // Evita disparar el effect si el formulario cambia internamente. (evitaría un loop infinito)
         untracked(() => {
           this.productForm.patchValue(product);
+          // Tags
+          this.tagsArray.clear();
+          if (product.tags && product.tags.length > 0) {
+            product.tags.forEach((tagObj) => {
+              this.tagsArray.push(new FormControl(tagObj.tagName));
+            });
+          }
         });
       }
     });
   }
 
   onSubmit() {
-    //console.log('Form submitted with values:', this.productForm.value);
-
     if (this.productForm.invalid) return;
 
     const formValue = this.productForm.getRawValue();
 
     // Mapeo de la estructura plana de Angular a la estructura de objetos de C#
-    const productToSave = {
+    const productToSave: Product = {
       ...formValue,
       // Si el ID es 0 o null, lo enviamos como null para que el Backend lo cree
-      id: formValue.id === 0 ? null : formValue.id,
-
-      // Mapeo images
-      // Mapeo de Imágenes:
-      // Aseguramos que si son nuevas, el productId sea el actual (opcional en EF Core)
+      id: formValue.id || null,
+      price: Number(formValue.price),
+      discountPercentage: Number(formValue.discountPercentage),
+      stock: Number(formValue.stock),
+      depth: Number(formValue.depth),
+      height: Number(formValue.height),
+      width: Number(formValue.width),
+      weight: Number(formValue.weight),
+      // Aseguramos que si las imagenes son nuevas, el productId sea el actual (opcional en EF Core)
       images: formValue.images.map((img: any) => ({
         id: img.id || null, // Si es nueva es null, si viene de DB se mantiene
         imageUrl: img.imageUrl,
-        productId: formValue.id === 0 ? null : formValue.id,
+        productId: formValue.id || null, // Esto ayuda a EF Core a asociar las imágenes al producto correcto
       })),
 
       // Mapeo tags [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
       tags: formValue.tags.map((tag: string) => ({
         tagName: tag,
-        // El productId no hace falta enviarlo aquí,
-        // EF Core lo asigna automáticamente al guardar el producto principal.
       })),
     };
-    console.log('Form submitted with values:', productToSave);
-    //this._productService.saveProduct(productToSave).subscribe(...);
+
+    if (this._operation === 'create') {
+      this._spinnerService.show();
+      this._createProduct(productToSave)
+        .pipe(
+          // Finalize se ejecuta tanto en éxito como en error (ideal para apagar un loading)
+          finalize(() => this._spinnerService.hide()),
+        )
+        .subscribe({
+          next: (product) => this._handleSuccess(product),
+          error: (err) => this._handleError(err),
+        });
+    } else {
+      console.log('editando');
+      this._updateProduct(productToSave)
+        .pipe(finalize(() => this._spinnerService.hide()))
+        .subscribe({
+          next: (product) => this._handleSuccess(product),
+          error: (err) => this._handleError(err),
+        });
+    }
   }
 
   onNumberKeydown(event: KeyboardEvent) {
@@ -124,6 +154,42 @@ export class ProductFormAdmin {
     if (!allowedKeys.includes(event.key) && isNaN(Number(event.key))) {
       event.preventDefault();
     }
+  }
+
+  // Getter para facilitar el acceso en el HTML
+  get tagsArray() {
+    return this.productForm.get('tags') as FormArray;
+  }
+
+  addTag(input: HTMLInputElement) {
+    const value = input.value.trim();
+    if (value) {
+      // Validar que no se repita
+      if (!this.tagsArray.value.includes(value)) {
+        this.tagsArray.push(new FormControl(value));
+      }
+      input.value = '';
+    }
+  }
+
+  removeTag(index: number) {
+    this.tagsArray.removeAt(index);
+  }
+
+  private _handleSuccess(product: Product): void {
+    alert(`Producto ${product.title} creado`);
+  }
+
+  private _handleError(product: Product): void {
+    alert(`Error Producto ${product.title} no se pudo crear`);
+  }
+
+  private _createProduct(product: Product): Observable<Product> {
+    return this._productService.createProduct(product);
+  }
+
+  private _updateProduct(product: Product): Observable<Product> {
+    return this._productService.updateProduct(product.id, product);
   }
 
   private _initData() {
@@ -175,26 +241,8 @@ export class ProductFormAdmin {
       categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       isActive: new FormControl<boolean>(true, { nonNullable: true }),
-      // Esto permite que el componente 'upload-image' gestione el array completo
       images: new FormControl<any[]>([], { nonNullable: true }),
-      //images: new FormArray([]),
       tags: new FormArray([]),
     });
-  }
-
-  // getter para obtener los tags
-  get tagsArray() {
-    return this.productForm.get('tags') as FormArray;
-  }
-
-  addTag(tagName: string) {
-    const cleanTag = tagName.trim();
-    if (cleanTag) {
-      this.tagsArray.push(new FormControl(cleanTag, { nonNullable: true }));
-    }
-  }
-
-  removeTag(index: number) {
-    this.tagsArray.removeAt(index);
   }
 }

@@ -347,6 +347,80 @@
           <h2 class="text-lg font-semibold text-slate-800 mb-4">Imagen Principal (Thumbnail)</h2>
           <app-upload-image formControlName="thumbnail" [maxFiles]="1"></app-upload-image>
         </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-slate-400 rounded-full"></span>
+            Etiquetas de Búsqueda
+          </h2>
+          <p class="text-xs text-slate-500 mb-4">
+            Ayuda a los clientes a encontrar el producto más rápido.
+          </p>
+
+          <div class="space-y-4">
+            <div class="relative">
+              <input
+                type="text"
+                #tagInput
+                (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
+                placeholder="Escribe y presiona Enter..."
+                class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all"
+              />
+              <button
+                type="button"
+                (click)="addTag(tagInput)"
+                class="absolute right-2 top-2 p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div
+              class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-slate-50 rounded-xl border border-dashed border-slate-200"
+            >
+              @if (tagsArray.controls.length === 0) {
+                <span class="text-xs text-slate-400 italic m-auto">Sin etiquetas añadidas</span>
+              }
+
+              @for (tagControl of tagsArray.controls; track $index) {
+                <div
+                  class="flex items-center gap-1.5 pl-3 pr-1.5 py-1 bg-white border border-slate-200 rounded-lg shadow-sm group hover:border-indigo-300 transition-all"
+                >
+                  <span class="text-sm font-medium text-slate-600">{{ tagControl.value }}</span>
+                  <button
+                    type="button"
+                    (click)="removeTag($index)"
+                    class="p-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </form>

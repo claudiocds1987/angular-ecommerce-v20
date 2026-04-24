@@ -567,7 +567,6 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _editProduct(id: number): void {
-    console.log('Edit product with ID:', id);
     this._router.navigate(['/product/edit', id]);
   }
 
