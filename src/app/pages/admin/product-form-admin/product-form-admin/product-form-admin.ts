@@ -89,12 +89,18 @@ export class ProductFormAdmin {
           this.tagsArray.clear();
           if (product.tags && product.tags.length > 0) {
             product.tags.forEach((tagObj) => {
+              // Agregamos cada nombre del tag al setter tagsArray que es un FormArray
               this.tagsArray.push(new FormControl(tagObj.tagName));
             });
           }
         });
       }
     });
+  }
+
+
+  isReadyToSave(): boolean {
+    return this.productForm.valid && this.productForm.dirty;
   }
 
   onSubmit() {
@@ -114,11 +120,10 @@ export class ProductFormAdmin {
       height: Number(formValue.height),
       width: Number(formValue.width),
       weight: Number(formValue.weight),
-      // Aseguramos que si las imagenes son nuevas, el productId sea el actual (opcional en EF Core)
       images: formValue.images.map((img: any) => ({
-        id: img.id || null, // Si es nueva es null, si viene de DB se mantiene
+        id: img.id || null,
         imageUrl: img.imageUrl,
-        productId: formValue.id || null, // Esto ayuda a EF Core a asociar las imágenes al producto correcto
+        productId: formValue.id || null,
       })),
 
       // Mapeo tags [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
