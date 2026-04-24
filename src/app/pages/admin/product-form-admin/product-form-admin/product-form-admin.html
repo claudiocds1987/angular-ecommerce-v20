@@ -50,12 +50,25 @@
           </div>
         </section>
 
-        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-pink-500 rounded-full"></span>
-            Imagen Principal (Thumbnail)
-          </h2>
-          <app-upload-image formControlName="thumbnail" [maxFiles]="1"></app-upload-image>
+        <section
+          class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-pink-500"
+        >
+          <div class="mb-4">
+            <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+              Portada del Producto
+            </h2>
+            <p class="text-xs text-slate-400">Esta imagen es la principal (thumbnail).</p>
+          </div>
+
+          <div
+            class="bg-slate-50 rounded-2xl p-4 border-2 border-dashed border-slate-200 hover:border-pink-300 transition-colors"
+          >
+            <app-upload-image
+              formControlName="thumbnail"
+              [maxFiles]="1"
+              class="thumbnail-uploader"
+            ></app-upload-image>
+          </div>
         </section>
 
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -63,10 +76,7 @@
             <span class="w-1.5 h-6 bg-indigo-400 rounded-full"></span>
             Galería de Imágenes
           </h2>
-          <app-upload-image
-            formControlName="images"
-            [title]="'Fotos de la Galería'"
-          ></app-upload-image>
+          <app-upload-image formControlName="images"></app-upload-image>
         </section>
       </div>
 
@@ -76,13 +86,22 @@
             <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
             Inventario y Medidas
           </h2>
-          <div class="grid grid-cols-2 gap-4">
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <label class="block">
               <span class="block text-xs font-bold text-slate-400 uppercase mb-2">Stock</span>
               <input
                 type="number"
                 formControlName="stock"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase mb-2">Mín. Compra</span>
+              <input
+                type="number"
+                formControlName="minimumOrderQuantity"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
               />
             </label>
             <label class="block">
@@ -90,39 +109,45 @@
               <input
                 type="text"
                 formControlName="sku"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-mono text-sm"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-mono text-sm uppercase"
               />
             </label>
           </div>
 
+          <span class="block text-xs font-bold text-slate-400 uppercase mb-3"
+            >Dimensiones (cm)</span
+          >
           <div
-            class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-3 gap-2 text-center"
+            class="p-4 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-3 gap-4 text-center"
           >
             <div class="flex flex-col">
-              <span class="text-[10px] font-bold text-slate-500 uppercase">Ancho</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase mb-1">Ancho</span>
               <input
                 type="text"
                 formControlName="width"
                 (keydown)="onNumberKeydown($event)"
-                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
+                placeholder="0.00"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm py-1"
               />
             </div>
             <div class="flex flex-col">
-              <span class="text-[10px] font-bold text-slate-500 uppercase">Alto</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase mb-1">Alto</span>
               <input
                 type="text"
                 formControlName="height"
                 (keydown)="onNumberKeydown($event)"
-                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
+                placeholder="0.00"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm py-1"
               />
             </div>
             <div class="flex flex-col">
-              <span class="text-[10px] font-bold text-slate-500 uppercase">Prof.</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase mb-1">Prof.</span>
               <input
                 type="text"
                 formControlName="depth"
                 (keydown)="onNumberKeydown($event)"
-                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
+                placeholder="0.00"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm py-1"
               />
             </div>
           </div>

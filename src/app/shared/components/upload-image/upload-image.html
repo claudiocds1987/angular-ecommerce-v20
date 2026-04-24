@@ -1,7 +1,7 @@
 <div class="space-y-4">
   <div class="flex justify-between items-center text-sm">
     @if (title) {
-      <span class="font-medium text-slate-700">${{ title }}</span>
+      <span class="font-medium text-slate-700">{{ title }}</span>
     }
     <span
       [class.text-red-500]="images().length >= maxFiles"
