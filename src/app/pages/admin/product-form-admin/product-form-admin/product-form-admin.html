@@ -24,196 +24,38 @@
 
   <form [formGroup]="productForm" class="space-y-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 space-y-6">
+      <div class="space-y-6">
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
             <span class="w-1.5 h-6 bg-indigo-600 rounded-full"></span>
-            Detalles Principales
+            Información Básica
           </h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2">
-              <label class="block">
-                <span class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Título del Producto</span
-                >
-                <input
-                  type="text"
-                  formControlName="title"
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all"
-                />
-              </label>
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block">
-                <span class="block text-sm font-semibold text-slate-700 mb-2">Descripción</span>
-                <textarea
-                  formControlName="description"
-                  rows="3"
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all resize-none"
-                ></textarea>
-              </label>
-            </div>
-
-            <div>
-              <label class="block">
-                <span class="block text-sm font-semibold text-slate-700 mb-2">SKU</span>
-                <input
-                  type="text"
-                  formControlName="sku"
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-mono text-sm"
-                />
-              </label>
-            </div>
-
-            <div>
-              <label class="block">
-                <span class="block text-sm font-semibold text-slate-700 mb-2">Estado</span>
-                <select
-                  formControlName="availabilityStatus"
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-indigo-50 transition-all appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
-                >
-                  <option value="In Stock">En Stock</option>
-                  <option value="Low Stock">Poco Stock</option>
-                  <option value="Out of Stock">Agotado</option>
-                </select>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
-            Inventario y Medidas
-          </h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="space-y-4">
             <label class="block">
-              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
-                >Stock</span
-              >
-              <input
-                type="number"
-                formControlName="stock"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
-                >Min. Orden</span
-              >
-              <input
-                type="number"
-                formControlName="minimumOrderQuantity"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
-                >Peso (kg)</span
-              >
+              <span class="block text-sm font-semibold text-slate-700 mb-2">Título</span>
               <input
                 type="text"
-                formControlName="weight"
-                (keydown)="onNumberKeydown($event)"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
+                formControlName="title"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 outline-none transition-all"
               />
             </label>
             <label class="block">
-              <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"
-                >Rating (AI)</span
-              >
-              <input
-                type="number"
-                formControlName="rating"
-                readonly
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500"
-              />
-            </label>
-          </div>
-
-          <div
-            class="mt-8 grid grid-cols-3 gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center"
-          >
-            <label class="block">
-              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
-                >Ancho (cm)</span
-              >
-              <input
-                type="text"
-                formControlName="width"
-                (keydown)="onNumberKeydown($event)"
-                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
-                >Alto (cm)</span
-              >
-              <input
-                type="text"
-                formControlName="height"
-                (keydown)="onNumberKeydown($event)"
-                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-[10px] font-bold text-slate-500 mb-1 uppercase"
-                >Profundidad (cm)</span
-              >
-              <input
-                type="text"
-                formControlName="depth"
-                (keydown)="onNumberKeydown($event)"
-                class="w-20 bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center"
-              />
+              <span class="block text-sm font-semibold text-slate-700 mb-2">Descripción</span>
+              <textarea
+                formControlName="description"
+                rows="4"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 outline-none transition-all resize-none"
+              ></textarea>
             </label>
           </div>
         </section>
 
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
-            Garantía y Políticas
+          <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-pink-500 rounded-full"></span>
+            Imagen Principal (Thumbnail)
           </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <label class="block">
-              <span class="block text-sm font-semibold text-slate-700 mb-2"
-                >Información de Garantía</span
-              >
-              <input
-                type="text"
-                formControlName="warrantyInformation"
-                placeholder="Ej: 1 año de garantía oficial"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50 focus:border-amber-500"
-              />
-            </label>
-            <label class="block">
-              <span class="block text-sm font-semibold text-slate-700 mb-2"
-                >Información de Envío</span
-              >
-              <input
-                type="text"
-                formControlName="shippingInformation"
-                placeholder="Ej: Envío gratis en 24h"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50 focus:border-amber-500"
-              />
-            </label>
-            <div class="md:col-span-2">
-              <label class="block">
-                <span class="block text-sm font-semibold text-slate-700 mb-2"
-                  >Política de Devolución</span
-                >
-                <input
-                  type="text"
-                  formControlName="returnPolicy"
-                  placeholder="Ej: 30 días de devolución gratuita"
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-amber-50"
-                />
-              </label>
-            </div>
-          </div>
+          <app-upload-image formControlName="thumbnail" [maxFiles]="1"></app-upload-image>
         </section>
 
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -221,96 +63,160 @@
             <span class="w-1.5 h-6 bg-indigo-400 rounded-full"></span>
             Galería de Imágenes
           </h2>
-
           <app-upload-image
             formControlName="images"
-            [title]="'Imagenes del producto'"
+            [title]="'Fotos de la Galería'"
           ></app-upload-image>
-
-          <p class="mt-4 text-xs text-slate-400">
-            Tip: Puedes arrastrar archivos directamente o pegar una URL externa.
-          </p>
         </section>
       </div>
 
       <div class="space-y-6">
-        <section
-          class="bg-indigo-900 p-8 rounded-3xl shadow-xl shadow-indigo-100 text-white overflow-hidden relative"
-        >
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+            Inventario y Medidas
+          </h2>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase mb-2">Stock</span>
+              <input
+                type="number"
+                formControlName="stock"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-emerald-50"
+              />
+            </label>
+            <label class="block">
+              <span class="block text-xs font-bold text-slate-400 uppercase mb-2">SKU</span>
+              <input
+                type="text"
+                formControlName="sku"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-mono text-sm"
+              />
+            </label>
+          </div>
+
           <div
-            class="absolute -top-10 -right-10 w-24 h-24 bg-indigo-800 rounded-full opacity-30"
-          ></div>
-
-          <h2 class="text-lg font-semibold mb-6">Finanzas</h2>
-
-          <div class="space-y-5 relative z-10">
-            <label class="block">
-              <span class="block text-xs font-medium text-indigo-200 mb-2">Precio Base ($)</span>
+            class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-3 gap-2 text-center"
+          >
+            <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">Ancho</span>
               <input
                 type="text"
-                formControlName="price"
-                inputmode="decimal"
-                placeholder="0.00"
+                formControlName="width"
                 (keydown)="onNumberKeydown($event)"
-                class="w-full px-4 py-3 rounded-xl bg-indigo-800/50 border border-indigo-700 text-white outline-none focus:ring-2 focus:ring-white transition-all appearance-none"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
               />
-            </label>
-
-            <label class="block">
-              <span class="block text-xs font-medium text-indigo-200 mb-2">Descuento (%)</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">Alto</span>
               <input
                 type="text"
-                formControlName="discountPercentage"
-                inputmode="numeric"
-                placeholder="0"
+                formControlName="height"
                 (keydown)="onNumberKeydown($event)"
-                class="w-full px-4 py-3 rounded-xl bg-indigo-800/50 border border-indigo-700 text-white outline-none focus:ring-2 focus:ring-indigo-400 transition-all appearance-none"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
               />
-            </label>
-
-            <div class="pt-6 border-t border-indigo-800/60 flex justify-between items-end">
-              <div>
-                <span
-                  class="block text-[10px] uppercase tracking-widest text-indigo-300 font-bold mb-1"
-                  >Precio Final</span
-                >
-                <div class="flex items-center gap-2">
-                  <span class="text-4xl font-black tracking-tighter transition-all duration-300">
-                    ${{ finalPriceSig() | number: '1.2-2' }}
-                  </span>
-
-                  @if (productForm.get('discountPercentage')?.value > 0) {
-                    <span
-                      class="text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded font-bold animate-pulse"
-                    >
-                      OFF
-                    </span>
-                  }
-                </div>
-              </div>
-
-              <div
-                class="text-indigo-300 text-[10px] font-mono bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-700"
-              >
-                ARS
-              </div>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">Prof.</span>
+              <input
+                type="text"
+                formControlName="depth"
+                (keydown)="onNumberKeydown($event)"
+                class="bg-transparent border-b-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-sm"
+              />
             </div>
           </div>
         </section>
 
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-6 font-display">Clasificación</h2>
-          <div class="space-y-5">
+          <h2 class="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+            Entregas y Garantía
+          </h2>
+          <div class="space-y-4">
+            <label class="block">
+              <span
+                class="block text-sm font-semibold text-slate-700 mb-2 border-l-2 border-amber-200 pl-2"
+                >Garantía</span
+              >
+              <input
+                type="text"
+                formControlName="warrantyInformation"
+                class="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+              />
+            </label>
+            <label class="block">
+              <span
+                class="block text-sm font-semibold text-slate-700 mb-2 border-l-2 border-amber-200 pl-2"
+                >Envío</span
+              >
+              <input
+                type="text"
+                formControlName="shippingInformation"
+                class="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+              />
+            </label>
+            <label class="block">
+              <span
+                class="block text-sm font-semibold text-slate-700 mb-2 border-l-2 border-amber-200 pl-2"
+                >Devoluciones</span
+              >
+              <input
+                type="text"
+                formControlName="returnPolicy"
+                class="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+              />
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <div class="space-y-6">
+        <section
+          class="bg-indigo-900 p-6 rounded-3xl shadow-xl shadow-indigo-100 text-white relative overflow-hidden"
+        >
+          <div
+            class="absolute -top-6 -right-6 w-20 h-20 bg-indigo-800 rounded-full opacity-50"
+          ></div>
+          <h2 class="text-lg font-semibold mb-4 relative z-10">Precios</h2>
+          <div class="space-y-4 relative z-10">
+            <div class="grid grid-cols-2 gap-4">
+              <label class="block">
+                <span class="text-[10px] text-indigo-200 uppercase font-bold">Base ($)</span>
+                <input
+                  type="text"
+                  formControlName="price"
+                  (keydown)="onNumberKeydown($event)"
+                  class="w-full bg-indigo-800/50 border border-indigo-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-white"
+                />
+              </label>
+              <label class="block">
+                <span class="text-[10px] text-indigo-200 uppercase font-bold">Desc (%)</span>
+                <input
+                  type="text"
+                  formControlName="discountPercentage"
+                  (keydown)="onNumberKeydown($event)"
+                  class="w-full bg-indigo-800/50 border border-indigo-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-white"
+                />
+              </label>
+            </div>
+            <div class="pt-4 border-t border-indigo-800 flex justify-between items-center">
+              <span class="text-3xl font-black">${{ finalPriceSig() | number: '1.2-2' }}</span>
+              <span class="text-[10px] bg-white/20 px-2 py-1 rounded">ARS</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="space-y-4">
             <label class="block">
               <span class="block text-sm font-semibold text-slate-700 mb-2">Categoría</span>
               <select
                 formControlName="categoryId"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
               >
                 @for (category of categoriesSig(); track category.id) {
-                  <option [ngValue]="category.id">
-                    {{ category.name }}
-                  </option>
+                  <option [ngValue]="category.id">{{ category.name }}</option>
                 }
               </select>
             </label>
@@ -318,90 +224,99 @@
               <span class="block text-sm font-semibold text-slate-700 mb-2">Marca</span>
               <select
                 formControlName="brandId"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none appearance-none bg-[url('data:image/svg+xml;...')] bg-no-repeat bg-[right_0.5rem_center]"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
               >
                 @for (brand of brandsSig(); track brand.id) {
-                  <option [ngValue]="brand.id">
-                    {{ brand.name }}
-                  </option>
+                  <option [ngValue]="brand.id">{{ brand.name }}</option>
                 }
               </select>
             </label>
-            <div class="pt-2">
-              <label class="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  formControlName="isActive"
-                  class="w-6 h-6 text-indigo-600 rounded-lg border-slate-300 focus:ring-indigo-500 cursor-pointer"
-                />
-                <span
-                  class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors"
-                  >Producto Activo</span
-                >
-              </label>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+              <input
+                type="checkbox"
+                formControlName="isActive"
+                class="w-5 h-5 text-indigo-600 rounded border-slate-300"
+              />
+              <span class="text-sm font-semibold text-slate-700">Producto Activo</span>
             </div>
           </div>
         </section>
 
         <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-4">Imagen Principal (Thumbnail)</h2>
-          <app-upload-image formControlName="thumbnail" [maxFiles]="1"></app-upload-image>
-        </section>
-
-        <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-slate-400 rounded-full"></span>
-            Etiquetas de Búsqueda
-          </h2>
-          <p class="text-xs text-slate-500 mb-4">
-            Ayuda a los clientes a encontrar el producto más rápido.
-          </p>
+          <div class="mb-4">
+            <h2
+              class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
+            >
+              Etiquetas de Búsqueda
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
+                ></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">
+              Agregue tags para mejorar la búsqueda de los usuarios y el posicionamiento.
+            </p>
+          </div>
 
           <div class="space-y-4">
-            <div class="relative">
+            <div class="relative group">
               <input
                 type="text"
                 #tagInput
                 (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
-                placeholder="Escribe y presiona Enter..."
-                class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all"
+                placeholder="Ej: Verano, Gamer..."
+                class="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all pr-24"
               />
-              <button
-                type="button"
-                (click)="addTag(tagInput)"
-                class="absolute right-2 top-2 p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+
+              <div class="absolute right-1.5 top-1.5 flex items-center gap-2">
+                <kbd
+                  class="hidden md:inline-flex text-[10px] font-sans px-1.5 py-1 border border-slate-200 rounded-md bg-slate-50 text-slate-400"
                 >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
+                  Enter
+                </kbd>
+
+                <button
+                  type="button"
+                  (click)="addTag(tagInput)"
+                  class="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:scale-95 transition-all shadow-md shadow-indigo-100"
+                  title="Agregar etiqueta"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div
-              class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-slate-50 rounded-xl border border-dashed border-slate-200"
+              class="flex flex-wrap gap-2 min-h-[42px] p-2 bg-slate-50/50 rounded-xl border border-dashed border-slate-200"
             >
               @if (tagsArray.controls.length === 0) {
-                <span class="text-xs text-slate-400 italic m-auto">Sin etiquetas añadidas</span>
+                <span class="text-[11px] text-slate-400 italic m-auto"
+                  >No hay etiquetas todavía</span
+                >
               }
 
               @for (tagControl of tagsArray.controls; track $index) {
                 <div
-                  class="flex items-center gap-1.5 pl-3 pr-1.5 py-1 bg-white border border-slate-200 rounded-lg shadow-sm group hover:border-indigo-300 transition-all"
+                  class="flex items-center gap-1.5 pl-2.5 pr-1 py-1 bg-white border border-indigo-100 rounded-lg shadow-sm group"
                 >
-                  <span class="text-sm font-medium text-slate-600">{{ tagControl.value }}</span>
+                  <span class="text-xs font-semibold text-indigo-600">{{ tagControl.value }}</span>
                   <button
                     type="button"
                     (click)="removeTag($index)"
-                    class="p-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                    class="p-0.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

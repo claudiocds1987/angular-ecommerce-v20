@@ -98,7 +98,6 @@ export class ProductFormAdmin {
     });
   }
 
-
   isReadyToSave(): boolean {
     return this.productForm.valid && this.productForm.dirty;
   }
@@ -107,7 +106,6 @@ export class ProductFormAdmin {
     if (this.productForm.invalid) return;
 
     const formValue = this.productForm.getRawValue();
-
     // Mapeo de la estructura plana de Angular a la estructura de objetos de C#
     const productToSave: Product = {
       ...formValue,
@@ -167,12 +165,27 @@ export class ProductFormAdmin {
   }
 
   addTag(input: HTMLInputElement) {
-    const value = input.value.trim();
-    if (value) {
-      // Validar que no se repita
-      if (!this.tagsArray.value.includes(value)) {
-        this.tagsArray.push(new FormControl(value));
-      }
+    const rawValue = input.value.trim();
+
+    if (rawValue) {
+      const newTags = rawValue.split(',');
+
+      newTags.forEach((tag) => {
+        // permite letras (con acentos y ñ), números y espacios. no permite simbolos y caracteres especiales y elimina espacios al inicio y al final.
+        const cleanTag = tag.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g, '').trim();
+
+        if (cleanTag) {
+          // Validación de duplicados sin importar mayúsculas/minúsculas
+          const alreadyExists = this.tagsArray.value.some(
+            (t: string) => t.toLowerCase() === cleanTag.toLowerCase(),
+          );
+
+          if (!alreadyExists) {
+            this.tagsArray.push(new FormControl(cleanTag));
+          }
+        }
+      });
+
       input.value = '';
     }
   }
@@ -242,7 +255,7 @@ export class ProductFormAdmin {
       availabilityStatus: new FormControl<string>('instock'),
       returnPolicy: new FormControl<string>(''),
       minimumOrderQuantity: new FormControl<number>(1, { validators: [Validators.min(1)] }),
-      thumbnail: new FormControl<string>(''),
+      thumbnail: new FormControl<string>('', { validators: [Validators.required] }),
       categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       isActive: new FormControl<boolean>(true, { nonNullable: true }),
