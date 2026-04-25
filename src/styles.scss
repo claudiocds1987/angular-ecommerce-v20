@@ -18,7 +18,30 @@ html {
 // 2. ESTILOS BASE Y TAILWIND
 @import 'tailwindcss';
 
-// Mis estilos despues de Tailwind
+// --- NUEVA SECCIÓN DE COMPONENTES ---
+@layer components {
+  /* Contenedor principal de cada sección */
+  .form-card {
+    @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
+  }
+
+  /* Títulos de sección con el indicador lateral */
+  .section-header {
+    @apply mb-6 flex items-center gap-2 text-lg font-semibold text-slate-800;
+  }
+
+  /* El indicador de color vertical */
+  .section-dot {
+    @apply h-6 w-1.5 rounded-full;
+  }
+
+  /* Inputs estándar del formulario */
+  .form-input-field {
+    @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
+  }
+}
+
+// 3. MIS ESTILOS DESPUÉS DE TAILWIND
 @import './app/shared/styles/buttons/primary-button.scss';
 @import './app/shared/styles/buttons/download-button.scss';
 
