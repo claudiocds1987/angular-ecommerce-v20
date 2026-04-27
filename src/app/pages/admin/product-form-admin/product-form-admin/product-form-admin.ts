@@ -118,7 +118,7 @@ export class ProductFormAdmin {
       height: Number(formValue.height),
       width: Number(formValue.width),
       weight: Number(formValue.weight),
-      images: formValue.images.map((img: any) => ({
+      images: (formValue.images || []).map((img: any) => ({
         id: img.id || null,
         imageUrl: img.imageUrl,
         productId: formValue.id || null,
@@ -254,7 +254,10 @@ export class ProductFormAdmin {
       shippingInformation: new FormControl<string>(''),
       availabilityStatus: new FormControl<string>('instock'),
       returnPolicy: new FormControl<string>(''),
-      minimumOrderQuantity: new FormControl<number>(1, { validators: [Validators.min(1)] }),
+      minimumOrderQuantity: new FormControl<number>(1, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(1)],
+      }),
       thumbnail: new FormControl<string>('', { validators: [Validators.required] }),
       categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
       brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
