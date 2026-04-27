@@ -39,10 +39,15 @@ html {
   .form-input-field {
     @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
   }
+
+  /* buttons*/
+  .primary-button {
+    @apply cursor-pointer rounded bg-slate-900 px-4 py-2 text-white shadow-md transition-colors hover:bg-slate-700;
+  }
 }
 
 // 3. MIS ESTILOS DESPUÉS DE TAILWIND
-@import './app/shared/styles/buttons/primary-button.scss';
+@import './app/shared/styles/buttons/action-button-grid.scss';
 @import './app/shared/styles/buttons/download-button.scss';
 
 html,

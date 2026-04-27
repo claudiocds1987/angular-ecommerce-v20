@@ -1,12 +1,12 @@
 <div
-  class="bg-white border border-slate-100 rounded-2xl p-4 flex gap-4 items-center transition-all hover:shadow-md"
+  class="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:shadow-md"
 >
-  <div class="w-20 h-20 bg-slate-50 rounded-xl flex-shrink-0 border border-slate-100">
-    <img [src]="item().thumbnail" [alt]="item().title" class="w-full h-full object-contain p-2" />
+  <div class="h-20 w-20 flex-shrink-0 rounded-xl border border-slate-100 bg-slate-50">
+    <img [src]="item().thumbnail" [alt]="item().title" class="h-full w-full object-contain p-2" />
   </div>
 
-  <div class="flex flex-col flex-1 min-w-0">
-    <span class="text-sm font-bold text-slate-900 truncate">{{ item().title }}</span>
+  <div class="flex min-w-0 flex-1 flex-col">
+    <span class="truncate text-sm font-bold text-slate-900">{{ item().title }}</span>
 
     <div class="mt-1 flex flex-col">
       @if (item().discountPercentage! > 0) {
@@ -25,9 +25,9 @@
   </div>
 
   <div class="flex flex-col items-center gap-1">
-    <span class="text-[9px] font-bold uppercase text-slate-400 tracking-wider">Cantidad</span>
+    <span class="text-[9px] font-bold tracking-wider text-slate-400 uppercase">Cantidad</span>
 
-    <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
+    <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-1">
       <button
         type="button"
         (click)="
@@ -35,7 +35,7 @@
           onQuantityChange(item().id, inputQuantity.value)
         "
         [disabled]="+inputQuantity.value <= 1"
-        class="w-7 h-7 flex items-center justify-center bg-white rounded-md shadow-sm disabled:opacity-30 disabled:cursor-not-allowed active:scale-90 transition-all text-slate-600 font-bold"
+        class="flex h-7 w-7 items-center justify-center rounded-md bg-white font-bold text-slate-600 shadow-sm transition-all active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
       >
         -
       </button>
@@ -47,7 +47,7 @@
         [max]="item().stock"
         [value]="item().quantity"
         readonly
-        class="w-8 text-center bg-transparent border-none text-sm font-bold text-slate-800 focus:ring-0 cursor-default"
+        class="w-8 cursor-default border-none bg-transparent text-center text-sm font-bold text-slate-800 focus:ring-0"
         (change)="onQuantityChange(item().id, inputQuantity.value)"
       />
 
@@ -58,7 +58,7 @@
           onQuantityChange(item().id, inputQuantity.value)
         "
         [disabled]="+inputQuantity.value >= item().stock"
-        class="w-7 h-7 flex items-center justify-center bg-white rounded-md shadow-sm disabled:opacity-30 disabled:cursor-not-allowed active:scale-90 transition-all text-slate-600 font-bold"
+        class="flex h-7 w-7 items-center justify-center rounded-md bg-white font-bold text-slate-600 shadow-sm transition-all active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
       >
         +
       </button>
@@ -67,7 +67,7 @@
 
   <button
     (click)="onRemoveItem(item().id)"
-    class="ml-2 p-2 text-slate-300 hover:text-red-500 transition-colors cursor-pointer group"
+    class="group ml-2 cursor-pointer p-2 text-slate-300 transition-colors hover:text-red-500"
     title="Eliminar producto"
   >
     <svg

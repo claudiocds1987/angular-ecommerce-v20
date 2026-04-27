@@ -490,7 +490,7 @@ export class ProductsGridAdmin implements OnInit {
       OrderBy: { columnName: 'id', direction: 'asc' },
       actionButtons: [
         {
-          class: 'primary-button',
+          class: 'action-button-grid',
           icon: 'icons/product-icon.svg',
           text: 'Agregar',
           action: (): void => this._onCreateProduct(),
