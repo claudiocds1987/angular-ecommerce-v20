@@ -43,6 +43,7 @@ import { ProductBrand } from '../../../shared/models/product-brand.model';
 import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
 import { AdminProductFilter } from '../../../shared/models/admin-product-filter.model';
 import { Router } from '@angular/router';
+import { CsvDownloadService } from '../../../shared/services/csv-download-service';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -72,6 +73,7 @@ export class ProductsGridAdmin implements OnInit {
   private _exportService = inject(ExportService);
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private _router = inject(Router);
+  private _csvService = inject(CsvDownloadService);
 
   // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
   mappedProductsSig = computed<GridData[]>(() => {
@@ -273,6 +275,7 @@ export class ProductsGridAdmin implements OnInit {
 
     this.chipsSig.set(newChips);
   }
+
   onRemoveChip(chip: Chip): void {
     // 1. Obtenemos el control del formulario que corresponde a este chip
     const form = this.gridFilterFormSig();
@@ -298,6 +301,36 @@ export class ProductsGridAdmin implements OnInit {
     this._updateGridConfigOnSortChange(sortEvent);
     // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
     this._loadData(this.productAdminStore.filterQuery());
+  }
+
+  downloadCSVTemplate(): void {
+    const exampleData = [
+      {
+        title: 'Producto Ejemplo',
+        description: 'Descripción breve del producto',
+        price: 100.0,
+        discountPercentage: 10,
+        rating: 4.5,
+        stock: 50,
+        sku: 'ABC-123',
+        weight: 1.5,
+        width: 20,
+        height: 10,
+        depth: 5,
+        warrantyInformation: '6 meses de garantía',
+        shippingInformation: 'Envío gratuito',
+        availabilityStatus: 'In Stock',
+        returnPolicy: '30 días de devolución',
+        minimumOrderQuantity: 1,
+        thumbnail: 'https://ejemplo.com/imagen.jpg',
+        categoryId: 1,
+        brandId: 1,
+        images: 'url1.jpg, url2.jpg, url2.jpg',
+        tags: 'tecnología, oferta',
+      },
+    ];
+
+    this._csvService.downloadCsv(exampleData, 'plantilla_productos');
   }
 
   private _updateGridConfigOnSortChange(sortEvent: Sort): void {

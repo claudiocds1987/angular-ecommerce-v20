@@ -142,7 +142,6 @@ export class ProductFormAdmin {
           error: (err) => this._handleError(err),
         });
     } else {
-      console.log('editando');
       this._updateProduct(productToSave)
         .pipe(finalize(() => this._spinnerService.hide()))
         .subscribe({

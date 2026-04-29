@@ -1,12 +1,12 @@
-<div class="bg-gray-50 h-full flex flex-col overflow-hidden">
-  <div class="wrapper flex-1 min-h-0">
+<div class="flex h-full flex-col overflow-hidden bg-gray-50">
+  <div class="wrapper min-h-0 flex-1">
     <div
       class="wrapper__content-area h-full"
       [class.wrapper__content-area--filter-collapsed]="isFilterCollapsedSig()"
     >
-      <div class="wrapper__grid-area h-full min-h-0 p-6 overflow-hidden flex flex-col">
+      <div class="wrapper__grid-area flex h-full min-h-0 flex-col overflow-hidden p-6">
         <div
-          class="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4 shrink-0"
+          class="mb-4 flex shrink-0 flex-col gap-4 md:flex-row md:items-start md:justify-between"
         >
           <div>
             <h1 class="text-2xl font-bold text-gray-800">Panel de Inventario (Admin)</h1>
@@ -19,7 +19,7 @@
 
         @if (importErrors().length > 0) {
           <div
-            class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center justify-between shrink-0 relative group"
+            class="group relative mb-4 flex shrink-0 items-center justify-between rounded-lg border-l-4 border-red-500 bg-red-50 p-4"
           >
             <div class="flex items-center gap-4">
               <h3 class="text-sm font-bold text-red-800">
@@ -27,7 +27,7 @@
               </h3>
               <button
                 (click)="onDownloadErrors()"
-                class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-md hover:bg-red-700 transition-colors"
+                class="rounded-md bg-red-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-red-700"
               >
                 Descargar reporte
               </button>
@@ -35,7 +35,7 @@
 
             <button
               (click)="importErrors.set([])"
-              class="ml-4 p-1 text-red-400 hover:text-red-800 hover:bg-red-100 rounded-full transition-all"
+              class="ml-4 rounded-full p-1 text-red-400 transition-all hover:bg-red-100 hover:text-red-800"
               title="Cerrar mensaje"
             >
               <svg
@@ -56,11 +56,14 @@
           </div>
         }
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 shrink-0">
-          <div class="flex-1 min-w-0">
+        <div class="mb-4 flex shrink-0 flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div class="min-w-0 flex-1">
             <app-chips [chips]="chipsSig()" (chipRemoved)="onRemoveChip($event)"> </app-chips>
           </div>
           <div class="flex shrink-0">
+            <button (click)="downloadCSVTemplate()" class="primary-button mr-2">
+              Descargar ejemplo .csv
+            </button>
             <app-excel-upload
               [text]="'Carga Masiva'"
               [endpointUrl]="apiURL"
@@ -71,7 +74,7 @@
         </div>
 
         <app-grid
-          class="wrapper__grid-component flex-1 min-h-0 overflow-hidden"
+          class="wrapper__grid-component min-h-0 flex-1 overflow-hidden"
           [gridConfigSig]="gridConfigWithTotalSig()"
           [gridDataSig]="mappedProductsSig()"
           [isLoadingSig]="productAdminStore.loading()"
@@ -82,9 +85,9 @@
         ></app-grid>
       </div>
 
-      <div class="wrapper__filter-container border-l border-gray-200 bg-white h-full shadow-xl">
+      <div class="wrapper__filter-container h-full border-l border-gray-200 bg-white shadow-xl">
         <app-grid-filter
-          class="h-full block overflow-y-auto"
+          class="block h-full overflow-y-auto"
           [configSig]="gridFilterConfigSig()"
           [filterFormSig]="gridFilterFormSig()"
           [isLoadingSig]="productAdminStore.loading()"
