@@ -210,7 +210,6 @@ export class ProductsGridAdmin implements OnInit {
 
   applyFilter(): void {
     const values = this.gridFilterFormSig().value;
-    console.log('Aplicando filtros con valores:', values);
     this._updateChips(values); // Actualizamos los visuales
     this._loadData(); // Cargamos la data
   }

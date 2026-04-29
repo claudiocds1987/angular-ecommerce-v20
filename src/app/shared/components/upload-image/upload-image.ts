@@ -99,16 +99,8 @@ export class UploadImageComponent implements ControlValueAccessor {
 
       reader.onload = async () => {
         const content = reader.result as string;
-
-        // Calculamos el tamaño antes para loguear (opcional, útil para debug)
-        const sizeBefore = this._imageCompress.byteCount(content);
-
-        // 3. COMPRESIÓN: // '80' de calidad es excelente. '50' de ratio es agresivo pero efectivo.
+        // COMPRESIÓN: // '80' de calidad es excelente. '50' de ratio es agresivo pero efectivo.
         const result = await this._imageCompress.compressFile(content, -1, 50, 80);
-
-        const sizeAfter = this._imageCompress.byteCount(result);
-        console.log(`Compresión terminada: de ${sizeBefore} a ${sizeAfter} bytes.`);
-
         this.addImageToList(result);
       };
     } catch (error) {
