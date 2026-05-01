@@ -168,6 +168,82 @@
             }
           </div>
         </section>
+
+        <!-- Nueva Sección: Atributos Dinámicos -->
+        <section class="form-card" formArrayName="extraAttributes">
+          <h2 class="section-header">
+            <span class="section-dot bg-purple-500"></span>
+            Especificaciones Técnicas
+          </h2>
+
+          <div class="space-y-4">
+            <!-- Iteramos sobre los controles del FormArray -->
+            @for (attrGroup of extraAttributesArray.controls; track $index) {
+              <div
+                [formGroupName]="$index"
+                class="animate-in fade-in slide-in-from-top-1 duration-300"
+              >
+                <!-- Caso para atributos de tipo Booleano (Checkbox/Switch) -->
+                <!-- Cambiado de 'type' a 'dataType' para coincidir con la interfaz -->
+                @if (attrGroup.get('dataType')?.value === 'boolean') {
+                  <div
+                    class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-3"
+                  >
+                    <span class="text-sm font-semibold text-slate-700">
+                      {{ attrGroup.get('label')?.value }}
+                    </span>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input type="checkbox" formControlName="value" class="peer sr-only" />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-purple-600 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white focus:outline-none"
+                      ></div>
+                    </label>
+                  </div>
+                }
+
+                <!-- Caso para atributos de tipo Texto o Número -->
+                @else {
+                  <label class="block">
+                    <span class="mb-2 block text-sm font-semibold text-slate-700">
+                      {{ attrGroup.get('label')?.value }}
+                    </span>
+                    <input
+                      [type]="attrGroup.get('dataType')?.value === 'number' ? 'number' : 'text'"
+                      formControlName="value"
+                      [placeholder]="'Ingrese ' + attrGroup.get('label')?.value"
+                      class="form-input-field focus:ring-purple-50"
+                    />
+                  </label>
+                }
+              </div>
+            } @empty {
+              <!-- Mensaje si no hay atributos para la categoría seleccionada -->
+              <div
+                class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center"
+              >
+                <div class="mb-2 text-slate-300">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="mx-auto h-10 w-10"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.663 17h4.674M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.364-6.364l-.707-.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 7a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5z"
+                    />
+                  </svg>
+                </div>
+                <p class="text-xs text-slate-400">
+                  Selecciona una categoría para ver atributos adicionales.
+                </p>
+              </div>
+            }
+          </div>
+        </section>
       </div>
 
       <div class="space-y-6">

@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -12,6 +13,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -25,8 +27,10 @@ import { BrandStore } from '../../state/brand.store';
 import { ProductService } from '../../../../shared/services/product-service';
 import { Product } from '../../../../shared/models/product.model';
 import { UploadImageComponent } from '../../../../shared/components/upload-image/upload-image';
-import { finalize, Observable } from 'rxjs';
+import { finalize, startWith } from 'rxjs';
 import { SpinnerService } from '../../../../shared/services/spinner-service';
+import { ProductExtraAttributeService } from '../../../../shared/services/product-extra-attribute-service';
+import { ProductExtraAttribute } from '../../../../shared/models/product-extra-attribute.model';
 
 @Component({
   selector: 'app-product-form-admin',
@@ -37,33 +41,23 @@ import { SpinnerService } from '../../../../shared/services/spinner-service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormAdmin {
-  productForm: FormGroup = this._createProductForm();
+  private readonly fb = inject(FormBuilder);
+  private readonly _spinnerService = inject(SpinnerService);
+  private readonly _productService = inject(ProductService);
+  private readonly _activeRoute = inject(ActivatedRoute);
+  private _productExtraAttributeService = inject(ProductExtraAttributeService);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
-  private _spinnerService = inject(SpinnerService);
-  // Inyección de stores
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
 
-  // cargando categorías y marcas cuando _initData() prende el motor en ambos stores con loadAll()
+  productForm: FormGroup = this._createProductForm();
+
   categoriesSig = this.categoryStore.items;
   brandsSig = this.brandStore.items;
-
-  // El computed solo se despierta si uno de estos dos cambia
-  finalPriceSig = computed(() => {
-    const price = Number(this._priceValue()) || 0;
-    const discount = Number(this._discountValue()) || 0;
-
-    if (discount <= 0) return price;
-    if (discount >= 100) return 0;
-
-    return Number((price * (1 - discount / 100)).toFixed(2));
-  });
-
   private _productDataSig = signal<Product | null>(null);
-  private readonly _productService = inject(ProductService);
-  private _activeRoute = inject(ActivatedRoute);
   private _operation = this._activeRoute.snapshot.data['operation'];
-  // Convirtiendo price y discountPercentage del form a signals para calcular precio final de forma reactiva
+
   private _priceValue = toSignal(this.productForm.get('price')!.valueChanges, {
     initialValue: this.productForm.get('price')?.value ?? 0,
   });
@@ -72,83 +66,153 @@ export class ProductFormAdmin {
     initialValue: this.productForm.get('discountPercentage')?.value ?? 0,
   });
 
+  categoryIdSig = toSignal(
+    this.productForm
+      .get('categoryId')!
+      .valueChanges.pipe(startWith(this.productForm.get('categoryId')?.value)),
+    { initialValue: this.productForm.get('categoryId')?.value },
+  );
+
+  finalPriceSig = computed(() => {
+    const price = Number(this._priceValue()) || 0;
+    const discount = Number(this._discountValue()) || 0;
+    if (discount <= 0) return price;
+    if (discount >= 100) return 0;
+    return Number((price * (1 - discount / 100)).toFixed(2));
+  });
+
+  loadExtraAttributes = effect(() => {
+    const id = this.categoryIdSig();
+    if (!id) return;
+
+    untracked(() => {
+      this._productExtraAttributeService
+        .getExtraAttributesByCategory(id)
+        .subscribe((attributes) => {
+          this.buildExtraFields(attributes, this._productDataSig()?.extraAttributes ?? []);
+        });
+    });
+  });
+
   constructor() {
     this._initData();
 
-    // 2. effect para actualizar el formulario cuando se cargue todo el producto (en edición) cuando categorías y marcas estén disponibles (simil a forkJoin)
     effect(() => {
       const product = this._productDataSig();
-
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
-        // untracked, le dice a Angular: "Ejecuta este código, pero no te quedes vigilando lo que pase aca adentro,
-        // solo quiero que este effect reaccione a los cambios de product, categoriesSig y brandsSig que están afuera".
-        // Evita disparar el effect si el formulario cambia internamente. (evitaría un loop infinito)
         untracked(() => {
           this.productForm.patchValue(product);
-          // Tags
+
           this.tagsArray.clear();
-          if (product.tags && product.tags.length > 0) {
+          if (product.tags?.length > 0) {
             product.tags.forEach((tagObj) => {
-              // Agregamos cada nombre del tag al setter tagsArray que es un FormArray
               this.tagsArray.push(new FormControl(tagObj.tagName));
             });
           }
+
+          this.buildExtraFields(product.extraAttributes ?? [], product.extraAttributes ?? []);
         });
       }
     });
+  }
+
+  private buildExtraFields(
+    attributes: ProductExtraAttribute[],
+    productValues: ProductExtraAttribute[] = [],
+  ) {
+    const extraArray = this.extraAttributesArray;
+    extraArray.clear({ emitEvent: false });
+
+    attributes.forEach((attr) => {
+      const existingValue = productValues.find((v) => v.name === attr.name);
+
+      extraArray.push(
+        this.fb.group({
+          name: [attr.name],
+          value: [
+            existingValue
+              ? attr.dataType === 'boolean'
+                ? String(existingValue.value).toLowerCase() === 'true'
+                : existingValue.value
+              : attr.dataType === 'boolean'
+                ? false
+                : '',
+          ],
+          label: [attr.label || attr.name],
+          dataType: [attr.dataType],
+        }),
+        { emitEvent: false },
+      );
+    });
+
+    this._cdr.detectChanges();
   }
 
   isReadyToSave(): boolean {
     return this.productForm.valid && this.productForm.dirty;
   }
 
+  get tagsArray() {
+    return this.productForm.get('tags') as FormArray;
+  }
+
+  get extraAttributesArray(): FormArray {
+    return this.productForm.get('extraAttributes') as FormArray;
+  }
+
   onSubmit() {
     if (this.productForm.invalid) return;
-
+    this._spinnerService.show();
     const formValue = this.productForm.getRawValue();
-    // Mapeo de la estructura plana de Angular a la estructura de objetos de C#
-    const productToSave: Product = {
+    // 1. Procesamos los atributos extra para que el backend los acepte como strings
+    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => ({
+      name: attr.name,
+      label: attr.label || attr.name,
+      dataType: attr.dataType,
+      // Convertimos cualquier valor (boolean, number, null) a string
+      value: String(attr.value ?? ''),
+    }));
+
+    const productToSave: any = {
       ...formValue,
-      // Si el ID es 0 o null, lo enviamos como null para que el Backend lo cree
       id: formValue.id || null,
       price: Number(formValue.price),
       discountPercentage: Number(formValue.discountPercentage),
       stock: Number(formValue.stock),
-      depth: Number(formValue.depth),
-      height: Number(formValue.height),
-      width: Number(formValue.width),
-      weight: Number(formValue.weight),
+      // 2. Asignamos los atributos ya normalizados
+      extraAttributes: formattedExtraAttributes,
+      tags: formValue.tags.map((tag: string) => ({ tagName: tag })),
       images: (formValue.images || []).map((img: any) => ({
         id: img.id || null,
         imageUrl: img.imageUrl,
         productId: formValue.id || null,
       })),
-
-      // Mapeo tags [ "tag1", "tag2" ] -> [ { tagName: "tag1" }, { tagName: "tag2" } ]
-      tags: formValue.tags.map((tag: string) => ({
-        tagName: tag,
-      })),
     };
 
-    if (this._operation === 'create') {
-      this._spinnerService.show();
-      this._createProduct(productToSave)
-        .pipe(
-          // Finalize se ejecuta tanto en éxito como en error (ideal para apagar un loading)
-          finalize(() => this._spinnerService.hide()),
-        )
-        .subscribe({
-          next: (product) => this._handleSuccess(product),
-          error: (err) => this._handleError(err),
-        });
-    } else {
-      this._updateProduct(productToSave)
-        .pipe(finalize(() => this._spinnerService.hide()))
-        .subscribe({
-          next: (product) => this._handleSuccess(product),
-          error: (err) => this._handleError(err),
-        });
+    const request =
+      this._operation === 'create'
+        ? this._productService.createProduct(productToSave)
+        : this._productService.updateProduct(productToSave.id!, productToSave);
+
+    request.pipe(finalize(() => this._spinnerService.hide())).subscribe({
+      next: (product) => this._handleSuccess(product),
+      error: (err) => this._handleError(err),
+    });
+  }
+
+  addTag(input: HTMLInputElement) {
+    const rawValue = input.value.trim();
+    if (rawValue) {
+      const cleanTag = rawValue.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g, '').trim();
+      if (cleanTag && !this.tagsArray.value.includes(cleanTag)) {
+        this.tagsArray.push(new FormControl(cleanTag));
+      }
+      input.value = '';
     }
+  }
+
+  removeTag(index: number) {
+    this.tagsArray.removeAt(index);
   }
 
   onNumberKeydown(event: KeyboardEvent) {
@@ -158,65 +222,20 @@ export class ProductFormAdmin {
     }
   }
 
-  // Getter para facilitar el acceso en el HTML
-  get tagsArray() {
-    return this.productForm.get('tags') as FormArray;
-  }
-
-  addTag(input: HTMLInputElement) {
-    const rawValue = input.value.trim();
-
-    if (rawValue) {
-      const newTags = rawValue.split(',');
-
-      newTags.forEach((tag) => {
-        // permite letras (con acentos y ñ), números y espacios. no permite simbolos y caracteres especiales y elimina espacios al inicio y al final.
-        const cleanTag = tag.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g, '').trim();
-
-        if (cleanTag) {
-          // Validación de duplicados sin importar mayúsculas/minúsculas
-          const alreadyExists = this.tagsArray.value.some(
-            (t: string) => t.toLowerCase() === cleanTag.toLowerCase(),
-          );
-
-          if (!alreadyExists) {
-            this.tagsArray.push(new FormControl(cleanTag));
-          }
-        }
-      });
-
-      input.value = '';
-    }
-  }
-
-  removeTag(index: number) {
-    this.tagsArray.removeAt(index);
-  }
-
   private _handleSuccess(product: Product): void {
-    alert(`Producto ${product.title} creado`);
+    alert(`Producto ${product.title} guardado con éxito`);
   }
 
-  private _handleError(product: Product): void {
-    alert(`Error Producto ${product.title} no se pudo crear`);
-  }
-
-  private _createProduct(product: Product): Observable<Product> {
-    return this._productService.createProduct(product);
-  }
-
-  private _updateProduct(product: Product): Observable<Product> {
-    return this._productService.updateProduct(product.id, product);
+  private _handleError(err: any): void {
+    alert(`Error al procesar el producto`);
   }
 
   private _initData() {
-    // Disparar catálogos
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
 
     if (this._operation === 'edit') {
       const productId = Number(this._activeRoute.snapshot.paramMap.get('id'));
-
       this._productService
         .getProductById(productId)
         .subscribe((data) => this._productDataSig.set(data));
@@ -224,45 +243,30 @@ export class ProductFormAdmin {
   }
 
   private _createProductForm(): FormGroup {
-    return new FormGroup({
-      id: new FormControl<number>(0, { nonNullable: true }),
-      title: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-      description: new FormControl<string>('', {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
-      price: new FormControl<number>(0, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(0)],
-      }),
-      discountPercentage: new FormControl<number>(0, {
-        nonNullable: true,
-        validators: [Validators.min(0), Validators.max(100)],
-      }),
-      rating: new FormControl<number>(0),
-      stock: new FormControl<number>(0, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(0)],
-      }),
-      sku: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-      weight: new FormControl<number>(0),
-      width: new FormControl<number>(0),
-      height: new FormControl<number>(0),
-      depth: new FormControl<number>(0),
-      warrantyInformation: new FormControl<string>(''),
-      shippingInformation: new FormControl<string>(''),
-      availabilityStatus: new FormControl<string>('instock'),
-      returnPolicy: new FormControl<string>(''),
-      minimumOrderQuantity: new FormControl<number>(1, {
-        nonNullable: true,
-        validators: [Validators.required, Validators.min(1)],
-      }),
-      thumbnail: new FormControl<string>('', { validators: [Validators.required] }),
-      categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
-      brandId: new FormControl<number | null>(null, { validators: [Validators.required] }),
-      isActive: new FormControl<boolean>(true, { nonNullable: true }),
-      images: new FormControl<any[]>([], { nonNullable: true }),
-      tags: new FormArray([]),
+    return this.fb.group({
+      id: [0],
+      title: ['', [Validators.required]],
+      description: ['', [Validators.required]],
+      price: [0, [Validators.required, Validators.min(0)]],
+      discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
+      stock: [0, [Validators.required, Validators.min(0)]],
+      sku: ['', [Validators.required]],
+      width: [0],
+      height: [0],
+      depth: [0],
+      weight: [0],
+      warrantyInformation: [''],
+      shippingInformation: [''],
+      returnPolicy: [''],
+      availabilityStatus: ['instock'],
+      minimumOrderQuantity: [1, [Validators.required, Validators.min(1)]],
+      thumbnail: ['', [Validators.required]],
+      categoryId: [null, [Validators.required]],
+      brandId: [null, [Validators.required]],
+      isActive: [true],
+      images: [[]],
+      tags: this.fb.array([]),
+      extraAttributes: this.fb.array([]),
     });
   }
 }

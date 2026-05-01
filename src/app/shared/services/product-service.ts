@@ -134,6 +134,8 @@ export class ProductService {
   }
 
   updateProduct(id: number, product: Partial<Product>): Observable<Product> {
+    console.log('Producto a actualizar id:', product.id);
+    console.log('Producto a actualizar:', product);
     return this._http.put<Product>(`${this._apiURL}/${id}`, product);
   }
 

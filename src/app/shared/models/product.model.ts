@@ -23,7 +23,15 @@ export interface Product {
   tags: ProductTag[];
   reviews: ProductReview[];
   finalPrice?: number;
+  extraAttributes?: ExtraAttribute[];
   isActive: boolean;
+}
+
+export interface ExtraAttribute {
+  name: string;
+  value: string;
+  label: string;
+  dataType: 'text' | 'number' | 'boolean';
 }
 
 export interface ProductImage {
