@@ -81,15 +81,31 @@ export class ProductFormAdmin {
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
+  // Modifica tu effect de carga de atributos
+  // En product-form-admin.ts
+
   loadExtraAttributes = effect(() => {
     const id = this.categoryIdSig();
-    if (!id) return;
+    if (!id) {
+      untracked(() => this.extraAttributesArray.clear());
+      return;
+    }
 
     untracked(() => {
       this._productExtraAttributeService
         .getExtraAttributesByCategory(id)
         .subscribe((attributes) => {
-          this.buildExtraFields(attributes, this._productDataSig()?.extraAttributes ?? []);
+          const productData = this._productDataSig();
+
+          // REGLA DE ORO: Solo pasamos valores previos si el producto
+          // pertenece a la categoría que acabamos de seleccionar.
+          // Si el usuario cambió la categoría manualmente, pasamos un array vacío [].
+          const productValues =
+            productData && Number(productData.categoryId) === Number(id)
+              ? (productData.extraAttributes ?? [])
+              : [];
+
+          this._buildExtraAttributes(attributes, productValues);
         });
     });
   });
@@ -110,41 +126,48 @@ export class ProductFormAdmin {
             });
           }
 
-          this.buildExtraFields(product.extraAttributes ?? [], product.extraAttributes ?? []);
+          this._buildExtraAttributes(product.extraAttributes ?? [], product.extraAttributes ?? []);
         });
       }
     });
   }
 
-  private buildExtraFields(
+  private _buildExtraAttributes(
     attributes: ProductExtraAttribute[],
     productValues: ProductExtraAttribute[] = [],
   ) {
     const extraArray = this.extraAttributesArray;
-    extraArray.clear({ emitEvent: false });
+
+    // 1. Limpieza total: clear quita los controles, reset limpia estados internos
+    extraArray.clear();
+    extraArray.reset();
 
     attributes.forEach((attr) => {
-      const existingValue = productValues.find((v) => v.name === attr.name);
+      // 2. Buscamos el valor solo si los nombres coinciden exactamente
+      const foundValue = productValues.find((v) => v.name === attr.name);
+
+      // 3. Definimos el valor inicial de forma segura
+      let initialValue: any = '';
+
+      if (attr.dataType === 'boolean') {
+        initialValue = foundValue ? String(foundValue.value).toLowerCase() === 'true' : false;
+      } else {
+        // Si encontramos un valor lo usamos, sino explicitly string vacío
+        initialValue = foundValue ? foundValue.value : '';
+      }
 
       extraArray.push(
         this.fb.group({
           name: [attr.name],
-          value: [
-            existingValue
-              ? attr.dataType === 'boolean'
-                ? String(existingValue.value).toLowerCase() === 'true'
-                : existingValue.value
-              : attr.dataType === 'boolean'
-                ? false
-                : '',
-          ],
+          value: [initialValue], // Aquí nos aseguramos de que sea '' si no hay coincidencia
           label: [attr.label || attr.name],
           dataType: [attr.dataType],
         }),
-        { emitEvent: false },
       );
     });
 
+    // 4. Marcamos para verificación y forzamos a que el formulario se considere "limpio" (pristine)
+    extraArray.markAsPristine();
     this._cdr.detectChanges();
   }
 
@@ -163,15 +186,28 @@ export class ProductFormAdmin {
   onSubmit() {
     if (this.productForm.invalid) return;
     this._spinnerService.show();
+
     const formValue = this.productForm.getRawValue();
-    // 1. Procesamos los atributos extra para que el backend los acepte como strings
-    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => ({
-      name: attr.name,
-      label: attr.label || attr.name,
-      dataType: attr.dataType,
-      // Convertimos cualquier valor (boolean, number, null) a string
-      value: String(attr.value ?? ''),
-    }));
+
+    // Procesamos los atributos asegurando que el valor capturado sea el del input
+    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => {
+      let finalValue = attr.value;
+
+      // Si es booleano, nos aseguramos de enviar "true" o "false" como string
+      if (attr.dataType === 'boolean') {
+        finalValue = String(!!attr.value);
+      } else {
+        // Para text y number, si es null o undefined enviamos string vacío
+        finalValue = String(attr.value ?? '');
+      }
+
+      return {
+        name: attr.name,
+        label: attr.label,
+        dataType: attr.dataType,
+        value: finalValue,
+      };
+    });
 
     const productToSave: any = {
       ...formValue,
