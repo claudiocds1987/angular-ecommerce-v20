@@ -133,6 +133,16 @@ export class ProductFormAdmin {
     });
   }
 
+  trackByAttributeName(index: number, extraAttributeName: string | undefined): string {
+    // trackByAttributeName (usado en el for html): Optimiza el rendimiento del renderizado.
+    // Indica a Angular que no destruya todo el HTML al cambiar de categoría,
+    // sino que identifique cada campo por su nombre único.
+    // Si el nombre cambia, destruye solo ese campo y crea uno nuevo.
+    // Si el nombre es el mismo, reutiliza el elemento existente.
+    // Retorna el nombre del atributo como identificador único o el índice como respaldo
+    return extraAttributeName || index.toString();
+  }
+
   private _buildExtraAttributes(
     attributes: ProductExtraAttribute[], // Definición de campos de la categoría
     productValues: ProductExtraAttribute[] = [], // Valores reales del producto (si existen)
@@ -183,15 +193,11 @@ export class ProductFormAdmin {
     extraArray.markAsPristine();
     // Indica que el usuario aún no ha interactuado con estos nuevos campos
     extraArray.markAsUntouched();
-
     // Notifica manualmente a Angular que debe repintar el DOM con la nueva estructura
     this._cdr.detectChanges();
   }
 
-  trackByAttributeName(index: number, attrGroup: any): string {
-    return attrGroup.get('name')?.value || index.toString();
-  }
-
+  // getters para acceder a los FormArrays de tags y atributos extra de forma más limpia en el template
   get tagsArray() {
     return this.productForm.get('tags') as FormArray;
   }
