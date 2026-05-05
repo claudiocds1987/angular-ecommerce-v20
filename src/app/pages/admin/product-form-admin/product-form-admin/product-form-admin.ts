@@ -134,49 +134,57 @@ export class ProductFormAdmin {
   }
 
   private _buildExtraAttributes(
-    attributes: ProductExtraAttribute[],
-    productValues: ProductExtraAttribute[] = [],
+    attributes: ProductExtraAttribute[], // Definición de campos de la categoría
+    productValues: ProductExtraAttribute[] = [], // Valores reales del producto (si existen)
   ) {
+    // Obtiene la referencia al FormArray del formulario principal
     const extraArray = this.extraAttributesArray;
 
-    // 1. LIMPIEZA NIVEL 1: Forzar valores nulos y emitir el cambio
-    // Esto asegura que Angular sepa que los controles actuales ya no tienen valor.
+    // Recorre controles actuales para setear su valor en vacío y disparar eventos de limpieza
     extraArray.controls.forEach((control) => {
       control.get('value')?.setValue('', { emitEvent: true });
     });
 
-    // 2. LIMPIEZA NIVEL 2: Vaciar el array completamente
+    // Elimina físicamente todos los controles del array sin disparar eventos innecesarios
     extraArray.clear({ emitEvent: false });
+    // Resetea el estado interno del array (valor y validaciones) a su punto inicial
     extraArray.reset([], { emitEvent: false });
 
-    // 3. RECONSTRUCCIÓN CON NUEVOS OBJETOS
-    // Al crear nuevos FormGroups, Angular debería detectar que son instancias distintas.
+    // Itera sobre la nueva lista de atributos para reconstruir el formulario
     attributes.forEach((attr) => {
+      // Paso clave para EDICIÓN:
+      // Si estamos editando un producto, 'productValues' contiene los datos guardados.
+      // Buscamos si este atributo (ej. "Aroma") ya tiene un valor en la base de datos.
+      // Si es un producto NUEVO o un cambio de categoría, 'foundValue' será undefined.
+
       const foundValue = productValues.find((v) => v.name === attr.name);
       let initialValue: any = '';
 
+      // Si el tipo es booleano, convierte el valor a true/false real para el Checkbox
       if (attr.dataType === 'boolean') {
         initialValue = foundValue ? String(foundValue.value).toLowerCase() === 'true' : false;
       } else {
-        // Importante: si no hay valor previo, garantizamos que sea un string vacío explícito
+        // Para texto/número, usa el valor encontrado o asegura un string vacío para limpiar el input
         initialValue = foundValue?.value ?? '';
       }
 
+      // Crea un nuevo grupo de controles y lo inserta en el FormArray
       extraArray.push(
         this.fb.group({
-          name: [attr.name],
-          value: [initialValue],
-          label: [attr.label || attr.name],
-          dataType: [attr.dataType],
+          name: [attr.name], // Nombre técnico del atributo en caso de edicion ej "Sistema operativo"
+          value: [initialValue], //ejemplo en caso de edicion "Google tv"
+          label: [attr.label || attr.name], // Etiqueta legible para el usuario (en caso de edicion) tambien como ej "Sistema operativo"
+          dataType: [attr.dataType], // Tipo de dato (string, number, boolean)
         }),
       );
     });
 
-    // 4. LIMPIEZA NIVEL 3: Notificar a la vista y resetear estados de validación
+    // Marca el array como "nuevo" (sin cambios del usuario) para el estado del botón Guardar
     extraArray.markAsPristine();
+    // Indica que el usuario aún no ha interactuado con estos nuevos campos
     extraArray.markAsUntouched();
 
-    // Forzamos la detección de cambios para que el DOM se entere de la nueva estructura
+    // Notifica manualmente a Angular que debe repintar el DOM con la nueva estructura
     this._cdr.detectChanges();
   }
 
