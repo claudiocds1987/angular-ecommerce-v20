@@ -47,6 +47,7 @@ export class ProductFormAdmin {
   private readonly _activeRoute = inject(ActivatedRoute);
   private _productExtraAttributeService = inject(ProductExtraAttributeService);
   private readonly _cdr = inject(ChangeDetectorRef);
+  private _isInitialLoad = true; // bandera para saber si es 1ra vez que se carga el componente
 
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
@@ -81,31 +82,31 @@ export class ProductFormAdmin {
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
-  // Modifica tu effect de carga de atributos
-  // En product-form-admin.ts
-
+  // Ahora el efecto maneja directamente la carga de atributos
   loadExtraAttributes = effect(() => {
-    const id = this.categoryIdSig();
-    if (!id) {
+    const categoryId = this.categoryIdSig();
+    const productData = this._productDataSig();
+
+    if (!categoryId) {
       untracked(() => this.extraAttributesArray.clear());
       return;
     }
 
     untracked(() => {
+      // Si es la carga inicial y ya tenemos los datos del producto,
+      // detenemos este efecto porque el efecto del constructor ya se encargó.
+      if (this._isInitialLoad && this._operation === 'edit' && productData) {
+        this._isInitialLoad = false; // Marcamos que la inicialización terminó
+        return;
+      }
+
       this._productExtraAttributeService
-        .getExtraAttributesByCategory(id)
+        .getExtraAttributesByCategory(categoryId)
         .subscribe((attributes) => {
-          const productData = this._productDataSig();
-
-          // REGLA DE ORO: Solo pasamos valores previos si el producto
-          // pertenece a la categoría que acabamos de seleccionar.
-          // Si el usuario cambió la categoría manualmente, pasamos un array vacío [].
-          const productValues =
-            productData && Number(productData.categoryId) === Number(id)
-              ? (productData.extraAttributes ?? [])
-              : [];
-
-          this._buildExtraAttributes(attributes, productValues);
+          // Al venir del servicio tras un cambio de categoría,
+          // mandamos [] para que los campos aparezcan vacíos.
+          this._buildExtraAttributes(attributes, []);
+          this._isInitialLoad = false;
         });
     });
   });
@@ -125,7 +126,7 @@ export class ProductFormAdmin {
               this.tagsArray.push(new FormControl(tagObj.tagName));
             });
           }
-
+          // Si estamos editando, pasamos los valores previos de atributos
           this._buildExtraAttributes(product.extraAttributes ?? [], product.extraAttributes ?? []);
         });
       }
@@ -138,41 +139,49 @@ export class ProductFormAdmin {
   ) {
     const extraArray = this.extraAttributesArray;
 
-    // 1. Limpieza total: clear quita los controles, reset limpia estados internos
-    extraArray.clear();
-    extraArray.reset();
+    // 1. LIMPIEZA NIVEL 1: Forzar valores nulos y emitir el cambio
+    // Esto asegura que Angular sepa que los controles actuales ya no tienen valor.
+    extraArray.controls.forEach((control) => {
+      control.get('value')?.setValue('', { emitEvent: true });
+    });
 
+    // 2. LIMPIEZA NIVEL 2: Vaciar el array completamente
+    extraArray.clear({ emitEvent: false });
+    extraArray.reset([], { emitEvent: false });
+
+    // 3. RECONSTRUCCIÓN CON NUEVOS OBJETOS
+    // Al crear nuevos FormGroups, Angular debería detectar que son instancias distintas.
     attributes.forEach((attr) => {
-      // 2. Buscamos el valor solo si los nombres coinciden exactamente
       const foundValue = productValues.find((v) => v.name === attr.name);
-
-      // 3. Definimos el valor inicial de forma segura
       let initialValue: any = '';
 
       if (attr.dataType === 'boolean') {
         initialValue = foundValue ? String(foundValue.value).toLowerCase() === 'true' : false;
       } else {
-        // Si encontramos un valor lo usamos, sino explicitly string vacío
-        initialValue = foundValue ? foundValue.value : '';
+        // Importante: si no hay valor previo, garantizamos que sea un string vacío explícito
+        initialValue = foundValue?.value ?? '';
       }
 
       extraArray.push(
         this.fb.group({
           name: [attr.name],
-          value: [initialValue], // Aquí nos aseguramos de que sea '' si no hay coincidencia
+          value: [initialValue],
           label: [attr.label || attr.name],
           dataType: [attr.dataType],
         }),
       );
     });
 
-    // 4. Marcamos para verificación y forzamos a que el formulario se considere "limpio" (pristine)
+    // 4. LIMPIEZA NIVEL 3: Notificar a la vista y resetear estados de validación
     extraArray.markAsPristine();
+    extraArray.markAsUntouched();
+
+    // Forzamos la detección de cambios para que el DOM se entere de la nueva estructura
     this._cdr.detectChanges();
   }
 
-  isReadyToSave(): boolean {
-    return this.productForm.valid && this.productForm.dirty;
+  trackByAttributeName(index: number, attrGroup: any): string {
+    return attrGroup.get('name')?.value || index.toString();
   }
 
   get tagsArray() {
@@ -181,6 +190,10 @@ export class ProductFormAdmin {
 
   get extraAttributesArray(): FormArray {
     return this.productForm.get('extraAttributes') as FormArray;
+  }
+
+  isReadyToSave(): boolean {
+    return this.productForm.valid && this.productForm.dirty;
   }
 
   onSubmit() {

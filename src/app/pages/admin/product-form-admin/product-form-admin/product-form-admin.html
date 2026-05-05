@@ -179,7 +179,10 @@
 
             <div class="space-y-4">
               <!-- Iteramos sobre los controles del FormArray -->
-              @for (attrGroup of extraAttributesArray.controls; track $index) {
+              @for (
+                attrGroup of extraAttributesArray.controls;
+                track trackByAttributeName($index, attrGroup)
+              ) {
                 <div
                   [formGroupName]="$index"
                   class="animate-in fade-in slide-in-from-top-1 duration-300"
