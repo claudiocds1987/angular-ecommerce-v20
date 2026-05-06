@@ -30,7 +30,6 @@ import { UploadImageComponent } from '../../../../shared/components/upload-image
 import { finalize, startWith } from 'rxjs';
 import { SpinnerService } from '../../../../shared/services/spinner-service';
 import { ProductExtraAttributeService } from '../../../../shared/services/product-extra-attribute-service';
-import { ProductExtraAttribute } from '../../../../shared/models/product-extra-attribute.model';
 
 @Component({
   selector: 'app-product-form-admin',
@@ -126,8 +125,11 @@ export class ProductFormAdmin {
               this.tagsArray.push(new FormControl(tagObj.tagName));
             });
           }
-          // Si estamos editando, pasamos los valores previos de atributos
-          this._buildExtraAttributes(product.extraAttributes ?? [], product.extraAttributes ?? []);
+          if (product.extraAttributes) {
+            // Usamos 'as any' para decirle a TS que confíe en nosotros,
+            // ya que solo queremos extraer los valores para matchear los nombres.
+            this._buildExtraAttributes(product.extraAttributes as any, product.extraAttributes);
+          }
         });
       }
     });
@@ -144,56 +146,52 @@ export class ProductFormAdmin {
   }
 
   private _buildExtraAttributes(
-    attributes: ProductExtraAttribute[], // Definición de campos de la categoría
-    productValues: ProductExtraAttribute[] = [], // Valores reales del producto (si existen)
+    definitions: any[], // Cambiamos a any[] para evitar conflictos de tipos
+    savedValues: any[] = [],
   ) {
-    // Obtiene la referencia al FormArray del formulario principal
     const extraArray = this.extraAttributesArray;
-
-    // Recorre controles actuales para setear su valor en vacío y disparar eventos de limpieza
-    extraArray.controls.forEach((control) => {
-      control.get('value')?.setValue('', { emitEvent: true });
-    });
-
-    // Elimina físicamente todos los controles del array sin disparar eventos innecesarios
     extraArray.clear({ emitEvent: false });
-    // Resetea el estado interno del array (valor y validaciones) a su punto inicial
-    extraArray.reset([], { emitEvent: false });
 
-    // Itera sobre la nueva lista de atributos para reconstruir el formulario
-    attributes.forEach((attr) => {
-      // Paso clave para EDICIÓN:
-      // Si estamos editando un producto, 'productValues' contiene los datos guardados.
-      // Buscamos si este atributo (ej. "Aroma") ya tiene un valor en la base de datos.
-      // Si es un producto NUEVO o un cambio de categoría, 'foundValue' será undefined.
-
-      const foundValue = productValues.find((v) => v.name === attr.name);
+    definitions.forEach((def) => {
+      // Buscamos si existe un valor guardado para este atributo
+      const saved = savedValues.find((v) => v.name === def.name);
       let initialValue: any = '';
 
-      // Si el tipo es booleano, convierte el valor a true/false real para el Checkbox
-      if (attr.dataType === 'boolean') {
-        initialValue = foundValue ? String(foundValue.value).toLowerCase() === 'true' : false;
+      if (def.dataType === 'boolean') {
+        initialValue = saved ? String(saved.value).toLowerCase() === 'true' : false;
       } else {
-        // Para texto/número, usa el valor encontrado o asegura un string vacío para limpiar el input
-        initialValue = foundValue?.value ?? '';
+        initialValue = saved?.value ?? '';
       }
 
-      // Crea un nuevo grupo de controles y lo inserta en el FormArray
+      // --- MEJORA DE SEGURIDAD PARA VALIDACIONES ---
+      const validators = [];
+
+      // Verificamos que 'validations' exista antes de leer sus propiedades
+      if (def.validations) {
+        if (def.validations.required) validators.push(Validators.required);
+        if (def.validations.minLength)
+          validators.push(Validators.minLength(def.validations.minLength));
+        if (def.validations.maxLength)
+          validators.push(Validators.maxLength(def.validations.maxLength));
+        if (def.validations.min !== undefined && def.validations.min !== null)
+          validators.push(Validators.min(def.validations.min));
+        if (def.validations.max !== undefined && def.validations.max !== null)
+          validators.push(Validators.max(def.validations.max));
+        if (def.validations.pattern) validators.push(Validators.pattern(def.validations.pattern));
+      }
+
       extraArray.push(
         this.fb.group({
-          name: [attr.name], // Nombre técnico del atributo en caso de edicion ej "Sistema operativo"
-          value: [initialValue], //ejemplo en caso de edicion "Google tv"
-          label: [attr.label || attr.name], // Etiqueta legible para el usuario (en caso de edicion) tambien como ej "Sistema operativo"
-          dataType: [attr.dataType], // Tipo de dato (string, number, boolean)
+          id: [def.id || 0],
+          name: [def.name],
+          label: [def.label || def.name], // Si no hay label, usa el name
+          dataType: [def.dataType],
+          value: [initialValue, validators],
         }),
       );
     });
 
-    // Marca el array como "nuevo" (sin cambios del usuario) para el estado del botón Guardar
     extraArray.markAsPristine();
-    // Indica que el usuario aún no ha interactuado con estos nuevos campos
-    extraArray.markAsUntouched();
-    // Notifica manualmente a Angular que debe repintar el DOM con la nueva estructura
     this._cdr.detectChanges();
   }
 
@@ -216,25 +214,13 @@ export class ProductFormAdmin {
 
     const formValue = this.productForm.getRawValue();
 
-    // Procesamos los atributos asegurando que el valor capturado sea el del input
-    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => {
-      let finalValue = attr.value;
-
-      // Si es booleano, nos aseguramos de enviar "true" o "false" como string
-      if (attr.dataType === 'boolean') {
-        finalValue = String(!!attr.value);
-      } else {
-        // Para text y number, si es null o undefined enviamos string vacío
-        finalValue = String(attr.value ?? '');
-      }
-
-      return {
-        name: attr.name,
-        label: attr.label,
-        dataType: attr.dataType,
-        value: finalValue,
-      };
-    });
+    // Mapeamos los atributos del FormArray al formato que espera el Backend
+    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => ({
+      name: attr.name,
+      label: attr.label,
+      dataType: attr.dataType,
+      value: attr.dataType === 'boolean' ? String(!!attr.value) : String(attr.value ?? ''),
+    }));
 
     const productToSave: any = {
       ...formValue,

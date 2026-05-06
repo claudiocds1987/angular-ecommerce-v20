@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { ProductExtraAttribute } from '../models/product-extra-attribute.model';
+import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,5 +14,15 @@ export class ProductExtraAttributeService {
 
   getExtraAttributesByCategory(categoryId: number): Observable<ProductExtraAttribute[]> {
     return this._http.get<ProductExtraAttribute[]>(`${this._baseUrl}/category/${categoryId}`);
+  }
+
+  saveExtraAttributes(
+    categoryId: number,
+    attributes: ProductExtraAttribute[],
+  ): Observable<ApiResponse> {
+    return this._http.post<ApiResponse>(
+      `${this._baseUrl}/save-extra-attributes/${categoryId}`,
+      attributes,
+    );
   }
 }
