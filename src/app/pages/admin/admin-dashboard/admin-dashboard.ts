@@ -9,7 +9,12 @@ import { Router } from '@angular/router';
 })
 export class AdminDashboard {
   private _router = inject(Router);
+
   goToProducts(): void {
     this._router.navigate(['admin/products-grid-admin']);
+  }
+
+  goToExtraAttributes(): void {
+    this._router.navigate(['admin/product-extra-attribute-form']);
   }
 }
