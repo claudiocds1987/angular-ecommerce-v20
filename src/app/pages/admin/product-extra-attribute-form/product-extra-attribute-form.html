@@ -33,7 +33,7 @@
         </span>
       </div>
 
-      @for (attr of extraAttributesArray.controls; track $index) {
+      @for (attr of extraAttributesSig(); track attr.get('id')?.value || $index) {
         <div
           [formGroupName]="$index"
           class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-100 hover:shadow-md"

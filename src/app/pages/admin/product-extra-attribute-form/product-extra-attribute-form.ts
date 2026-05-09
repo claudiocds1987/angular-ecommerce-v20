@@ -13,7 +13,7 @@ import { SpinnerService } from '../../../shared/services/spinner-service';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { CategoryStore } from '../state/category.store';
-import { ProductCategory } from '../../../shared/models/product-category.model';
+
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
 
 @Component({
@@ -31,6 +31,7 @@ export class ProductExtraAttributeForm implements OnInit {
   private _categoryStore = inject(CategoryStore);
 
   categoriesSig = this._categoryStore.items;
+  extraAttributesSig = signal<FormGroup[]>([]);
 
   // Formulario principal
   form = this._fb.group({
@@ -59,12 +60,10 @@ export class ProductExtraAttributeForm implements OnInit {
 
   onSave() {
     if (this.form.invalid) return;
-
     const categoryId = this.form.get('categoryId')?.value;
 
     if (categoryId) {
       const attributesToSave = this.extraAttributesArray.getRawValue() as ProductExtraAttribute[];
-
       this.attributeService.saveExtraAttributes(categoryId, attributesToSave).subscribe({
         next: () => {
           alert('Guardado correctamente');
@@ -75,11 +74,20 @@ export class ProductExtraAttributeForm implements OnInit {
     }
   }
 
+  private refreshAttributesSig() {
+    this.extraAttributesSig.set([...(this.extraAttributesArray.controls as FormGroup[])]);
+  }
+
   private buildForm(defs: ProductExtraAttribute[]) {
+    // 1. Limpiamos el FormArray físico
     this.extraAttributesArray.clear();
-    defs.forEach((def) => {
-      this.extraAttributesArray.push(this.createAttributeGroup(def));
-    });
+    // 2. Creamos las NUEVAS instancias de FormGroup
+    const newGroups = defs.map((def) => this.createAttributeGroup(def));
+    // 3. Las agregamos al FormArray para que el formulario sea válido
+    newGroups.forEach((g) => this.extraAttributesArray.push(g));
+    // 4. Seteamos el Signal con un NUEVO array
+    // para romper la referencia anterior y forzar a OnPush a repintar.
+    this.extraAttributesSig.set([...(this.extraAttributesArray.controls as FormGroup[])]);
   }
 
   // Modificamos el método createAttributeGroup
@@ -104,6 +112,7 @@ export class ProductExtraAttributeForm implements OnInit {
 
   addEmptyAttribute() {
     this.extraAttributesArray.push(this.createAttributeGroup());
+    this.refreshAttributesSig(); // Notifica el cambio
   }
 
   // CRÍTICO: Solo borrar si es nuevo (id === 0)
@@ -111,6 +120,7 @@ export class ProductExtraAttributeForm implements OnInit {
     const control = this.extraAttributesArray.at(index);
     if (control.get('id')?.value === 0) {
       this.extraAttributesArray.removeAt(index);
+      this.refreshAttributesSig(); // Notifica el cambio
     } else {
       alert('No puedes borrar un atributo existente porque afectaría a los productos ya creados.');
     }
