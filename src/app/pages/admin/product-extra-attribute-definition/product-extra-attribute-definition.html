@@ -1,204 +1,184 @@
-<div [formGroup]="form" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-  <h2 class="mb-6 text-xl font-bold text-slate-800">
-    Configurar la definición para los extra atributos por Categoría
-  </h2>
-
-  <!-- Selector de Categoría -->
-  <div class="mb-8 rounded-lg border border-slate-100 bg-slate-50 p-4">
-    <label for="categoryId" class="mb-2 block text-sm font-semibold text-slate-700">
-      Seleccionar Categoría para configurar
-    </label>
-    <select
-      id="categoryId"
-      formControlName="categoryId"
-      (change)="onCategoryChange(+form.get('categoryId')?.value!)"
-      class="w-full rounded-lg border border-slate-300 bg-white p-2.5 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-80"
-    >
-      @for (cat of categoriesSig(); track cat.id) {
-        <option [value]="cat.id">{{ cat.name }}</option>
-      }
-    </select>
+<div
+  [formGroup]="form"
+  class="mx-auto max-w-5xl rounded-2xl border border-slate-200 bg-white p-8 shadow-xl"
+>
+  <div class="mb-8 flex items-center gap-3">
+    <mat-icon class="text-indigo-600">settings_suggest</mat-icon>
+    <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">
+      Configurar Atributos Extra por Categoría
+    </h2>
   </div>
 
-  <hr class="my-8 border-slate-100" />
+  <div class="mb-10 rounded-2xl border border-indigo-50 bg-indigo-50/30 p-6">
+    <div class="flex flex-col gap-2">
+      <label for="categoryId" class="text-sm font-bold tracking-wide text-indigo-900 uppercase"
+        >Seleccionar Categoría</label
+      >
+      <mat-form-field appearance="outline" class="w-full md:w-96">
+        <mat-label>Categoría</mat-label>
+        <mat-select
+          id="categoryId"
+          formControlName="categoryId"
+          (selectionChange)="onCategoryChange(+$event.value)"
+        >
+          @for (cat of categoriesSig(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix class="mr-2 text-slate-400">category</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <mat-divider class="mb-10"></mat-divider>
 
   @if (form.get('categoryId')?.value) {
-    <div formArrayName="attributes" class="space-y-6">
+    <div formArrayName="attributes" class="space-y-8">
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-bold tracking-wider text-slate-400 uppercase">
+        <h3
+          class="flex items-center gap-2 text-xs font-black tracking-widest text-slate-500 uppercase"
+        >
+          <mat-icon class="scale-75">list_alt</mat-icon>
           Atributos Definidos
         </h3>
-        <span class="rounded-full bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-600">
-          {{ extraAttributesArray.length }} Atributos
+        <span
+          class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700"
+        >
+          {{ extraAttributesArray.length }}
+          {{ extraAttributesArray.length === 1 ? 'Atributo' : 'Atributos' }}
         </span>
       </div>
 
-      @for (attr of extraAttributesSig(); track attr.get('id')?.value || $index) {
+      @for (attr of extraAttributesSig(); track attr) {
         <div
           [formGroupName]="$index"
-          class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-100 hover:shadow-md"
+          class="group relative rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:border-indigo-300 hover:shadow-lg"
         >
-          <!-- Fila 1: Configuración Principal -->
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div>
-              <label
-                [for]="'name-' + $index"
-                class="mb-1 block text-[10px] font-bold text-slate-400 uppercase"
-                >Nombre</label
-              >
-              <input
-                [id]="'name-' + $index"
-                type="text"
-                formControlName="name"
-                class="w-full rounded-lg border border-slate-200 p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-200"
-              />
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Nombre Técnico</mat-label>
+              <input matInput formControlName="name" placeholder="ej. color_primario" />
               @if (attr.get('name')?.touched && attr.get('name')?.hasError('duplicated')) {
-                <span class="mt-1 block text-[10px] font-bold text-red-500 italic">
-                  * Este nombre ya existe en esta categoría
-                </span>
+                <mat-error class="text-[10px] font-bold">Este nombre ya existe</mat-error>
               }
-            </div>
+            </mat-form-field>
 
-            <div>
-              <label
-                [for]="'label-' + $index"
-                class="mb-1 block text-[10px] font-bold text-slate-400 uppercase"
-                >Etiqueta (Label)</label
-              >
-              <input
-                [id]="'label-' + $index"
-                type="text"
-                formControlName="label"
-                class="w-full rounded-lg border border-slate-200 p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-200"
-              />
-            </div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Etiqueta (UI)</mat-label>
+              <input matInput formControlName="label" placeholder="ej. Color" />
+            </mat-form-field>
 
-            <div>
-              <label
-                [for]="'type-' + $index"
-                class="mb-1 block text-[10px] font-bold text-slate-400 uppercase"
-                >Tipo de Dato</label
-              >
-              <select
-                [id]="'type-' + $index"
-                formControlName="dataType"
-                class="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-indigo-200"
-              >
-                <option value="text">Texto</option>
-                <option value="number">Número</option>
-                <option value="boolean">Boolean</option>
-                <option value="date">Fecha</option>
-              </select>
-            </div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Tipo de Dato</mat-label>
+              <mat-select formControlName="dataType">
+                <mat-option value="text">Texto</mat-option>
+                <mat-option value="number">Número</mat-option>
+                <mat-option value="boolean">Boolean</mat-option>
+                <mat-option value="date">Fecha</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <div class="flex flex-col justify-end">
+            <div class="flex items-center justify-center">
               @if (attr.get('id')?.value !== 0) {
-                <span
-                  class="mb-2 text-center text-[9px] font-black text-emerald-500 uppercase italic"
-                  >Guardado</span
-                >
+                <div class="flex flex-col items-center gap-1 opacity-60">
+                  <mat-icon class="text-emerald-500">check_circle</mat-icon>
+                  <span class="text-[10px] font-black text-emerald-600 uppercase italic"
+                    >Guardado</span
+                  >
+                </div>
               } @else {
                 <button
+                  mat-stroked-button
+                  color="warn"
                   type="button"
                   (click)="removeAttribute($index)"
-                  class="mb-1 flex items-center justify-center gap-1 text-[10px] font-bold text-red-400 hover:text-red-600"
+                  class="!rounded-lg !border-red-100 hover:!bg-red-50"
                 >
+                  <mat-icon>delete_outline</mat-icon>
                   ELIMINAR
                 </button>
               }
             </div>
           </div>
 
-          <!-- Fila 2: Validaciones -->
-          <div class="mt-4 border-t border-slate-50 pt-4">
-            <span class="mb-3 block text-[10px] font-bold tracking-tight text-slate-400 uppercase"
-              >Validaciones</span
-            >
+          <div class="mt-6 border-t border-slate-50 pt-6">
+            <span class="mb-4 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+              Configuración de Validaciones
+            </span>
 
-            <div formGroupName="validations" class="flex flex-wrap items-center gap-4">
-              <!-- Requerido -->
-              <label
-                [for]="'req-' + $index"
-                class="flex cursor-pointer items-center gap-2 rounded-md border border-slate-100 bg-slate-50 px-3 py-2"
-              >
-                <input
-                  [id]="'req-' + $index"
-                  type="checkbox"
-                  formControlName="required"
-                  class="h-4 w-4 rounded border-slate-300 text-indigo-600"
-                />
-                <span class="text-xs font-semibold text-slate-600">Requerido</span>
-              </label>
+            <div formGroupName="validations" class="flex flex-col gap-6">
+              <div class="flex items-center">
+                <mat-slide-toggle formControlName="required" color="primary">
+                  <span class="text-xs font-bold text-slate-600">Requerido</span>
+                </mat-slide-toggle>
+              </div>
 
-              <!-- Validaciones para Texto -->
-              @if (attr.get('dataType')?.value === 'text') {
-                <div class="flex items-center gap-2">
-                  <input
-                    type="number"
-                    formControlName="minLength"
-                    placeholder="Min Carac."
-                    class="w-24 rounded border border-slate-200 p-2 text-xs"
-                  />
-                  <input
-                    type="number"
-                    formControlName="maxLength"
-                    placeholder="Max Carac."
-                    class="w-24 rounded border border-slate-200 p-2 text-xs"
-                  />
-                  <div class="relative flex items-center">
-                    <span class="absolute left-2 text-[10px] font-bold text-slate-400">/</span>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:items-center lg:gap-6">
+                @if (attr.get('dataType')?.value === 'text') {
+                  <mat-form-field appearance="outline" class="w-full lg:w-28">
+                    <mat-label>Min</mat-label>
+                    <input matInput type="number" formControlName="minLength" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full lg:w-28">
+                    <mat-label>Max</mat-label>
+                    <input matInput type="number" formControlName="maxLength" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full lg:min-w-[200px] lg:flex-1">
+                    <mat-label>RegEx Pattern</mat-label>
                     <input
+                      matInput
                       type="text"
                       formControlName="pattern"
-                      placeholder="RegEx Pattern"
-                      class="w-48 rounded border border-slate-200 py-2 pr-2 pl-5 font-mono text-xs"
+                      placeholder="^[a-zA-Z]+$"
                     />
-                  </div>
-                </div>
-              }
+                    <span matPrefix class="px-1 text-slate-400">/</span>
+                  </mat-form-field>
+                }
 
-              <!-- Validaciones para Números -->
-              @if (attr.get('dataType')?.value === 'number') {
-                <div class="flex gap-2">
-                  <input
-                    type="number"
-                    formControlName="min"
-                    placeholder="Mín"
-                    class="w-20 rounded border border-slate-200 p-2 text-xs"
-                  />
-                  <input
-                    type="number"
-                    formControlName="max"
-                    placeholder="Máx"
-                    class="w-20 rounded border border-slate-200 p-2 text-xs"
-                  />
-                </div>
-              }
+                @if (attr.get('dataType')?.value === 'number') {
+                  <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
+                    <mat-label>Mínimo</mat-label>
+                    <input matInput type="number" formControlName="min" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
+                    <mat-label>Máximo</mat-label>
+                    <input matInput type="number" formControlName="max" />
+                  </mat-form-field>
+                }
+              </div>
             </div>
           </div>
         </div>
       } @empty {
         <div
-          class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-100 py-10"
+          class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 py-16"
         >
-          <p class="text-sm text-slate-400">No hay atributos definidos.</p>
+          <mat-icon class="mb-2 scale-150 text-slate-300">post_add</mat-icon>
+          <p class="font-medium text-slate-400">No hay atributos definidos para esta categoría.</p>
         </div>
       }
 
       <button
+        mat-button
         type="button"
         (click)="addEmptyAttribute()"
-        class="w-full rounded-xl border-2 border-dashed border-slate-200 py-3 font-bold text-slate-400 transition-all hover:border-indigo-300 hover:text-indigo-500"
+        class="!h-14 w-full !rounded-2xl !border-2 !border-dashed !border-slate-300 !text-slate-500 transition-all hover:!border-indigo-400 hover:!bg-indigo-50 hover:!text-indigo-600"
       >
-        + Agregar Nuevo Atributo
+        <mat-icon>add</mat-icon>
+        <span class="font-bold">Agregar Nuevo Atributo</span>
       </button>
 
-      <div class="mt-8 flex justify-end border-t border-slate-100 pt-6">
+      <div class="mt-12 flex justify-end border-t border-slate-100 pt-8">
         <button
+          mat-flat-button
+          color="primary"
           (click)="onSave()"
           [disabled]="form.invalid"
-          class="rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white shadow-lg transition-all hover:bg-indigo-700 disabled:opacity-50"
+          class="!h-14 !rounded-xl !px-12 !text-lg !font-bold shadow-indigo-200 transition-all hover:shadow-xl"
         >
+          <mat-icon>save</mat-icon>
           Guardar Configuración
         </button>
       </div>

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -15,11 +21,29 @@ import { CommonModule } from '@angular/common';
 import { CategoryStore } from '../state/category.store';
 
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatSlideToggleModule,
+  ],
   templateUrl: './product-extra-attribute-definition.html',
   styleUrl: './product-extra-attribute-definition.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +84,7 @@ export class ProductExtraAttributeDefinition implements OnInit {
 
   onSave() {
     if (this.form.invalid) return;
+    this._spinnerService.show();
     const categoryId = this.form.get('categoryId')?.value;
 
     if (categoryId) {
@@ -67,9 +92,13 @@ export class ProductExtraAttributeDefinition implements OnInit {
       this.attributeService.saveExtraAttributes(categoryId, attributesToSave).subscribe({
         next: () => {
           alert('Guardado correctamente');
+          this._spinnerService.hide();
           this.onCategoryChange(categoryId); // Recargamos para limpiar estados
         },
-        error: () => alert('Error al guardar'),
+        error: () => {
+          alert('Error al guardar');
+          this._spinnerService.hide();
+        },
       });
     }
   }

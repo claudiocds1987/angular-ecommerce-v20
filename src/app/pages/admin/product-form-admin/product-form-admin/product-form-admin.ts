@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -18,6 +17,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 
@@ -25,11 +25,26 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryStore } from '../../state/category.store';
 import { BrandStore } from '../../state/brand.store';
 import { ProductService } from '../../../../shared/services/product-service';
-import { Product } from '../../../../shared/models/product.model';
+import { ExtraAttribute, Product } from '../../../../shared/models/product.model';
 import { UploadImageComponent } from '../../../../shared/components/upload-image/upload-image';
 import { finalize, startWith } from 'rxjs';
 import { SpinnerService } from '../../../../shared/services/spinner-service';
 import { ProductExtraAttributeService } from '../../../../shared/services/product-extra-attribute-service';
+import { ProductExtraAttribute } from '../../../../shared/models/product-extra-attribute.model';
+
+type AdminProductOperation = 'create' | 'edit';
+
+interface ExtraAttributeFormRow {
+  name: string;
+  label: string;
+  dataType: string;
+  value: unknown;
+}
+
+interface ImageFormRow {
+  id?: number | null;
+  imageUrl: string;
+}
 
 @Component({
   selector: 'app-product-form-admin',
@@ -40,51 +55,62 @@ import { ProductExtraAttributeService } from '../../../../shared/services/produc
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormAdmin {
+  private static readonly TAG_SANITIZE = /[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g;
+  private static readonly NUMBER_NAV_KEYS = [
+    'Backspace',
+    'Delete',
+    'ArrowLeft',
+    'ArrowRight',
+    'Tab',
+    '.',
+    ',',
+  ];
+
   private readonly fb = inject(FormBuilder);
-  private readonly _spinnerService = inject(SpinnerService);
-  private readonly _productService = inject(ProductService);
-  private readonly _activeRoute = inject(ActivatedRoute);
-  private _productExtraAttributeService = inject(ProductExtraAttributeService);
-  private readonly _cdr = inject(ChangeDetectorRef);
-  private _isInitialLoad = true; // bandera para saber si es 1ra vez que se carga el componente
+  private readonly spinnerService = inject(SpinnerService);
+  private readonly productService = inject(ProductService);
+  private readonly activeRoute = inject(ActivatedRoute);
+  private readonly productExtraAttributeService = inject(ProductExtraAttributeService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
 
-  productForm: FormGroup = this._createProductForm();
+  productForm: FormGroup = this.createProductForm();
 
-  categoriesSig = this.categoryStore.items;
-  brandsSig = this.brandStore.items;
-  private _productDataSig = signal<Product | null>(null);
-  private _operation = this._activeRoute.snapshot.data['operation'];
+  readonly categoriesSig = this.categoryStore.items;
+  readonly brandsSig = this.brandStore.items;
+  private readonly productDataSig = signal<Product | null>(null);
+  private readonly operation = this.activeRoute.snapshot.data['operation'] as AdminProductOperation;
 
-  private _priceValue = toSignal(this.productForm.get('price')!.valueChanges, {
+  private readonly priceValue = toSignal(this.productForm.get('price')!.valueChanges, {
     initialValue: this.productForm.get('price')?.value ?? 0,
   });
 
-  private _discountValue = toSignal(this.productForm.get('discountPercentage')!.valueChanges, {
-    initialValue: this.productForm.get('discountPercentage')?.value ?? 0,
-  });
+  private readonly discountValue = toSignal(
+    this.productForm.get('discountPercentage')!.valueChanges,
+    { initialValue: this.productForm.get('discountPercentage')?.value ?? 0 },
+  );
 
-  categoryIdSig = toSignal(
+  readonly categoryIdSig = toSignal(
     this.productForm
       .get('categoryId')!
       .valueChanges.pipe(startWith(this.productForm.get('categoryId')?.value)),
     { initialValue: this.productForm.get('categoryId')?.value },
   );
 
-  finalPriceSig = computed(() => {
-    const price = Number(this._priceValue()) || 0;
-    const discount = Number(this._discountValue()) || 0;
+  readonly finalPriceSig = computed(() => {
+    const price = Number(this.priceValue()) || 0;
+    const discount = Number(this.discountValue()) || 0;
     if (discount <= 0) return price;
     if (discount >= 100) return 0;
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
-  // Ahora el efecto maneja directamente la carga de atributos
-  loadExtraAttributes = effect(() => {
+  // Aunque marca como no usado si esta usandose, es necesario para el formulario de extra atributos
+  private readonly loadExtraAttributesEffect = effect((onCleanup) => {
     const categoryId = this.categoryIdSig();
-    const productData = this._productDataSig();
+    const productData = this.productDataSig();
 
     if (!categoryId) {
       untracked(() => this.extraAttributesArray.clear());
@@ -92,111 +118,35 @@ export class ProductFormAdmin {
     }
 
     untracked(() => {
-      // Si es la carga inicial y ya tenemos los datos del producto,
-      // detenemos este efecto porque el efecto del constructor ya se encargó.
-      if (this._isInitialLoad && this._operation === 'edit' && productData) {
-        this._isInitialLoad = false; // Marcamos que la inicialización terminó
-        return;
-      }
-
-      this._productExtraAttributeService
+      const sub = this.productExtraAttributeService
         .getExtraAttributesByCategory(categoryId)
-        .subscribe((attributes) => {
-          // Al venir del servicio tras un cambio de categoría,
-          // mandamos [] para que los campos aparezcan vacíos.
-          this._buildExtraAttributes(attributes, []);
-          this._isInitialLoad = false;
+        .subscribe({
+          next: (definitions) => {
+            console.log('definitions', definitions);
+            const saved: ExtraAttribute[] =
+              this.operation === 'edit' && productData ? (productData.extraAttributes ?? []) : [];
+            this.buildExtraAttributes(definitions, saved);
+          },
         });
+      onCleanup(() => sub.unsubscribe());
     });
   });
 
   constructor() {
-    this._initData();
-
+    this.initData();
     effect(() => {
-      const product = this._productDataSig();
+      const product = this.productDataSig();
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
-        untracked(() => {
-          this.productForm.patchValue(product);
-
-          this.tagsArray.clear();
-          if (product.tags?.length > 0) {
-            product.tags.forEach((tagObj) => {
-              this.tagsArray.push(new FormControl(tagObj.tagName));
-            });
-          }
-          if (product.extraAttributes) {
-            // Usamos 'as any' para decirle a TS que confíe en nosotros,
-            // ya que solo queremos extraer los valores para matchear los nombres.
-            this._buildExtraAttributes(product.extraAttributes as any, product.extraAttributes);
-          }
-        });
+        untracked(() => this.patchFormFromProduct(product));
       }
     });
   }
 
   trackByAttributeName(index: number, extraAttributeName: string | undefined): string {
-    // trackByAttributeName (usado en el for html): Optimiza el rendimiento del renderizado.
-    // Indica a Angular que no destruya todo el HTML al cambiar de categoría,
-    // sino que identifique cada campo por su nombre único.
-    // Si el nombre cambia, destruye solo ese campo y crea uno nuevo.
-    // Si el nombre es el mismo, reutiliza el elemento existente.
-    // Retorna el nombre del atributo como identificador único o el índice como respaldo
     return extraAttributeName || index.toString();
   }
 
-  private _buildExtraAttributes(
-    definitions: any[], // Cambiamos a any[] para evitar conflictos de tipos
-    savedValues: any[] = [],
-  ) {
-    const extraArray = this.extraAttributesArray;
-    extraArray.clear({ emitEvent: false });
-
-    definitions.forEach((def) => {
-      // Buscamos si existe un valor guardado para este atributo
-      const saved = savedValues.find((v) => v.name === def.name);
-      let initialValue: any = '';
-
-      if (def.dataType === 'boolean') {
-        initialValue = saved ? String(saved.value).toLowerCase() === 'true' : false;
-      } else {
-        initialValue = saved?.value ?? '';
-      }
-
-      // --- MEJORA DE SEGURIDAD PARA VALIDACIONES ---
-      const validators = [];
-
-      // Verificamos que 'validations' exista antes de leer sus propiedades
-      if (def.validations) {
-        if (def.validations.required) validators.push(Validators.required);
-        if (def.validations.minLength)
-          validators.push(Validators.minLength(def.validations.minLength));
-        if (def.validations.maxLength)
-          validators.push(Validators.maxLength(def.validations.maxLength));
-        if (def.validations.min !== undefined && def.validations.min !== null)
-          validators.push(Validators.min(def.validations.min));
-        if (def.validations.max !== undefined && def.validations.max !== null)
-          validators.push(Validators.max(def.validations.max));
-        if (def.validations.pattern) validators.push(Validators.pattern(def.validations.pattern));
-      }
-
-      extraArray.push(
-        this.fb.group({
-          id: [def.id || 0],
-          name: [def.name],
-          label: [def.label || def.name], // Si no hay label, usa el name
-          dataType: [def.dataType],
-          value: [initialValue, validators],
-        }),
-      );
-    });
-
-    extraArray.markAsPristine();
-    this._cdr.detectChanges();
-  }
-
-  // getters para acceder a los FormArrays de tags y atributos extra de forma más limpia en el template
-  get tagsArray() {
+  get tagsArray(): FormArray {
     return this.productForm.get('tags') as FormArray;
   }
 
@@ -208,90 +158,155 @@ export class ProductFormAdmin {
     return this.productForm.valid && this.productForm.dirty;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.productForm.invalid) return;
-    this._spinnerService.show();
+    this.spinnerService.show();
 
     const formValue = this.productForm.getRawValue();
+    const productToSave = this.mapFormToProductPayload(formValue);
 
-    // Mapeamos los atributos del FormArray al formato que espera el Backend
-    const formattedExtraAttributes = (formValue.extraAttributes || []).map((attr: any) => ({
+    const request =
+      this.operation === 'create'
+        ? this.productService.createProduct(productToSave)
+        : this.productService.updateProduct(productToSave.id!, productToSave);
+
+    request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
+      next: (product) => this.handleSuccess(product),
+      error: () => this.handleError(),
+    });
+  }
+
+  addTag(input: HTMLInputElement): void {
+    const rawValue = input.value.trim();
+    if (!rawValue) return;
+
+    const cleanTag = rawValue.replace(ProductFormAdmin.TAG_SANITIZE, '').trim();
+    if (cleanTag && !this.tagsArray.value.includes(cleanTag)) {
+      this.tagsArray.push(new FormControl(cleanTag));
+    }
+    input.value = '';
+  }
+
+  removeTag(index: number): void {
+    this.tagsArray.removeAt(index);
+  }
+
+  onNumberKeydown(event: KeyboardEvent): void {
+    if (!ProductFormAdmin.NUMBER_NAV_KEYS.includes(event.key) && Number.isNaN(Number(event.key))) {
+      event.preventDefault();
+    }
+  }
+
+  private patchFormFromProduct(product: Product): void {
+    this.productForm.patchValue(product);
+
+    this.tagsArray.clear();
+    product.tags?.forEach((tagObj) => {
+      this.tagsArray.push(new FormControl(tagObj.tagName));
+    });
+  }
+
+  private buildExtraAttributes(
+    definitions: ProductExtraAttribute[],
+    savedValues: ExtraAttribute[] = [],
+  ): void {
+    const extraArray = this.extraAttributesArray;
+    extraArray.clear({ emitEvent: false });
+
+    definitions.forEach((def) => {
+      const saved = savedValues.find((v) => v.name === def.name);
+      const initialValue = this.resolveInitialExtraValue(def, saved);
+      const validators = this.validatorsFromDefinition(def);
+
+      extraArray.push(
+        this.fb.group({
+          id: [def.id || 0],
+          name: [def.name],
+          label: [def.label || def.name],
+          dataType: [def.dataType],
+          value: [initialValue, validators],
+        }),
+      );
+    });
+
+    extraArray.markAsPristine();
+    this.cdr.detectChanges();
+  }
+
+  private resolveInitialExtraValue(
+    def: ProductExtraAttribute,
+    saved: ExtraAttribute | undefined,
+  ): string | boolean {
+    if (def.dataType === 'boolean') {
+      return saved ? String(saved.value).toLowerCase() === 'true' : false;
+    }
+    return (saved?.value ?? '') as string;
+  }
+
+  private validatorsFromDefinition(def: ProductExtraAttribute): ValidatorFn[] {
+    const v = def.validations;
+    if (!v) return [];
+
+    const validators: ValidatorFn[] = [];
+    if (v.required) validators.push(Validators.required);
+    if (v.minLength != null) validators.push(Validators.minLength(v.minLength));
+    if (v.maxLength != null) validators.push(Validators.maxLength(v.maxLength));
+    if (v.min !== undefined && v.min !== null) validators.push(Validators.min(v.min));
+    if (v.max !== undefined && v.max !== null) validators.push(Validators.max(v.max));
+    if (v.pattern) validators.push(Validators.pattern(v.pattern));
+    return validators;
+  }
+
+  private mapFormToProductPayload(formValue: Record<string, unknown>): Product {
+    const extraRows = (formValue['extraAttributes'] ?? []) as ExtraAttributeFormRow[];
+    const formattedExtraAttributes = extraRows.map((attr) => ({
       name: attr.name,
       label: attr.label,
       dataType: attr.dataType,
       value: attr.dataType === 'boolean' ? String(!!attr.value) : String(attr.value ?? ''),
     }));
 
-    const productToSave: any = {
-      ...formValue,
-      id: formValue.id || null,
-      price: Number(formValue.price),
-      discountPercentage: Number(formValue.discountPercentage),
-      stock: Number(formValue.stock),
-      // 2. Asignamos los atributos ya normalizados
-      extraAttributes: formattedExtraAttributes,
-      tags: formValue.tags.map((tag: string) => ({ tagName: tag })),
-      images: (formValue.images || []).map((img: any) => ({
+    const tagStrings = (formValue['tags'] ?? []) as string[];
+    const imageRows = (formValue['images'] ?? []) as ImageFormRow[];
+    const id = (formValue['id'] as number) || null;
+
+    return {
+      ...(formValue as unknown as Product),
+      id: id ?? 0,
+      price: Number(formValue['price']),
+      discountPercentage: Number(formValue['discountPercentage']),
+      stock: Number(formValue['stock']),
+      extraAttributes: formattedExtraAttributes as ExtraAttribute[],
+      tags: tagStrings.map((tag) => ({ tagName: tag }) as Product['tags'][number]),
+      images: imageRows.map((img) => ({
         id: img.id || null,
         imageUrl: img.imageUrl,
-        productId: formValue.id || null,
-      })),
+        productId: id,
+      })) as Product['images'],
     };
-
-    const request =
-      this._operation === 'create'
-        ? this._productService.createProduct(productToSave)
-        : this._productService.updateProduct(productToSave.id!, productToSave);
-
-    request.pipe(finalize(() => this._spinnerService.hide())).subscribe({
-      next: (product) => this._handleSuccess(product),
-      error: (err) => this._handleError(err),
-    });
   }
 
-  addTag(input: HTMLInputElement) {
-    const rawValue = input.value.trim();
-    if (rawValue) {
-      const cleanTag = rawValue.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g, '').trim();
-      if (cleanTag && !this.tagsArray.value.includes(cleanTag)) {
-        this.tagsArray.push(new FormControl(cleanTag));
-      }
-      input.value = '';
-    }
-  }
-
-  removeTag(index: number) {
-    this.tagsArray.removeAt(index);
-  }
-
-  onNumberKeydown(event: KeyboardEvent) {
-    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', '.', ','];
-    if (!allowedKeys.includes(event.key) && isNaN(Number(event.key))) {
-      event.preventDefault();
-    }
-  }
-
-  private _handleSuccess(product: Product): void {
+  private handleSuccess(product: Product): void {
     alert(`Producto ${product.title} guardado con éxito`);
   }
 
-  private _handleError(err: any): void {
+  private handleError(): void {
     alert(`Error al procesar el producto`);
   }
 
-  private _initData() {
+  private initData(): void {
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
 
-    if (this._operation === 'edit') {
-      const productId = Number(this._activeRoute.snapshot.paramMap.get('id'));
-      this._productService
+    if (this.operation === 'edit') {
+      const productId = Number(this.activeRoute.snapshot.paramMap.get('id'));
+      this.productService
         .getProductById(productId)
-        .subscribe((data) => this._productDataSig.set(data));
+        .subscribe((data) => this.productDataSig.set(data));
     }
   }
 
-  private _createProductForm(): FormGroup {
+  private createProductForm(): FormGroup {
     return this.fb.group({
       id: [0],
       title: ['', [Validators.required]],
