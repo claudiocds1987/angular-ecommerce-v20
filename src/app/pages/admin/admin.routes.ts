@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { ProductsGridAdmin } from './products-grid-admin/products-grid-admin';
 import { AdminDashboard } from './admin-dashboard/admin-dashboard';
-import { ProductExtraAttributeForm } from './product-extra-attribute-form/product-extra-attribute-form';
+import { ProductExtraAttributeDefinition } from './product-extra-attribute-definition/product-extra-attribute-definition';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -15,8 +15,8 @@ export const ADMIN_ROUTES: Routes = [
     title: 'Lista de Productos',
   },
   {
-    path: 'product-extra-attribute-form', // Esto cargará cuando entres a /admin
-    component: ProductExtraAttributeForm,
+    path: 'product-extra-attribute-definition', // Esto cargará cuando entres a /admin
+    component: ProductExtraAttributeDefinition,
     title: 'Definición de Atributos Extra para el producto',
   },
 ];

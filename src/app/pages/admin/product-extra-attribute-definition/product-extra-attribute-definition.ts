@@ -17,14 +17,14 @@ import { CategoryStore } from '../state/category.store';
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
 
 @Component({
-  selector: 'app-product-extra-attribute-form',
+  selector: 'app-product-extra-attribute-definition',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './product-extra-attribute-form.html',
-  styleUrl: './product-extra-attribute-form.scss',
+  templateUrl: './product-extra-attribute-definition.html',
+  styleUrl: './product-extra-attribute-definition.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductExtraAttributeForm implements OnInit {
+export class ProductExtraAttributeDefinition implements OnInit {
   private _fb = inject(FormBuilder);
   private _spinnerService = inject(SpinnerService);
   private attributeService = inject(ProductExtraAttributeService);

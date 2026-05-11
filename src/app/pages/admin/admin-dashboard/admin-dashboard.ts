@@ -15,6 +15,6 @@ export class AdminDashboard {
   }
 
   goToExtraAttributes(): void {
-    this._router.navigate(['admin/product-extra-attribute-form']);
+    this._router.navigate(['admin/product-extra-attribute-definition']);
   }
 }
