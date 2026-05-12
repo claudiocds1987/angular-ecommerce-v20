@@ -1,0 +1,9 @@
+@if (errorMessage()) {
+  @if (useMaterial()) {
+    {{ errorMessage() }}
+  } @else {
+    <div class="animate-fade-in mt-1 text-xs font-medium text-red-600">
+      {{ errorMessage() }}
+    </div>
+  }
+}

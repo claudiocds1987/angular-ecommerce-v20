@@ -10,7 +10,6 @@ import {
 import { ProductExtraAttributeService } from '../../../shared/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '../../../shared/models/product-extra-attribute.model';
 import { SpinnerService } from '../../../shared/services/spinner-service';
-import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { CategoryStore } from '../state/category.store';
 
@@ -22,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
@@ -37,6 +37,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatIconModule,
     MatDividerModule,
     MatSlideToggleModule,
+    FormFieldError,
   ],
   templateUrl: './product-extra-attribute-definition.html',
   styleUrl: './product-extra-attribute-definition.scss',
@@ -113,7 +114,31 @@ export class ProductExtraAttributeDefinition implements OnInit {
     this.extraAttributesSig.set([...(this.extraAttributesArray.controls as FormGroup[])]);
   }
 
-  // Modificamos el método createAttributeGroup
+  private createAttributeGroup(def?: ProductExtraAttribute): FormGroup {
+    // `validations.required` del backend: obligatoriedad del atributo en catálogo.
+    // Fila nueva sin `def`: exigimos nombre y etiqueta hasta que el usuario defina el atributo.
+    const attrRequired = !def || !!def.validations?.required;
+    const nameValidators = attrRequired ? [Validators.required] : [];
+    const labelValidators = attrRequired ? [Validators.required] : [];
+
+    return this._fb.group({
+      id: [def?.id || 0],
+      name: [def?.name || '', nameValidators],
+      label: [def?.label || '', labelValidators],
+      dataType: [def?.dataType || 'text', Validators.required],
+      categoryId: [this.form.get('categoryId')?.value],
+      validations: this._fb.group({
+        required: [def?.validations?.required || false],
+        minLength: [def?.validations?.minLength || null, [Validators.min(0)]],
+        maxLength: [def?.validations?.maxLength || null, [Validators.min(0)]],
+        pattern: [def?.validations?.pattern || null],
+        min: [def?.validations?.min || null],
+        max: [def?.validations?.max || null],
+      }),
+    });
+  }
+
+  /* // Modificamos el método createAttributeGroup
   private createAttributeGroup(def?: ProductExtraAttribute): FormGroup {
     return this._fb.group({
       id: [def?.id || 0],
@@ -131,7 +156,7 @@ export class ProductExtraAttributeDefinition implements OnInit {
         max: [def?.validations?.max || null],
       }),
     });
-  }
+  } */
 
   addEmptyAttribute() {
     this.extraAttributesArray.push(this.createAttributeGroup());
