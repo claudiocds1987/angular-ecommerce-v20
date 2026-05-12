@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -22,6 +29,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
+import { Router } from '@angular/router';
+import { ToastService } from '../../../shared/services/toast-service';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
@@ -48,6 +58,9 @@ export class ProductExtraAttributeDefinition implements OnInit {
   private _spinnerService = inject(SpinnerService);
   private attributeService = inject(ProductExtraAttributeService);
   private _categoryStore = inject(CategoryStore);
+  private _confirmDialog = inject(ConfirmDialogService);
+  private _router = inject(Router);
+  private _toast = inject(ToastService);
 
   categoriesSig = this._categoryStore.items;
   extraAttributesSig = signal<FormGroup[]>([]);
@@ -73,6 +86,55 @@ export class ProductExtraAttributeDefinition implements OnInit {
     return this.form.valid && this.extraAttributesArray.valid && this.extraAttributesArray.dirty;
   }
 
+  /** Solo los atributos importan: elegir categoría o rellenar el array desde el API no debe bloquear la salida. */
+  hasUnsavedChanges(): boolean {
+    return this.extraAttributesArray.dirty;
+  }
+
+  // Escucha cuando se cierra la ventana o se hace un refresh en la pagina, muestra el alert del browser es independiente al mat dialog
+  // Ejemplo: El usuario escribe en el formulario y si por accidente cierra o refresca la ventana, muestra el alert propio del navegador
+  // avisandole que tiene cambios pendientes, si realmente quiere salir.
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault();
+    }
+  }
+
+  confirmSave(): void {
+    if (!this.isReadyToSave()) return;
+    this._confirmDialog
+      .open({
+        title: 'Guardar configuración',
+        message: '¿Deseas guardar los atributos extra de esta categoría en el servidor?',
+        confirmLabel: 'Guardar',
+        cancelLabel: 'Cancelar',
+        confirmColor: 'primary',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) this.onSave();
+      });
+  }
+
+  confirmExit(): void {
+    if (!this.hasUnsavedChanges()) {
+      void this._router.navigate(['/admin']);
+      return;
+    }
+    this._confirmDialog
+      .open({
+        title: 'Salir sin guardar',
+        message:
+          'Hay cambios sin guardar. Si sales ahora, se perderán. ¿Deseas salir del panel de configuración?',
+        confirmLabel: 'Salir sin guardar',
+        cancelLabel: 'Seguir editando',
+        confirmColor: 'warn',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) void this._router.navigate(['/admin']);
+      });
+  }
+
   // Escuchar cuando cambia la categoría
   onCategoryChange(categoryId: number) {
     this.attributeService.getExtraAttributesByCategory(categoryId).subscribe({
@@ -81,7 +143,7 @@ export class ProductExtraAttributeDefinition implements OnInit {
     });
   }
 
-  onSave() {
+  private onSave(): void {
     if (this.form.invalid) return;
     this._spinnerService.show();
     const categoryId = this.form.get('categoryId')?.value;
@@ -90,12 +152,12 @@ export class ProductExtraAttributeDefinition implements OnInit {
       const attributesToSave = this.extraAttributesArray.getRawValue() as ProductExtraAttribute[];
       this.attributeService.saveExtraAttributes(categoryId, attributesToSave).subscribe({
         next: () => {
-          alert('Guardado correctamente');
+          this._toast.show('Guardado correctamente', 'success');
           this._spinnerService.hide();
-          this.onCategoryChange(categoryId); // Recargamos para limpiar estados
+          this.onCategoryChange(categoryId);
         },
         error: () => {
-          alert('Error al guardar');
+          this._toast.show('Error al guardar', 'danger');
           this._spinnerService.hide();
         },
       });
@@ -116,6 +178,8 @@ export class ProductExtraAttributeDefinition implements OnInit {
     // 4. Seteamos el Signal con un NUEVO array
     // para romper la referencia anterior y forzar a OnPush a repintar.
     this.extraAttributesSig.set([...(this.extraAttributesArray.controls as FormGroup[])]);
+    // clear/push pueden dejar el array en dirty sin edición del usuario; alinear con datos del servidor.
+    this.extraAttributesArray.markAsPristine();
   }
 
   private createAttributeGroup(def?: ProductExtraAttribute): FormGroup {

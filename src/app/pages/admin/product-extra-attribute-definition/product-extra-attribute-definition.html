@@ -194,11 +194,23 @@
         <span class="font-bold">Agregar Nuevo Atributo</span>
       </button>
 
-      <div class="mt-12 flex justify-end border-t border-slate-100 pt-8">
+      <div
+        class="mt-12 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-8"
+      >
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="confirmExit()"
+          class="!h-14 !rounded-xl !px-8 !font-bold"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          Salir
+        </button>
         <button
           mat-flat-button
           color="primary"
-          (click)="onSave()"
+          type="button"
+          (click)="confirmSave()"
           [disabled]="!isReadyToSave()"
           class="!h-14 !rounded-xl !px-12 !text-lg !font-bold shadow-indigo-200 transition-all hover:shadow-xl"
         >
