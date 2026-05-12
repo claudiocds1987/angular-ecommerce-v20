@@ -69,6 +69,10 @@ export class ProductExtraAttributeDefinition implements OnInit {
     }
   }
 
+  isReadyToSave() {
+    return this.form.valid && this.extraAttributesArray.valid && this.extraAttributesArray.dirty;
+  }
+
   // Escuchar cuando cambia la categoría
   onCategoryChange(categoryId: number) {
     this.attributeService.getExtraAttributesByCategory(categoryId).subscribe({
@@ -137,26 +141,6 @@ export class ProductExtraAttributeDefinition implements OnInit {
       }),
     });
   }
-
-  /* // Modificamos el método createAttributeGroup
-  private createAttributeGroup(def?: ProductExtraAttribute): FormGroup {
-    return this._fb.group({
-      id: [def?.id || 0],
-      name: [def?.name || '', Validators.required],
-      label: [def?.label || '', Validators.required],
-      dataType: [def?.dataType || 'text', Validators.required],
-      categoryId: [this.form.get('categoryId')?.value],
-      // Inicializamos todos los campos de validación posibles
-      validations: this._fb.group({
-        required: [def?.validations?.required || false],
-        minLength: [def?.validations?.minLength || null],
-        maxLength: [def?.validations?.maxLength || null],
-        pattern: [def?.validations?.pattern || null],
-        min: [def?.validations?.min || null],
-        max: [def?.validations?.max || null],
-      }),
-    });
-  } */
 
   addEmptyAttribute() {
     this.extraAttributesArray.push(this.createAttributeGroup());

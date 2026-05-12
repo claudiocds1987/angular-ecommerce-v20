@@ -214,3 +214,9 @@ body {
   border-left: none !important;
   border-right: none !important;
 }
+
+// ─── Elimina el padding del wrapper de errores (para que elmensaje de error debajo del input no tenga espacio) ──-
+
+.mat-mdc-form-field-error-wrapper {
+  padding: 0 !important;
+}
