@@ -32,17 +32,6 @@
 
   <mat-divider class="mb-10"></mat-divider>
 
-  <!-------------------------------------------------------------------------------->
-  <div class="mb-4 rounded-lg bg-black p-4 font-mono text-xs text-green-400">
-    <p>¿Formulario Válido?: {{ form.valid }}</p>
-    <p>
-      Errores en el primer atributo (name):
-      {{ extraAttributesArray.at(0)?.get('name')?.errors | json }}
-    </p>
-    <p>Estado del primer atributo (name): {{ extraAttributesArray.at(0)?.get('name')?.status }}</p>
-  </div>
-  <!-------------------------------------------------------------------------------->
-
   @if (form.get('categoryId')?.value) {
     <div formArrayName="attributes" class="space-y-8">
       <div class="flex items-center justify-between">
