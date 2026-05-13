@@ -1,0 +1,10 @@
+/* Misma separación vertical entre todos los bloques de campo (Material + Tailwind). */
+.product-form-admin__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-form-admin__extra-attribute-row {
+  width: 100%;
+}

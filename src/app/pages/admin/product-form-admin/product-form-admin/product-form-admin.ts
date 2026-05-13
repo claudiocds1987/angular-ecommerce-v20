@@ -31,6 +31,16 @@ import { finalize, startWith } from 'rxjs';
 import { SpinnerService } from '../../../../shared/services/spinner-service';
 import { ProductExtraAttributeService } from '../../../../shared/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '../../../../shared/models/product-extra-attribute.model';
+import { FormFieldError } from '../../../../shared/components/form-field-error/form-field-error';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -49,7 +59,22 @@ interface ImageFormRow {
 @Component({
   selector: 'app-product-form-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UploadImageComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    UploadImageComponent,
+    FormFieldError,
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+  ],
   templateUrl: './product-form-admin.html',
   styleUrl: './product-form-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -122,7 +147,6 @@ export class ProductFormAdmin {
         .getExtraAttributesByCategory(categoryId)
         .subscribe({
           next: (definitions) => {
-            console.log('definitions', definitions);
             const saved: ExtraAttribute[] =
               this.operation === 'edit' && productData ? (productData.extraAttributes ?? []) : [];
             this.buildExtraAttributes(definitions, saved);

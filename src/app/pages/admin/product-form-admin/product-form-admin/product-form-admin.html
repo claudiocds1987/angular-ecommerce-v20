@@ -1,408 +1,378 @@
-<div class="min-h-screen bg-slate-50 p-4 md:p-8">
-  <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Gestión de Producto</h1>
-      <p class="text-sm text-slate-500">Panel de administración avanzada de catálogo.</p>
+<div class="product-form-admin min-h-screen bg-slate-50 p-4 md:p-8">
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-8">
+    <div class="mb-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Gestión de Producto</h1>
+        <p class="text-sm text-slate-500">Panel de administración avanzada de catálogo.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button mat-stroked-button type="button">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="!isReadyToSave()">
+          Guardar Producto
+        </button>
+      </div>
     </div>
-    <div class="flex items-center gap-3">
-      <button
-        type="button"
-        class="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50"
-      >
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        (click)="onSubmit()"
-        [disabled]="!isReadyToSave()"
-        class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 disabled:opacity-50"
-      >
-        Guardar Producto
-      </button>
-    </div>
-  </header>
 
-  <form [formGroup]="productForm" class="space-y-8">
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <div class="space-y-6">
-        <section class="form-card">
-          <h2 class="section-header">
-            <span class="section-dot bg-indigo-600"></span>
-            Información Básica
-          </h2>
-          <div class="space-y-4">
-            <label class="block">
-              <span class="mb-2 block text-sm font-semibold text-slate-700">Título</span>
-              <input
-                type="text"
-                formControlName="title"
-                class="form-input-field focus:ring-indigo-50"
-              />
-            </label>
-            <label class="block">
-              <span class="mb-2 block text-sm font-semibold text-slate-700">Descripción</span>
-              <textarea
-                formControlName="description"
-                rows="4"
-                class="form-input-field resize-none focus:ring-indigo-50"
-              ></textarea>
-            </label>
-          </div>
-        </section>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <!-- Columna 1 -->
+      <div class="flex flex-col gap-6">
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-indigo-600">inventory_2</mat-icon>
+            <mat-card-title>Información Básica</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Título</mat-label>
+                <input matInput type="text" formControlName="title" />
+                <mat-error>
+                  <app-form-field-error [control]="productForm.get('title')" [useMaterial]="true" />
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Descripción</mat-label>
+                <textarea matInput formControlName="description" rows="4"></textarea>
+                <mat-error>
+                  <app-form-field-error
+                    [control]="productForm.get('description')"
+                    [useMaterial]="true"
+                  />
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
 
-        <section class="form-card overflow-hidden border-t-4 border-t-pink-500">
-          <div class="mb-4">
-            <h2 class="flex items-center gap-2 text-lg font-semibold text-slate-800">
-              Portada del Producto
-            </h2>
-            <p class="text-xs text-slate-400">Esta imagen es la principal (thumbnail).</p>
-          </div>
-          <div
-            class="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-4 transition-colors hover:border-pink-300"
-          >
-            <app-upload-image
-              formControlName="thumbnail"
-              [maxFiles]="1"
-              class="thumbnail-uploader"
-            ></app-upload-image>
-          </div>
-        </section>
+        <mat-card class="gap-4 border-t-4 border-t-pink-500">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-pink-600">image</mat-icon>
+            <mat-card-title>Portada del Producto</mat-card-title>
+            <mat-card-subtitle>Imagen principal (thumbnail)</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <div
+                class="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-3 transition-colors hover:border-pink-300"
+              >
+                <app-upload-image
+                  formControlName="thumbnail"
+                  [maxFiles]="1"
+                  class="thumbnail-uploader"
+                ></app-upload-image>
+              </div>
+              <mat-error class="block">
+                <app-form-field-error
+                  [control]="productForm.get('thumbnail')"
+                  [useMaterial]="true"
+                />
+              </mat-error>
+            </div>
+          </mat-card-content>
+        </mat-card>
 
-        <section class="form-card">
-          <h2 class="section-header">
-            <span class="section-dot bg-indigo-400"></span>
-            Galería de Imágenes
-          </h2>
-          <app-upload-image formControlName="images"></app-upload-image>
-        </section>
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-indigo-500">collections</mat-icon>
+            <mat-card-title>Galería de Imágenes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <app-upload-image formControlName="images"></app-upload-image>
+          </mat-card-content>
+        </mat-card>
       </div>
 
-      <div class="space-y-6">
-        <section class="form-card">
-          <h2 class="section-header">
-            <span class="section-dot bg-emerald-500"></span>
-            Inventario y Medidas
-          </h2>
-
-          <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <label class="block">
-              <span class="mb-2 block text-[10px] font-bold tracking-wider text-slate-400 uppercase"
-                >Stock</span
-              >
-              <input
-                type="number"
-                formControlName="stock"
-                class="form-input-field focus:ring-emerald-50"
-              />
-            </label>
-            <label class="block">
-              <span class="mb-2 block text-[10px] font-bold tracking-wider text-slate-400 uppercase"
-                >Mín. Compra</span
-              >
-              <input
-                type="number"
-                formControlName="minimumOrderQuantity"
-                class="form-input-field focus:ring-emerald-50"
-              />
-            </label>
-            <label class="block">
-              <span class="mb-2 block text-[10px] font-bold tracking-wider text-slate-400 uppercase"
-                >SKU</span
-              >
-              <input
-                type="text"
-                formControlName="sku"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-sm uppercase outline-none"
-              />
-            </label>
-          </div>
-
-          <span class="mb-3 block text-[10px] font-bold tracking-wider text-slate-400 uppercase"
-            >Dimensiones (cm)</span
-          >
-          <div
-            class="grid grid-cols-3 gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-center"
-          >
-            @for (dim of ['width', 'height', 'depth']; track dim) {
-              <div class="flex flex-col">
-                <span class="mb-1 text-[10px] font-bold text-slate-500 uppercase">{{
-                  dim === 'depth' ? 'Prof.' : dim
-                }}</span>
-                <input
-                  type="text"
-                  [formControlName]="dim"
-                  (keydown)="onNumberKeydown($event)"
-                  placeholder="0.00"
-                  class="border-b-2 border-slate-200 bg-transparent py-1 text-center text-sm outline-none focus:border-emerald-500"
-                />
+      <!-- Columna 2 -->
+      <div class="flex flex-col gap-6">
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-emerald-600">straighten</mat-icon>
+            <mat-card-title>Inventario y Medidas</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Stock</mat-label>
+                  <input matInput type="number" formControlName="stock" />
+                  <mat-error>
+                    <app-form-field-error
+                      [control]="productForm.get('stock')"
+                      [useMaterial]="true"
+                    />
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Mín. compra</mat-label>
+                  <input matInput type="number" formControlName="minimumOrderQuantity" />
+                  <mat-error>
+                    <app-form-field-error
+                      [control]="productForm.get('minimumOrderQuantity')"
+                      [useMaterial]="true"
+                    />
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>SKU</mat-label>
+                  <input matInput type="text" formControlName="sku" class="font-mono uppercase" />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.get('sku')" [useMaterial]="true" />
+                  </mat-error>
+                </mat-form-field>
               </div>
-            }
-          </div>
-        </section>
 
-        <section class="form-card">
-          <h2 class="section-header">
-            <span class="section-dot bg-amber-500"></span>
-            Entregas y Garantía
-          </h2>
-          <div class="space-y-4">
-            @for (
-              item of [
-                { lab: 'Garantía', ctrl: 'warrantyInformation' },
-                { lab: 'Envío', ctrl: 'shippingInformation' },
-                { lab: 'Devoluciones', ctrl: 'returnPolicy' },
-              ];
-              track item.ctrl
-            ) {
-              <label class="block">
-                <span
-                  class="mb-2 block border-l-2 border-amber-200 pl-2 text-sm font-semibold text-slate-700"
-                  >{{ item.lab }}</span
-                >
-                <input
-                  type="text"
-                  [formControlName]="item.ctrl"
-                  class="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm outline-none focus:border-amber-300"
-                />
-              </label>
-            }
-          </div>
-        </section>
-
-        <!-- Nueva Sección: Atributos Dinámicos asegurando que formArrayName esté correctamente vinculado-->
-        @if (extraAttributesArray.length > 0) {
-          <section class="form-card" [formGroup]="productForm">
-            <div formArrayName="extraAttributes">
-              <h2 class="section-header">
-                <span class="section-dot bg-purple-500"></span>
-                Especificaciones Técnicas
-              </h2>
-
-              <div class="space-y-4">
-                <!-- Iteramos sobre los controles del FormArray -->
-                @for (
-                  extraAttribute of extraAttributesArray.controls;
-                  track trackByAttributeName($index, extraAttribute.get('name')?.value)
-                ) {
-                  <div
-                    [formGroupName]="$index"
-                    class="animate-in fade-in slide-in-from-top-1 duration-300"
-                  >
-                    <!-- Caso para atributos de tipo Booleano (Checkbox/Switch) -->
-                    @if (extraAttribute.get('dataType')?.value === 'boolean') {
-                      <div
-                        class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-3"
-                      >
-                        <span class="text-sm font-semibold text-slate-700">
-                          {{ extraAttribute.get('label')?.value }}
-                        </span>
-                        <label class="relative inline-flex cursor-pointer items-center">
-                          <!-- Forzamos la detección de cambios con el evento click -->
-                          <input type="checkbox" formControlName="value" class="peer sr-only" />
-                          <div
-                            class="peer h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-purple-600 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white focus:outline-none"
-                          ></div>
-                        </label>
-                      </div>
-                    }
-
-                    <!-- Caso para atributos de tipo Texto o Número -->
-                    @else {
-                      <label class="block">
-                        <span class="mb-2 block text-sm font-semibold text-slate-700">
-                          {{ extraAttribute.get('label')?.value }}
-                        </span>
-                        <input
-                          [type]="
-                            extraAttribute.get('dataType')?.value === 'number' ? 'number' : 'text'
-                          "
-                          formControlName="value"
-                          [placeholder]="'Ingrese ' + extraAttribute.get('label')?.value"
-                          class="form-input-field focus:ring-purple-50"
-                        />
-                      </label>
-                    }
-                  </div>
-                } @empty {
-                  <!-- Mensaje si no hay atributos para la categoría seleccionada -->
-                  <div
-                    class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center"
-                  >
-                    <div class="mb-2 text-slate-300">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="mx-auto h-10 w-10"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9.663 17h4.674M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.364-6.364l-.707-.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 7a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5z"
-                        />
-                      </svg>
-                    </div>
-                    <p class="text-xs text-slate-400">
-                      Selecciona una categoría para ver atributos adicionales.
-                    </p>
-                  </div>
+              <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                Dimensiones (cm)
+              </span>
+              <div class="grid grid-cols-3 gap-4">
+                @for (dim of ['width', 'height', 'depth']; track dim) {
+                  <mat-form-field appearance="outline" class="w-full text-center">
+                    <mat-label>{{ dim === 'depth' ? 'Prof.' : dim }}</mat-label>
+                    <input
+                      matInput
+                      type="text"
+                      [formControlName]="dim"
+                      (keydown)="onNumberKeydown($event)"
+                      placeholder="0.00"
+                    />
+                  </mat-form-field>
                 }
               </div>
             </div>
-          </section>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-amber-600">local_shipping</mat-icon>
+            <mat-card-title>Entregas y Garantía</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              @for (
+                item of [
+                  { lab: 'Garantía', ctrl: 'warrantyInformation' },
+                  { lab: 'Envío', ctrl: 'shippingInformation' },
+                  { lab: 'Devoluciones', ctrl: 'returnPolicy' },
+                ];
+                track item.ctrl
+              ) {
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>{{ item.lab }}</mat-label>
+                  <input matInput type="text" [formControlName]="item.ctrl" />
+                </mat-form-field>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        @if (extraAttributesArray.length > 0) {
+          <mat-card [formGroup]="productForm">
+            <div formArrayName="extraAttributes">
+              <mat-card-header class="!mb-5">
+                <mat-icon mat-card-avatar class="text-purple-600">tune</mat-icon>
+                <mat-card-title>Especificaciones Técnicas</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="product-form-admin__fields">
+                  @for (
+                    extraAttribute of extraAttributesArray.controls;
+                    track trackByAttributeName($index, extraAttribute.get('name')?.value)
+                  ) {
+                    <div [formGroupName]="$index" class="product-form-admin__extra-attribute-row">
+                      @if (extraAttribute.get('dataType')?.value === 'boolean') {
+                        <div
+                          class="mb-4 flex w-full items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+                        >
+                          <span class="text-sm font-semibold text-slate-700">
+                            {{ extraAttribute.get('label')?.value }}
+                          </span>
+                          <mat-slide-toggle formControlName="value" color="primary" />
+                        </div>
+                      } @else {
+                        <mat-form-field appearance="outline" class="w-full">
+                          <mat-label>{{ extraAttribute.get('label')?.value }}</mat-label>
+                          <input
+                            matInput
+                            [type]="
+                              extraAttribute.get('dataType')?.value === 'number' ? 'number' : 'text'
+                            "
+                            formControlName="value"
+                            [placeholder]="'Ingrese ' + extraAttribute.get('label')?.value"
+                          />
+                          <mat-error>
+                            <app-form-field-error
+                              [control]="extraAttribute.get('value')"
+                              [useMaterial]="true"
+                            />
+                          </mat-error>
+                        </mat-form-field>
+                      }
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+            </div>
+          </mat-card>
         }
       </div>
 
-      <div class="space-y-6">
-        <section
-          class="relative overflow-hidden rounded-3xl bg-indigo-900 p-6 text-white shadow-xl shadow-indigo-100"
-        >
-          <div
-            class="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-indigo-800 opacity-50"
-          ></div>
-          <h2 class="relative z-10 mb-4 text-lg font-semibold">Precios</h2>
-          <div class="relative z-10 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <label class="block">
-                <span class="text-[10px] font-bold text-indigo-200 uppercase">Base ($)</span>
-                <input
-                  type="text"
-                  formControlName="price"
-                  (keydown)="onNumberKeydown($event)"
-                  class="w-full rounded-lg border border-indigo-700 bg-indigo-800/50 p-2 outline-none focus:ring-2 focus:ring-white"
-                />
-              </label>
-              <label class="block">
-                <span class="text-[10px] font-bold text-indigo-200 uppercase">Desc (%)</span>
-                <input
-                  type="text"
-                  formControlName="discountPercentage"
-                  (keydown)="onNumberKeydown($event)"
-                  class="w-full rounded-lg border border-indigo-700 bg-indigo-800/50 p-2 outline-none focus:ring-2 focus:ring-white"
-                />
-              </label>
-            </div>
-            <div class="flex items-center justify-between border-t border-indigo-800 pt-4">
-              <span class="text-3xl font-black">${{ finalPriceSig() | number: '1.2-2' }}</span>
-              <span class="rounded bg-white/20 px-2 py-1 text-[10px]">ARS</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="form-card">
-          <div class="space-y-4">
-            <label class="block">
-              <span class="mb-2 block text-sm font-semibold text-slate-700">Categoría</span>
-              <select formControlName="categoryId" class="form-input-field">
-                @for (cat of categoriesSig(); track cat.id) {
-                  <option [ngValue]="cat.id">{{ cat.name }}</option>
-                }
-              </select>
-            </label>
-
-            <label class="block">
-              <span class="mb-2 block text-sm font-semibold text-slate-700">Marca</span>
-              <select formControlName="brandId" class="form-input-field">
-                @for (brand of brandsSig(); track brand.id) {
-                  <option [ngValue]="brand.id">{{ brand.name }}</option>
-                }
-              </select>
-            </label>
-
-            <div class="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
-              <input
-                type="checkbox"
-                formControlName="isActive"
-                class="h-5 w-5 rounded border-slate-300 text-indigo-600"
-              />
-              <span class="text-sm font-semibold text-slate-700">Producto Activo</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="form-card">
-          <div class="mb-4">
-            <h2
-              class="flex items-center gap-2 text-sm font-bold tracking-wider text-slate-800 uppercase"
-            >
-              Etiquetas
-              <span class="relative flex h-2 w-2">
-                <span
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"
-                ></span>
-                <span class="relative inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
-              </span>
-            </h2>
-          </div>
-
-          <div class="space-y-4">
-            <div class="group relative">
-              <input
-                type="text"
-                #tagInput
-                (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
-                placeholder="Ej: Verano, Gamer..."
-                class="form-input-field pr-24 text-sm focus:border-indigo-500 focus:ring-indigo-50"
-              />
-              <div class="absolute top-1.5 right-1.5 flex items-center gap-2">
-                <button
-                  type="button"
-                  (click)="addTag(tagInput)"
-                  class="rounded-lg bg-indigo-600 p-2 text-white shadow-md transition-all hover:bg-indigo-700 active:scale-95"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                      clip-rule="evenodd"
+      <!-- Columna 3 -->
+      <div class="flex flex-col gap-6">
+        <mat-card class="product-form-admin__price-card gap-4 shadow-xl">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>payments</mat-icon>
+            <mat-card-title>Precio</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <div class="grid grid-cols-2 gap-4">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Base ($)</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    formControlName="price"
+                    (keydown)="onNumberKeydown($event)"
+                  />
+                  <mat-error>
+                    <app-form-field-error
+                      [control]="productForm.get('price')"
+                      [useMaterial]="true"
                     />
-                  </svg>
-                </button>
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Desc. (%)</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    formControlName="discountPercentage"
+                    (keydown)="onNumberKeydown($event)"
+                  />
+                  <mat-error>
+                    <app-form-field-error
+                      [control]="productForm.get('discountPercentage')"
+                      [useMaterial]="true"
+                    />
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="flex items-center justify-between">
+                <span class="text-3xl font-black tracking-tight">
+                  ${{ finalPriceSig() | number: '1.2-2' }}
+                </span>
+                <span class="rounded-md bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase">
+                  ARS
+                </span>
               </div>
             </div>
+          </mat-card-content>
+        </mat-card>
 
-            <div
-              class="flex min-h-[42px] flex-wrap gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-2"
-            >
-              @if (tagsArray.controls.length === 0) {
-                <span class="m-auto text-[11px] text-slate-400 italic">Sin etiquetas</span>
-              } @else {
-                @for (tag of tagsArray.controls; track $index) {
-                  <div
-                    class="flex items-center gap-1.5 rounded-lg border border-indigo-100 bg-white py-1 pr-1 pl-2.5 shadow-sm"
-                  >
-                    <span class="text-xs font-semibold text-indigo-600">{{ tag.value }}</span>
-                    <button
-                      type="button"
-                      (click)="removeTag($index)"
-                      class="rounded-md p-0.5 text-slate-300 hover:bg-red-50 hover:text-red-500"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                }
-              }
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-slate-600">category</mat-icon>
+            <mat-card-title>Clasificación</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Categoría</mat-label>
+                <mat-select formControlName="categoryId">
+                  @for (cat of categoriesSig(); track cat.id) {
+                    <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                  }
+                </mat-select>
+                <mat-error>
+                  <app-form-field-error
+                    [control]="productForm.get('categoryId')"
+                    [useMaterial]="true"
+                  />
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Marca</mat-label>
+                <mat-select formControlName="brandId">
+                  @for (brand of brandsSig(); track brand.id) {
+                    <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
+                  }
+                </mat-select>
+                <mat-error>
+                  <app-form-field-error
+                    [control]="productForm.get('brandId')"
+                    [useMaterial]="true"
+                  />
+                </mat-error>
+              </mat-form-field>
+
+              <div
+                class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+              >
+                <span class="text-sm font-semibold text-slate-700">Producto activo</span>
+                <mat-slide-toggle formControlName="isActive" color="primary" />
+              </div>
             </div>
-          </div>
-        </section>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="gap-4">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="text-indigo-600">label</mat-icon>
+            <mat-card-title class="!mb-2">Etiquetas</mat-card-title>
+            <mat-card-subtitle>Añade palabras clave para búsqueda y filtros</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="product-form-admin__fields">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Nueva etiqueta</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  #tagInput
+                  (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
+                  placeholder="Ej: Verano, Gamer..."
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="addTag(tagInput)"
+                  aria-label="Añadir etiqueta"
+                >
+                  <mat-icon>add</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <div
+                class="flex min-h-[48px] flex-wrap gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-3"
+              >
+                @if (tagsArray.controls.length === 0) {
+                  <span class="m-auto text-center text-xs text-slate-400 italic"
+                    >Sin etiquetas</span
+                  >
+                } @else {
+                  <mat-chip-set class="w-full">
+                    @for (tag of tagsArray.controls; track $index) {
+                      <mat-chip removable (removed)="removeTag($index)">
+                        {{ tag.value }}
+                        <button
+                          type="button"
+                          matChipRemove
+                          [attr.aria-label]="'Quitar ' + tag.value"
+                        >
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                }
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
   </form>
