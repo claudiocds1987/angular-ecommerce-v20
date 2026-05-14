@@ -9,7 +9,6 @@ html {
         tertiary: mat.$blue-palette,
       ),
       typography: Inter,
-      // Sincronizado con la fuente global
       density: 0,
     )
   );
@@ -20,27 +19,33 @@ html {
 
 // --- NUEVA SECCIÓN DE COMPONENTES ---
 @layer components {
-  /* Contenedor principal de cada sección */
+  .mat-card-custom {
+    /* En Tailwind, el ! va al inicio de la utilidad dentro del @apply */
+    @apply flex w-full flex-col rounded-xl border border-slate-200/60 !bg-white shadow-sm;
+
+    &.mat-mdc-card {
+      padding: 1.25rem !important;
+      /* Esto asegura que el color de fondo sea blanco puro ignorando el tema de Material */
+      background-color: white !important;
+    }
+  }
+
   .form-card {
     @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
   }
 
-  /* Títulos de sección con el indicador lateral */
   .section-header {
     @apply mb-6 flex items-center gap-2 text-lg font-semibold text-slate-800;
   }
 
-  /* El indicador de color vertical */
   .section-dot {
     @apply h-6 w-1.5 rounded-full;
   }
 
-  /* Inputs estándar del formulario */
   .form-input-field {
     @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
   }
 
-  /* buttons*/
   .primary-button {
     @apply cursor-pointer rounded bg-slate-900 px-4 py-2 text-white shadow-md transition-colors hover:bg-slate-700;
   }
@@ -62,37 +67,27 @@ body {
 body {
   margin: 0;
   color-scheme: light;
-
-  // variables de sistema de Material 3
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
-
-  // Forzar Inter y suavizado de fuente
   font-family: 'Inter', sans-serif !important;
   font: var(--mat-sys-body-medium);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-// COLOR DE LOS PLACEHOLDERS DE LOS INPUTS
-
 @layer base {
   input::placeholder,
   textarea::placeholder {
-    /* En lugar de @apply, usamos los valores directos */
-    color: #94a3b8; /* Este es text-slate-400 */
-    opacity: 0.6; /* Este es opacity-60 */
-    font-weight: 300; /* Este es font-light */
+    color: #94a3b8;
+    opacity: 0.6;
+    font-weight: 300;
   }
 }
 
-// COMPONENTES PERSONALIZADOS (Efectos y Modales)
-
-// Efecto de brillo que cruza la tarjeta (card) en componente products-list
+// COMPONENTES PERSONALIZADOS
 .glass-shine {
   position: relative;
   overflow: hidden;
-
   &::after {
     content: '';
     position: absolute;
@@ -106,25 +101,18 @@ body {
     z-index: 30;
     pointer-events: none;
   }
-
   &:hover::after {
     left: 200%;
   }
 }
 
-// Fondo desenfocado para modales
 .custom-modal-backdrop {
   background-color: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
 }
 
-// ─── Overrides globales para mat-form-field outline ──────────────────────────
-// Se definen acá (y no en el componente) porque Angular Material renderiza
-// parte del DOM de MDC fuera del encapsulamiento del componente hijo.
-// Reparación de bordes duplicados en Angular Material MDC (Input Outline)
-
-// ─── Altura y padding interno ─────────────────────────────────────────────────
+// ─── Overrides globales para mat-form-field ──────────────────────────
 
 .mat-mdc-form-field-infix {
   padding-top: 10px !important;
@@ -136,44 +124,22 @@ body {
   padding: 0 12px;
 }
 
-// ─── Tipografía del label en reposo ───────────────────────────────────────────
-
 .mat-mdc-floating-label {
   font-size: 13px !important;
   font-weight: 400;
   color: #9ca3af !important;
-  letter-spacing: 0.2px;
 }
-
-// ─── Label flotando arriba (campo activo o con valor) ─────────────────────────
 
 .mdc-floating-label--float-above {
   font-size: 12px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.4px;
 }
 
-// ─── Texto del valor ingresado ────────────────────────────────────────────────
-
-.mat-mdc-input-element {
-  font-size: 13px !important;
-  color: #374151 !important;
-  letter-spacing: 0.1px;
-}
-
-// ─── Texto del valor seleccionado en mat-select ───────────────────────────────
-
+.mat-mdc-input-element,
 .mat-mdc-select-value-text {
   font-size: 13px !important;
   color: #374151 !important;
 }
-
-.mat-mdc-select-placeholder {
-  font-size: 13px;
-  color: #9ca3af !important;
-}
-
-// ─── Bordes del outline en reposo ─────────────────────────────────────────────
 
 .mdc-notched-outline__leading,
 .mdc-notched-outline__notch,
@@ -181,8 +147,6 @@ body {
   border-color: #d1d9e0 !important;
   border-width: 1.5px !important;
 }
-
-// ─── Bordes al hacer focus ────────────────────────────────────────────────────
 
 .mat-mdc-form-field.mat-focused {
   .mdc-notched-outline__leading,
@@ -192,30 +156,17 @@ body {
   }
 }
 
-// ─── Border-radius de las esquinas del outline ────────────────────────────────
-
 .mdc-notched-outline__leading {
   border-radius: 7px 0 0 7px !important;
 }
-
 .mdc-notched-outline__trailing {
   border-radius: 0 7px 7px 0 !important;
 }
-
-// ─── Flecha del mat-select ────────────────────────────────────────────────────
-
-.mat-mdc-select-arrow {
-  color: #9ca3af !important;
-}
-
-// ─── Elimina la línea vertical (doble borde vertical dentro del input) interna del notch (borde flotante del label) ───
 
 .mdc-notched-outline__notch {
   border-left: none !important;
   border-right: none !important;
 }
-
-// ─── Elimina el padding del wrapper de errores (para que elmensaje de error debajo del input no tenga espacio) ──-
 
 .mat-mdc-form-field-error-wrapper {
   padding: 0 !important;

@@ -15,165 +15,221 @@
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
       <!-- Columna 1 -->
-      <div class="flex flex-col gap-6">
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-indigo-600">inventory_2</mat-icon>
-            <mat-card-title>Información Básica</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
+      <div class="flex flex-col gap-4">
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 !bg-white shadow-sm"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-indigo-600">inventory_2</mat-icon>
+                Información Básica
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="product-form-admin__fields">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Título</mat-label>
+              <input matInput type="text" formControlName="title" />
+              <mat-error>
+                <app-form-field-error [control]="productForm.get('title')" [useMaterial]="true" />
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="description" rows="4"></textarea>
+              <mat-error>
+                <app-form-field-error
+                  [control]="productForm.get('description')"
+                  [useMaterial]="true"
+                />
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-pink-600">image</mat-icon>
+                Portada del Producto
+              </span>
+            </mat-panel-title>
+            <mat-panel-description class="!mr-2 hidden text-xs text-slate-500 sm:block">
+              Imagen principal (thumbnail)
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="product-form-admin__fields p-5">
+            <div
+              class="p- rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-5 transition-colors hover:border-pink-300"
+            >
+              <app-upload-image
+                formControlName="thumbnail"
+                [maxFiles]="1"
+                class="thumbnail-uploader"
+              ></app-upload-image>
+            </div>
+            <mat-error class="block">
+              <app-form-field-error [control]="productForm.get('thumbnail')" [useMaterial]="true" />
+            </mat-error>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-indigo-500">collections</mat-icon>
+                Galería de Imágenes
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="p-5">
+            <app-upload-image formControlName="images"></app-upload-image>
+          </div>
+        </mat-expansion-panel>
+      </div>
+
+      <!-- Columna 2 -->
+      <div class="flex flex-col gap-4">
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-emerald-600">straighten</mat-icon>
+                Inventario y Medidas
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="product-form-admin__fields p-5">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Título</mat-label>
-                <input matInput type="text" formControlName="title" />
+                <mat-label>Stock</mat-label>
+                <input matInput type="number" formControlName="stock" />
                 <mat-error>
-                  <app-form-field-error [control]="productForm.get('title')" [useMaterial]="true" />
+                  <app-form-field-error [control]="productForm.get('stock')" [useMaterial]="true" />
                 </mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Descripción</mat-label>
-                <textarea matInput formControlName="description" rows="4"></textarea>
+                <mat-label>Mín. compra</mat-label>
+                <input matInput type="number" formControlName="minimumOrderQuantity" />
                 <mat-error>
                   <app-form-field-error
-                    [control]="productForm.get('description')"
+                    [control]="productForm.get('minimumOrderQuantity')"
                     [useMaterial]="true"
                   />
                 </mat-error>
               </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>SKU</mat-label>
+                <input matInput type="text" formControlName="sku" class="font-mono uppercase" />
+                <mat-error>
+                  <app-form-field-error [control]="productForm.get('sku')" [useMaterial]="true" />
+                </mat-error>
+              </mat-form-field>
             </div>
-          </mat-card-content>
-        </mat-card>
 
-        <mat-card class="gap-4 border-t-4 border-t-pink-500">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-pink-600">image</mat-icon>
-            <mat-card-title>Portada del Producto</mat-card-title>
-            <mat-card-subtitle>Imagen principal (thumbnail)</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
-              <div
-                class="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-3 transition-colors hover:border-pink-300"
-              >
-                <app-upload-image
-                  formControlName="thumbnail"
-                  [maxFiles]="1"
-                  class="thumbnail-uploader"
-                ></app-upload-image>
-              </div>
-              <mat-error class="block">
-                <app-form-field-error
-                  [control]="productForm.get('thumbnail')"
-                  [useMaterial]="true"
-                />
-              </mat-error>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-indigo-500">collections</mat-icon>
-            <mat-card-title>Galería de Imágenes</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <app-upload-image formControlName="images"></app-upload-image>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <!-- Columna 2 -->
-      <div class="flex flex-col gap-6">
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-emerald-600">straighten</mat-icon>
-            <mat-card-title>Inventario y Medidas</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Stock</mat-label>
-                  <input matInput type="number" formControlName="stock" />
-                  <mat-error>
-                    <app-form-field-error
-                      [control]="productForm.get('stock')"
-                      [useMaterial]="true"
-                    />
-                  </mat-error>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Mín. compra</mat-label>
-                  <input matInput type="number" formControlName="minimumOrderQuantity" />
-                  <mat-error>
-                    <app-form-field-error
-                      [control]="productForm.get('minimumOrderQuantity')"
-                      [useMaterial]="true"
-                    />
-                  </mat-error>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>SKU</mat-label>
-                  <input matInput type="text" formControlName="sku" class="font-mono uppercase" />
-                  <mat-error>
-                    <app-form-field-error [control]="productForm.get('sku')" [useMaterial]="true" />
-                  </mat-error>
-                </mat-form-field>
-              </div>
-
-              <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                Dimensiones (cm)
-              </span>
-              <div class="grid grid-cols-3 gap-4">
-                @for (dim of ['width', 'height', 'depth']; track dim) {
-                  <mat-form-field appearance="outline" class="w-full text-center">
-                    <mat-label>{{ dim === 'depth' ? 'Prof.' : dim }}</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      [formControlName]="dim"
-                      (keydown)="onNumberKeydown($event)"
-                      placeholder="0.00"
-                    />
-                  </mat-form-field>
-                }
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-amber-600">local_shipping</mat-icon>
-            <mat-card-title>Entregas y Garantía</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
-              @for (
-                item of [
-                  { lab: 'Garantía', ctrl: 'warrantyInformation' },
-                  { lab: 'Envío', ctrl: 'shippingInformation' },
-                  { lab: 'Devoluciones', ctrl: 'returnPolicy' },
-                ];
-                track item.ctrl
-              ) {
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>{{ item.lab }}</mat-label>
-                  <input matInput type="text" [formControlName]="item.ctrl" />
+            <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+              Dimensiones (cm)
+            </span>
+            <div class="grid grid-cols-3 gap-4">
+              @for (dim of ['width', 'height', 'depth']; track dim) {
+                <mat-form-field appearance="outline" class="w-full text-center">
+                  <mat-label>{{ dim === 'depth' ? 'Prof.' : dim }}</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [formControlName]="dim"
+                    (keydown)="onNumberKeydown($event)"
+                    placeholder="0.00"
+                  />
                 </mat-form-field>
               }
             </div>
-          </mat-card-content>
-        </mat-card>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-amber-600">local_shipping</mat-icon>
+                Entregas y Garantía
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="product-form-admin__fields p-5">
+            @for (
+              item of [
+                { lab: 'Garantía', ctrl: 'warrantyInformation' },
+                { lab: 'Envío', ctrl: 'shippingInformation' },
+                { lab: 'Devoluciones', ctrl: 'returnPolicy' },
+              ];
+              track item.ctrl
+            ) {
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>{{ item.lab }}</mat-label>
+                <input matInput type="text" [formControlName]="item.ctrl" />
+              </mat-form-field>
+            }
+          </div>
+        </mat-expansion-panel>
 
         @if (extraAttributesArray.length > 0) {
-          <mat-card [formGroup]="productForm">
-            <div formArrayName="extraAttributes">
-              <mat-card-header class="!mb-5">
-                <mat-icon mat-card-avatar class="text-purple-600">tune</mat-icon>
-                <mat-card-title>Especificaciones Técnicas</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
+          <mat-expansion-panel
+            [expanded]="true"
+            class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+          >
+            <mat-expansion-panel-header
+              class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+            >
+              <mat-panel-title>
+                <span
+                  class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+                >
+                  <mat-icon class="text-purple-600">tune</mat-icon>
+                  Especificaciones Técnicas
+                </span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div [formGroup]="productForm" class="p-5">
+              <div formArrayName="extraAttributes">
                 <div class="product-form-admin__fields">
                   @for (
                     extraAttribute of extraAttributesArray.controls;
@@ -211,168 +267,187 @@
                     </div>
                   }
                 </div>
-              </mat-card-content>
+              </div>
             </div>
-          </mat-card>
+          </mat-expansion-panel>
         }
       </div>
 
       <!-- Columna 3 -->
-      <div class="flex flex-col gap-6">
-        <mat-card class="product-form-admin__price-card gap-4 shadow-xl">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>payments</mat-icon>
-            <mat-card-title>Precio</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
-              <div class="grid grid-cols-2 gap-4">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Base ($)</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    formControlName="price"
-                    (keydown)="onNumberKeydown($event)"
-                  />
-                  <mat-error>
-                    <app-form-field-error
-                      [control]="productForm.get('price')"
-                      [useMaterial]="true"
-                    />
-                  </mat-error>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Desc. (%)</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    formControlName="discountPercentage"
-                    (keydown)="onNumberKeydown($event)"
-                  />
-                  <mat-error>
-                    <app-form-field-error
-                      [control]="productForm.get('discountPercentage')"
-                      [useMaterial]="true"
-                    />
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="flex items-center justify-between">
-                <span class="text-3xl font-black tracking-tight">
-                  ${{ finalPriceSig() | number: '1.2-2' }}
-                </span>
-                <span class="rounded-md bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase">
-                  ARS
-                </span>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-slate-600">category</mat-icon>
-            <mat-card-title>Clasificación</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Categoría</mat-label>
-                <mat-select formControlName="categoryId">
-                  @for (cat of categoriesSig(); track cat.id) {
-                    <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-                  }
-                </mat-select>
-                <mat-error>
-                  <app-form-field-error
-                    [control]="productForm.get('categoryId')"
-                    [useMaterial]="true"
-                  />
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Marca</mat-label>
-                <mat-select formControlName="brandId">
-                  @for (brand of brandsSig(); track brand.id) {
-                    <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
-                  }
-                </mat-select>
-                <mat-error>
-                  <app-form-field-error
-                    [control]="productForm.get('brandId')"
-                    [useMaterial]="true"
-                  />
-                </mat-error>
-              </mat-form-field>
-
-              <div
-                class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+      <div class="flex flex-col gap-4">
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
               >
-                <span class="text-sm font-semibold text-slate-700">Producto activo</span>
-                <mat-slide-toggle formControlName="isActive" color="primary" />
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+                <mat-icon class="text-emerald-700">payments</mat-icon>
+                Precio
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
 
-        <mat-card class="gap-4">
-          <mat-card-header>
-            <mat-icon mat-card-avatar class="text-indigo-600">label</mat-icon>
-            <mat-card-title class="!mb-2">Etiquetas</mat-card-title>
-            <mat-card-subtitle>Añade palabras clave para búsqueda y filtros</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="product-form-admin__fields">
+          <div class="product-form-admin__fields p-5">
+            <div class="grid grid-cols-2 gap-4">
               <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Nueva etiqueta</mat-label>
+                <mat-label>Base ($)</mat-label>
                 <input
                   matInput
                   type="text"
-                  #tagInput
-                  (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
-                  placeholder="Ej: Verano, Gamer..."
+                  formControlName="price"
+                  (keydown)="onNumberKeydown($event)"
                 />
-                <button
-                  mat-icon-button
-                  matSuffix
-                  type="button"
-                  (click)="addTag(tagInput)"
-                  aria-label="Añadir etiqueta"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
+                <mat-error>
+                  <app-form-field-error [control]="productForm.get('price')" [useMaterial]="true" />
+                </mat-error>
               </mat-form-field>
-
-              <div
-                class="flex min-h-[48px] flex-wrap gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-3"
-              >
-                @if (tagsArray.controls.length === 0) {
-                  <span class="m-auto text-center text-xs text-slate-400 italic"
-                    >Sin etiquetas</span
-                  >
-                } @else {
-                  <mat-chip-set class="w-full">
-                    @for (tag of tagsArray.controls; track $index) {
-                      <mat-chip removable (removed)="removeTag($index)">
-                        {{ tag.value }}
-                        <button
-                          type="button"
-                          matChipRemove
-                          [attr.aria-label]="'Quitar ' + tag.value"
-                        >
-                          <mat-icon>cancel</mat-icon>
-                        </button>
-                      </mat-chip>
-                    }
-                  </mat-chip-set>
-                }
-              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Desc. (%)</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="discountPercentage"
+                  (keydown)="onNumberKeydown($event)"
+                />
+                <mat-error>
+                  <app-form-field-error
+                    [control]="productForm.get('discountPercentage')"
+                    [useMaterial]="true"
+                  />
+                </mat-error>
+              </mat-form-field>
             </div>
-          </mat-card-content>
-        </mat-card>
+            <mat-divider></mat-divider>
+            <div class="flex items-center justify-between">
+              <span class="text-3xl font-black tracking-tight">
+                ${{ finalPriceSig() | number: '1.2-2' }}
+              </span>
+              <span class="rounded-md bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase">
+                ARS
+              </span>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-slate-600">category</mat-icon>
+                Clasificación
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="product-form-admin__fields p-5">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Categoría</mat-label>
+              <mat-select formControlName="categoryId">
+                @for (cat of categoriesSig(); track cat.id) {
+                  <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>
+                <app-form-field-error
+                  [control]="productForm.get('categoryId')"
+                  [useMaterial]="true"
+                />
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Marca</mat-label>
+              <mat-select formControlName="brandId">
+                @for (brand of brandsSig(); track brand.id) {
+                  <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>
+                <app-form-field-error [control]="productForm.get('brandId')" [useMaterial]="true" />
+              </mat-error>
+            </mat-form-field>
+
+            <div
+              class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+            >
+              <span class="text-sm font-semibold text-slate-700">Producto activo</span>
+              <mat-slide-toggle formControlName="isActive" color="primary" />
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel
+          [expanded]="true"
+          class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/[0.04] [&_.mat-expansion-panel-body]:!p-0"
+        >
+          <mat-expansion-panel-header
+            class="!h-auto min-h-[3.25rem] !px-4 !py-3 hover:bg-slate-50/90"
+          >
+            <mat-panel-title>
+              <span
+                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              >
+                <mat-icon class="text-indigo-600">label</mat-icon>
+                Etiquetas
+              </span>
+            </mat-panel-title>
+            <mat-panel-description class="!mr-2 hidden text-xs text-slate-500 sm:block">
+              Palabras clave para búsqueda y filtros
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="product-form-admin__fields p-5">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Nueva etiqueta</mat-label>
+              <input
+                matInput
+                type="text"
+                #tagInput
+                (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
+                placeholder="Ej: Verano, Gamer..."
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="addTag(tagInput)"
+                aria-label="Añadir etiqueta"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <div
+              class="flex min-h-[48px] flex-wrap gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-3"
+            >
+              @if (tagsArray.controls.length === 0) {
+                <span class="m-auto text-center text-xs text-slate-400 italic">Sin etiquetas</span>
+              } @else {
+                <mat-chip-set class="w-full">
+                  @for (tag of tagsArray.controls; track $index) {
+                    <mat-chip removable (removed)="removeTag($index)">
+                      {{ tag.value }}
+                      <button type="button" matChipRemove [attr.aria-label]="'Quitar ' + tag.value">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip>
+                  }
+                </mat-chip-set>
+              }
+            </div>
+          </div>
+        </mat-expansion-panel>
       </div>
     </div>
   </form>
