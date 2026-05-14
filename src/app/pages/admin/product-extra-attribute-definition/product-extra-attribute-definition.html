@@ -59,7 +59,7 @@
               <mat-label>Nombre Técnico</mat-label>
               <input matInput formControlName="name" placeholder="ej. color_primario" />
               <mat-error>
-                <app-form-field-error [control]="attr.get('name')" [useMaterial]="true" />
+                <app-form-field-error [control]="attr.get('name')" />
               </mat-error>
             </mat-form-field>
 
@@ -67,7 +67,7 @@
               <mat-label>Etiqueta (UI)</mat-label>
               <input matInput formControlName="label" placeholder="ej. Color" />
               <mat-error>
-                <app-form-field-error [control]="attr.get('label')" [useMaterial]="true" />
+                <app-form-field-error [control]="attr.get('label')" />
               </mat-error>
             </mat-form-field>
 
@@ -80,7 +80,7 @@
                 <mat-option value="date">Fecha</mat-option>
               </mat-select>
               <mat-error>
-                <app-form-field-error [control]="attr.get('dataType')" [useMaterial]="true" />
+                <app-form-field-error [control]="attr.get('dataType')" />
               </mat-error>
             </mat-form-field>
 
@@ -125,10 +125,7 @@
                     <mat-label>Min</mat-label>
                     <input matInput type="number" formControlName="minLength" />
                     <mat-error>
-                      <app-form-field-error
-                        [control]="attr.get('minLength')"
-                        [useMaterial]="true"
-                      />
+                      <app-form-field-error [control]="attr.get('minLength')" />
                     </mat-error>
                   </mat-form-field>
 
@@ -136,10 +133,7 @@
                     <mat-label>Max</mat-label>
                     <input matInput type="number" formControlName="maxLength" />
                     <mat-error>
-                      <app-form-field-error
-                        [control]="attr.get('maxLength')"
-                        [useMaterial]="true"
-                      />
+                      <app-form-field-error [control]="attr.get('maxLength')" />
                     </mat-error>
                   </mat-form-field>
 
@@ -160,14 +154,14 @@
                     <mat-label>Mínimo</mat-label>
                     <input matInput type="number" formControlName="min" />
                     <mat-error>
-                      <app-form-field-error [control]="attr.get('min')" [useMaterial]="true" />
+                      <app-form-field-error [control]="attr.get('min')" />
                     </mat-error>
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
                     <mat-label>Máximo</mat-label>
                     <input matInput type="number" formControlName="max" />
                     <mat-error>
-                      <app-form-field-error [control]="attr.get('max')" [useMaterial]="true" />
+                      <app-form-field-error [control]="attr.get('max')" />
                     </mat-error>
                   </mat-form-field>
                 }
