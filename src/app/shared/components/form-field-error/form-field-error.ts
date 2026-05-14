@@ -13,8 +13,6 @@ import { map, merge, of, startWith, switchMap } from 'rxjs';
 })
 export class FormFieldError {
   control = input.required<AbstractControl | null>();
-  useMaterial = input<boolean>(false);
-
   /** Vuelve a suscribirse cuando cambia el control; value + status cubren errores con mismo status. */
   private readonly controlUpdates = toSignal(
     toObservable(this.control).pipe(

@@ -37,17 +37,14 @@
               <mat-label>Título</mat-label>
               <input matInput type="text" formControlName="title" />
               <mat-error>
-                <app-form-field-error [control]="productForm.get('title')" [useMaterial]="true" />
+                <app-form-field-error [control]="productForm.get('title')" />
               </mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Descripción</mat-label>
               <textarea matInput formControlName="description" rows="4"></textarea>
               <mat-error>
-                <app-form-field-error
-                  [control]="productForm.get('description')"
-                  [useMaterial]="true"
-                />
+                <app-form-field-error [control]="productForm.get('description')" />
               </mat-error>
             </mat-form-field>
           </div>
@@ -65,14 +62,11 @@
                 class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
               >
                 <mat-icon class="text-pink-600">image</mat-icon>
-                Portada del Producto
+                Imagen principal (thumbnail)
               </span>
             </mat-panel-title>
-            <mat-panel-description class="!mr-2 hidden text-xs text-slate-500 sm:block">
-              Imagen principal (thumbnail)
-            </mat-panel-description>
           </mat-expansion-panel-header>
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             <div
               class="p- rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-5 transition-colors hover:border-pink-300"
             >
@@ -82,8 +76,8 @@
                 class="thumbnail-uploader"
               ></app-upload-image>
             </div>
-            <mat-error class="block">
-              <app-form-field-error [control]="productForm.get('thumbnail')" [useMaterial]="true" />
+            <mat-error>
+              <app-form-field-error [control]="productForm.get('thumbnail')" />
             </mat-error>
           </div>
         </mat-expansion-panel>
@@ -129,30 +123,27 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Stock</mat-label>
                 <input matInput type="number" formControlName="stock" />
                 <mat-error>
-                  <app-form-field-error [control]="productForm.get('stock')" [useMaterial]="true" />
+                  <app-form-field-error [control]="productForm.get('stock')" />
                 </mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Mín. compra</mat-label>
                 <input matInput type="number" formControlName="minimumOrderQuantity" />
                 <mat-error>
-                  <app-form-field-error
-                    [control]="productForm.get('minimumOrderQuantity')"
-                    [useMaterial]="true"
-                  />
+                  <app-form-field-error [control]="productForm.get('minimumOrderQuantity')" />
                 </mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>SKU</mat-label>
                 <input matInput type="text" formControlName="sku" class="font-mono uppercase" />
                 <mat-error>
-                  <app-form-field-error [control]="productForm.get('sku')" [useMaterial]="true" />
+                  <app-form-field-error [control]="productForm.get('sku')" />
                 </mat-error>
               </mat-form-field>
             </div>
@@ -194,7 +185,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             @for (
               item of [
                 { lab: 'Garantía', ctrl: 'warrantyInformation' },
@@ -228,7 +219,7 @@
                 </span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <div [formGroup]="productForm" class="p-5">
+            <div [formGroup]="productForm">
               <div formArrayName="extraAttributes">
                 <div class="product-form-admin__fields">
                   @for (
@@ -257,10 +248,7 @@
                             [placeholder]="'Ingrese ' + extraAttribute.get('label')?.value"
                           />
                           <mat-error>
-                            <app-form-field-error
-                              [control]="extraAttribute.get('value')"
-                              [useMaterial]="true"
-                            />
+                            <app-form-field-error [control]="extraAttribute.get('value')" />
                           </mat-error>
                         </mat-form-field>
                       }
@@ -292,7 +280,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             <div class="grid grid-cols-2 gap-4">
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Base ($)</mat-label>
@@ -303,7 +291,7 @@
                   (keydown)="onNumberKeydown($event)"
                 />
                 <mat-error>
-                  <app-form-field-error [control]="productForm.get('price')" [useMaterial]="true" />
+                  <app-form-field-error [control]="productForm.get('price')" />
                 </mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="w-full">
@@ -315,10 +303,7 @@
                   (keydown)="onNumberKeydown($event)"
                 />
                 <mat-error>
-                  <app-form-field-error
-                    [control]="productForm.get('discountPercentage')"
-                    [useMaterial]="true"
-                  />
+                  <app-form-field-error [control]="productForm.get('discountPercentage')" />
                 </mat-error>
               </mat-form-field>
             </div>
@@ -350,7 +335,7 @@
               </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Categoría</mat-label>
               <mat-select formControlName="categoryId">
@@ -359,10 +344,7 @@
                 }
               </mat-select>
               <mat-error>
-                <app-form-field-error
-                  [control]="productForm.get('categoryId')"
-                  [useMaterial]="true"
-                />
+                <app-form-field-error [control]="productForm.get('categoryId')" />
               </mat-error>
             </mat-form-field>
 
@@ -374,7 +356,7 @@
                 }
               </mat-select>
               <mat-error>
-                <app-form-field-error [control]="productForm.get('brandId')" [useMaterial]="true" />
+                <app-form-field-error [control]="productForm.get('brandId')" />
               </mat-error>
             </mat-form-field>
 
@@ -407,7 +389,7 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="product-form-admin__fields p-5">
+          <div class="product-form-admin__fields">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Nueva etiqueta</mat-label>
               <input

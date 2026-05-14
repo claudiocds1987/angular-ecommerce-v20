@@ -1,9 +1,5 @@
 @if (errorMessage()) {
-  @if (useMaterial()) {
+  <span class="text-[12px] leading-[1.2] font-normal tracking-normal text-[#f44336]">
     {{ errorMessage() }}
-  } @else {
-    <div class="animate-fade-in mt-1 text-xs font-medium text-red-600">
-      {{ errorMessage() }}
-    </div>
-  }
+  </span>
 }
