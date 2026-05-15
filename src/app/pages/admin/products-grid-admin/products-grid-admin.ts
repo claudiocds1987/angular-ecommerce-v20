@@ -7,6 +7,8 @@ import {
   inject,
   OnInit,
   signal,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -44,11 +46,27 @@ import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.mode
 import { AdminProductFilter } from '../../../shared/models/admin-product-filter.model';
 import { Router } from '@angular/router';
 import { CsvDownloadService } from '../../../shared/services/csv-download-service';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductExtraAttributeService } from '../../../shared/services/product-extra-attribute-service';
+import { MatDialogModule } from '@angular/material/dialog'; // Importante
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-products-grid-admin',
   standalone: true,
-  imports: [CommonModule, ExcelUpload, GridComponent, GridFilterComponent, ChipsComponent], // CommonModule para usar @if, @for, etc.
+  imports: [
+    CommonModule,
+    ExcelUpload,
+    GridComponent,
+    GridFilterComponent,
+    ChipsComponent,
+    MatDialogModule, // Agregá esto
+    MatFormFieldModule, // Agregá esto para el select del modal
+    MatSelectModule, // Agregá esto para el select del modal
+    MatButtonModule,
+  ], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,6 +92,9 @@ export class ProductsGridAdmin implements OnInit {
   private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private _router = inject(Router);
   private _csvService = inject(CsvDownloadService);
+  private _dialog = inject(MatDialog);
+  private _extraAttrService = inject(ProductExtraAttributeService);
+  @ViewChild('categoryDialog') categoryDialog!: TemplateRef<any>;
 
   // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
   mappedProductsSig = computed<GridData[]>(() => {
@@ -303,33 +324,67 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   downloadCSVTemplate(): void {
-    const exampleData = [
-      {
-        title: 'Producto Ejemplo',
-        description: 'Descripción breve del producto',
-        price: 100.0,
-        discountPercentage: 10,
-        rating: 4.5,
-        stock: 50,
-        sku: 'ABC-123',
-        weight: 1.5,
-        width: 20,
-        height: 10,
-        depth: 5,
-        warrantyInformation: '6 meses de garantía',
-        shippingInformation: 'Envío gratuito',
-        availabilityStatus: 'In Stock',
-        returnPolicy: '30 días de devolución',
-        minimumOrderQuantity: 1,
-        thumbnail: 'https://ejemplo.com/imagen.jpg',
-        categoryId: 1,
-        brandId: 1,
-        images: 'url1.jpg, url2.jpg, url2.jpg',
-        tags: 'tecnología, oferta',
-      },
-    ];
+    const dialogRef = this._dialog.open(this.categoryDialog, { width: '400px' });
 
-    this._csvService.downloadCsv(exampleData, 'plantilla_productos');
+    dialogRef.afterClosed().subscribe((categoryId) => {
+      if (categoryId) {
+        this._generateDynamicCSV(categoryId);
+      }
+    });
+  }
+
+  private _generateDynamicCSV(categoryId: number): void {
+    this._spinnerService.show();
+
+    this._extraAttrService.getExtraAttributesByCategory(categoryId).subscribe({
+      next: (extraAttrs) => {
+        // 1. Definimos el objeto con las 21 columnas BASE exactas que espera tu Backend
+        const baseProduct: any = {
+          title: 'Producto Ejemplo',
+          description: 'Descripción breve',
+          price: 100.0,
+          discountPercentage: 0,
+          rating: 5,
+          stock: 10,
+          sku: 'SKU-001',
+          weight: 1.0,
+          width: 10,
+          height: 10,
+          depth: 10,
+          warrantyInformation: '12 meses',
+          shippingInformation: 'Envío estándar',
+          availabilityStatus: 'In Stock',
+          returnPolicy: '30 días',
+          minimumOrderQuantity: 1,
+          thumbnail: 'url_imagen.jpg',
+          categoryId: categoryId, // El ID de la categoría seleccionada
+          brandId: 1, // ID de marca por defecto (ej: Samsung)
+          images: 'url1.jpg, url2.jpg',
+          tags: 'tecnología, nuevo',
+        };
+
+        // 2. Agregamos las columnas dinámicas (extra) al final del mismo objeto
+        if (extraAttrs && extraAttrs.length > 0) {
+          extraAttrs.forEach((attr) => {
+            // El nombre de la propiedad debe ser el 'name' técnico (ej: 'Sistema Operativo')
+            baseProduct[attr.name] = attr.dataType === 'boolean' ? 'false' : '';
+          });
+        }
+
+        // 3. Descargamos
+        const categoryName = this.categoryStore.categoryMap()[categoryId]?.name || 'Plantilla';
+        this._csvService.downloadCsv(
+          [baseProduct],
+          `Plantilla_${categoryName.replace(/\s+/g, '_')}`,
+        );
+
+        this._spinnerService.hide();
+      },
+      error: () => {
+        this._spinnerService.hide();
+        alert('Error al obtener atributos de la categoría');
+      },
+    });
   }
 
   private _updateGridConfigOnSortChange(sortEvent: Sort): void {

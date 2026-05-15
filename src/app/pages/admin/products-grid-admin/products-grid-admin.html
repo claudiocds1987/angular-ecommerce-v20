@@ -98,3 +98,24 @@
     </div>
   </div>
 </div>
+
+<ng-template #categoryDialog>
+  <h2 mat-dialog-title>Descargar Plantilla</h2>
+  <mat-dialog-content>
+    <p>Selecciona una categoría para incluir sus atributos específicos:</p>
+    <mat-form-field class="w-full">
+      <mat-label>Categoría</mat-label>
+      <mat-select #catSelect>
+        @for (cat of categoryStore.items(); track cat.id) {
+          <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="catSelect.value">
+      Descargar .csv
+    </button>
+  </mat-dialog-actions>
+</ng-template>
