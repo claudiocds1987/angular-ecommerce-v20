@@ -115,58 +115,6 @@ export const ProductAdminStore = signalStore(
           }),
         ),
       ),
-      /* loadProducts: rxMethod<{
-        search?: string;
-        first?: number;
-        after?: string;
-        last?: number;
-        before?: string;
-      }>(
-        pipe(
-          tap(() => patchState(state, { loading: true })),
-          switchMap((params) => {
-            // 1. Configuración de Ordenamiento
-            const sort = state.sortConfig();
-            const orderArg = sort.direction
-              ? [{ [sort.active]: sort.direction.toUpperCase() }]
-              : [];
-
-            // 2. Definición del filtro para HotChocolate
-            const whereArg =
-              params.search && params.search.trim() !== ''
-                ? { title: { contains: params.search } }
-                : undefined;
-
-            const graphQlVariables = { ...params };
-            delete (graphQlVariables as any).search;
-
-            return graphqlService
-              .getProducts({
-                ...graphQlVariables,
-                where: whereArg,
-                order: orderArg,
-              })
-              .pipe(
-                tap((res) => {
-                  patchState(state, {
-                    items: res.items,
-                    totalItems: res.totalItems,
-                    hasNextPage: res.hasNextPage,
-                    startCursor: res.startCursor,
-                    endCursor: res.endCursor,
-                    loading: false,
-                    // Mantenemos el valor de búsqueda en el estado del Store
-                    filterQuery: params.search !== undefined ? params.search : state.filterQuery(),
-                  });
-                }),
-                catchError(() => {
-                  patchState(state, { loading: false });
-                  return EMPTY;
-                }),
-              );
-          }),
-        ),
-      ), */
 
       updateSort: (sort: Sort) => patchState(state, { sortConfig: sort }),
 

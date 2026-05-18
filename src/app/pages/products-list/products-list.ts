@@ -45,22 +45,35 @@ export class ProductsList {
   }
 
   private _loadCarouselProducts() {
-    // Obtiene una muestra amplia, trae los productos del 1 al 100 (1, 100) para filtrar y mostrar en el Carousel
-    // hasta 8 productos, asegurando que cada uno pertenezca a una categoría distinta.
+    // Solicita los primeros 100 productos para extraer la muestra del carrusel
     this._productsService.getProductsPaginated(1, 100).subscribe((res) => {
-      const uniqueCategories = new Set<number>();
+      const uniqueCategories = new Set<string>();
       const selectedProducts: Product[] = [];
 
-      if (res.items) {
+      if (res && res.items) {
+        // 1. Intento principal: Buscar variedad (un producto por categoría)
         for (const product of res.items) {
-          if (product.categoryId && !uniqueCategories.has(product.categoryId)) {
-            uniqueCategories.add(product.categoryId);
+          // Usamos 'category' (string) que es lo que viene del ProductDto
+          if (product.category && !uniqueCategories.has(product.category)) {
+            uniqueCategories.add(product.category);
             selectedProducts.push(product);
-            // Límite visual del Carousel, con 8 productos es suficiente para mostrar variedad sin abrumar al usuario.
+            // Se carga un máximo de 8 productos en el carousel
+            if (selectedProducts.length === 8) break;
+          }
+        }
+        // 2. Respaldo (Fallback): Si hay pocos tipos de categorías en los primeros 100 productos
+        // y no logramos juntar al menos 4 para mostrar el carrusel, rellenamos con lo que haya.
+        if (selectedProducts.length < 4) {
+          for (const product of res.items) {
+            // Si el producto no fue agregado ya, lo metemos para rellenar
+            if (!selectedProducts.some((p) => p.id === product.id)) {
+              selectedProducts.push(product);
+            }
             if (selectedProducts.length === 8) break;
           }
         }
       }
+      // Actualiza el signal con los productos encontrados
       this.carouselProducts.set(selectedProducts);
     });
   }

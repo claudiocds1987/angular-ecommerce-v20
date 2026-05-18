@@ -26,7 +26,7 @@ export const ProductStore = signalStore(
   }),
 
   withComputed((state) => ({
-    // Filtro en memoria para búsqueda rápida
+    // Filtro en memoria para búsqueda rápida por título de producto
     filteredProducts: computed(() => {
       const query = state.filterQuery().toLowerCase();
       return state.items().filter((p) => p.title.toLowerCase().includes(query));
