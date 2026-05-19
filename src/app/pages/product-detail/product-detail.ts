@@ -16,11 +16,14 @@ import { ToastService } from '../../shared/services/toast-service';
 import { ProductStore } from '../admin/state/product.store';
 import { BrandStore } from '../admin/state/brand.store';
 import { CategoryStore } from '../admin/state/category.store';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, MatDialogModule],
+  imports: [CommonModule, MatDialogModule, MatExpansionModule, MatListModule, MatIconModule],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
