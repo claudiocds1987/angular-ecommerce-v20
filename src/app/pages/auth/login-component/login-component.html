@@ -1,34 +1,73 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
-  <div class="p-8 bg-white shadow-lg rounded-2xl w-96">
-    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Iniciar Sesión</h2>
+<div
+  class="flex h-full items-center justify-center bg-gradient-to-br from-slate-50 via-gray-100 to-indigo-50/50 p-4"
+>
+  <div class="w-full max-w-md rounded-3xl border border-gray-100 bg-white p-8 shadow-lg md:p-10">
+    <div class="mb-8 flex flex-col items-center">
+      <div
+        class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-200"
+      >
+        <mat-icon class="text-white">lock</mat-icon>
+      </div>
+      <h2 class="text-center text-3xl font-black tracking-tight text-slate-800">¡Bienvenido!</h2>
+      <p class="mt-1 text-sm text-slate-400">Ingresa tus credenciales para acceder</p>
+    </div>
 
-    <form (submit)="onSubmit($event)" class="space-y-4">
-      <input
-        [(ngModel)]="username"
-        name="username"
-        type="text"
-        placeholder="Usuario"
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-      />
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-2">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" type="text" placeholder="Tu usuario" />
+        <mat-icon matPrefix class="mr-2 text-slate-400">person</mat-icon>
 
-      <input
-        [(ngModel)]="password"
-        name="password"
-        type="password"
-        placeholder="Contraseña"
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-      />
+        <mat-error>
+          <app-form-field-error [control]="loginForm.get('username')" />
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          [type]="hidePassword() ? 'password' : 'text'"
+          placeholder="Tu contraseña"
+        />
+        <mat-icon matPrefix class="mr-2 text-slate-400">lock_open</mat-icon>
+
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="hidePassword.set(!hidePassword())"
+          class="!text-slate-400"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        <mat-error>
+          <app-form-field-error [control]="loginForm.get('password')" />
+        </mat-error>
+      </mat-form-field>
 
       @if (authStore.error()) {
-        <p class="text-red-500 text-sm">{{ authStore.error() }}</p>
+        <div
+          class="mb-2 flex items-center gap-2.5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs font-semibold text-red-600"
+        >
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ authStore.error() }}</span>
+        </div>
       }
 
       <button
+        mat-flat-button
         type="submit"
-        [disabled]="authStore.loading()"
-        class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+        [disabled]="!isReadyToLogin()"
+        class="mt-2 !h-12 w-full !rounded-xl !bg-indigo-600 font-bold tracking-wide !text-white hover:!bg-indigo-700"
       >
-        {{ authStore.loading() ? 'Entrando...' : 'Ingresar' }}
+        @if (authStore.loading()) {
+          <span>Autenticando...</span>
+        } @else {
+          <span>Ingresar</span>
+        }
       </button>
     </form>
   </div>
