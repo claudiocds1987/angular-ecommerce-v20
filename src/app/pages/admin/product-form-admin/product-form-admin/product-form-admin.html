@@ -6,10 +6,10 @@
         <p class="text-sm text-slate-500">Panel de administración avanzada de catálogo.</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button mat-stroked-button type="button">Cancelar</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="!isReadyToSave()">
-          Guardar Producto
-        </button>
+        <button mat-stroked-button type="button" (click)="confirmCancel()">Cancelar</button>
+        <app-primary-button type="submit" [disabled]="!isReadyToSave()" [icon]="'save'"
+          >Guardar producto</app-primary-button
+        >
       </div>
     </div>
 

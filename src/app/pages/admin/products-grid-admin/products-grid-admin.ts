@@ -52,6 +52,7 @@ import { MatDialogModule } from '@angular/material/dialog'; // Importante
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -66,6 +67,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule, // Agregá esto para el select del modal
     MatSelectModule, // Agregá esto para el select del modal
     MatButtonModule,
+    PrimaryButton,
   ], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',

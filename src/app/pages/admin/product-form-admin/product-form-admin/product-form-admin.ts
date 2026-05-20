@@ -21,7 +21,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryStore } from '../../state/category.store';
 import { BrandStore } from '../../state/brand.store';
 import { ProductService } from '../../../../shared/services/product-service';
@@ -42,6 +42,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
+import { PrimaryButton } from '../../../../shared/components/primary-button/primary-button';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -76,6 +78,7 @@ interface ImageFormRow {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    PrimaryButton,
   ],
   templateUrl: './product-form-admin.html',
   styleUrl: './product-form-admin.scss',
@@ -102,6 +105,8 @@ export class ProductFormAdmin {
 
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
+  private _router = inject(Router);
+  private _confirmDialog = inject(ConfirmDialogService);
 
   productForm: FormGroup = this.createProductForm();
 
@@ -221,6 +226,25 @@ export class ProductFormAdmin {
     if (!ProductFormAdmin.NUMBER_NAV_KEYS.includes(event.key) && Number.isNaN(Number(event.key))) {
       event.preventDefault();
     }
+  }
+
+  confirmCancel(): void {
+    if (!this.productForm.dirty) {
+      void this._router.navigate(['/admin']);
+      return;
+    }
+    this._confirmDialog
+      .open({
+        title: 'Salir sin guardar',
+        message:
+          'Hay cambios sin guardar. Si sales ahora, se perderán. ¿Deseas salir del panel de configuración?',
+        confirmLabel: 'Salir sin guardar',
+        cancelLabel: 'Seguir editando',
+        confirmColor: 'warn',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) void this._router.navigate(['/admin']);
+      });
   }
 
   private patchFormFromProduct(product: Product): void {

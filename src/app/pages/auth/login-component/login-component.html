@@ -57,18 +57,9 @@
         </div>
       }
 
-      <button
-        mat-flat-button
-        type="submit"
-        [disabled]="!isReadyToLogin()"
-        class="mt-2 !h-12 w-full !rounded-xl !bg-indigo-600 font-bold tracking-wide !text-white hover:!bg-indigo-700"
-      >
-        @if (authStore.loading()) {
-          <span>Autenticando...</span>
-        } @else {
-          <span>Ingresar</span>
-        }
-      </button>
+      <app-primary-button type="submit" icon="login" [disabled]="!isReadyToLogin()" class="mt-2">
+        Ingresar
+      </app-primary-button>
     </form>
   </div>
 </div>

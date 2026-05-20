@@ -1,13 +1,16 @@
 <button
-  class="primary-button"
-  (click)="onClick()"
+  mat-flat-button
+  [type]="type()"
   [disabled]="disabled()"
-  [class]="disabled() ? 'cursor-not-allowed opacity-50' : ''"
+  [class]="'primary-button ' + variant()"
 >
   <div class="flex items-center justify-center gap-2">
     @if (iconUrl()) {
-      <img [src]="iconUrl()" class="h-5 w-5 invert" alt="icon" />
+      <img [src]="iconUrl()" class="animate-fade-in h-5 w-5 invert" alt="icon" />
     }
-    <span>{{ label() }}</span>
+    @if (icon()) {
+      <mat-icon>{{ icon() }}</mat-icon>
+    }
+    <span><ng-content /></span>
   </div>
 </button>

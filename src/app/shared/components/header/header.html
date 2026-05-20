@@ -1,19 +1,19 @@
 <header
-  class="flex items-center justify-between py-3 px-3 sm:py-4 sm:px-8 sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-xl"
+  class="sticky top-0 z-50 flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-3 py-3 shadow-xl backdrop-blur-md sm:px-8 sm:py-4"
 >
   <button
     (click)="redirectToHomePage()"
-    class="cursor-pointer group"
+    class="group cursor-pointer"
     aria-label="Ir a la página de inicio de Angular Ecommerce"
   >
     <div class="flex items-center gap-2 sm:gap-3">
       <img
         [src]="'./icons/angular.svg'"
         alt="Logo de Angular Ecommerce - V20"
-        class="w-8 h-8 sm:w-10 sm:h-10 group-hover:rotate-12 transition-transform"
+        class="h-8 w-8 transition-transform group-hover:rotate-12 sm:h-10 sm:w-10"
       />
       <span
-        class="text-white font-black tracking-wide text-[10px] min-[380px]:text-xs sm:text-lg uppercase line-clamp-1 italic pr-2 [word-spacing:0.3em]"
+        class="line-clamp-1 pr-2 text-[10px] font-black tracking-wide text-white uppercase italic [word-spacing:0.3em] min-[380px]:text-xs sm:text-lg"
         >{{ title() }}</span
       >
     </div>
@@ -28,13 +28,13 @@
         <button
           (click)="toggleMenu()"
           type="button"
-          class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors focus:outline-none"
+          class="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-white/5 focus:outline-none"
         >
-          <span class="text-blue-400 text-sm font-bold">
+          <span class="text-sm font-bold text-blue-400">
             {{ authStore.user()?.firstName }}
           </span>
           <span
-            class="material-icons text-slate-400 text-sm transition-transform duration-200"
+            class="material-icons text-sm text-slate-400 transition-transform duration-200"
             [class.rotate-180]="isMenuOpen()"
           >
             expand_more
@@ -43,22 +43,22 @@
 
         @if (isMenuOpen()) {
           <div
-            class="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-slate-900 border border-white/10 shadow-2xl py-1 z-[60]"
+            class="absolute right-0 z-[60] mt-2 w-48 origin-top-right rounded-xl border border-white/10 bg-slate-900 py-1 shadow-2xl"
           >
             @if (authStore.user()?.role === 'admin') {
               <button
                 (click)="redirectToAdminPanel()"
-                class="flex items-center w-full px-4 py-2 text-sm text-slate-300 hover:bg-blue-500/10 hover:text-blue-400 transition-colors"
+                class="flex w-full items-center px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-blue-500/10 hover:text-blue-400"
               >
-                <span class="material-icons text-lg mr-2">dashboard</span>
+                <span class="material-icons mr-2 text-lg">dashboard</span>
                 Dashboard
               </button>
             }
             <button
               (click)="logout()"
-              class="flex items-center w-full px-4 py-2 text-sm text-slate-300 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+              class="flex w-full items-center px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-red-500/10 hover:text-red-400"
             >
-              <span class="material-icons text-lg mr-2">logout</span>
+              <span class="material-icons mr-2 text-lg">logout</span>
               Cerrar Sesión
             </button>
           </div>
@@ -67,7 +67,7 @@
     } @else {
       <button
         (click)="login()"
-        class="group flex items-center gap-2 px-2 py-1.5 sm:px-3 text-slate-300 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
+        class="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-300 transition-all hover:bg-blue-500/10 hover:text-blue-400 sm:px-3"
       >
         <span class="text-sm font-medium tracking-wide">Login</span>
       </button>
@@ -75,19 +75,19 @@
 
     <button
       (click)="openAIAssistant()"
-      class="group flex items-center gap-2 px-2 py-1.5 sm:px-3 cursor-pointer text-slate-300 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all duration-300"
+      class="group flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-slate-300 transition-all duration-300 hover:bg-blue-500/10 hover:text-blue-400 sm:px-3"
       aria-label="Open AI assistant"
     >
-      <span class="hidden md:inline text-sm font-medium tracking-wide">AI Assistant</span>
-      <span class="material-icons text-xl group-hover:animate-bounce-slow">smart_toy</span>
+      <span class="hidden text-sm font-medium tracking-wide md:inline">AI Assistant</span>
+      <span class="material-icons group-hover:animate-bounce-slow text-xl">smart_toy</span>
     </button>
 
     <app-primary-button
-      [label]="cartService.cart().length"
       [iconUrl]="'./icons/shopping-cart.svg'"
-      (btnClicked)="redirectToCart()"
-      class="hover:scale-105 transition-transform inline-block scale-90 sm:scale-100"
+      (click)="redirectToCart()"
+      class="inline-block scale-90 transition-transform hover:scale-105 sm:scale-100"
       aria-label="View shopping cart"
-    ></app-primary-button>
+      >{{ cartService.cart().length }}</app-primary-button
+    >
   </nav>
 </header>

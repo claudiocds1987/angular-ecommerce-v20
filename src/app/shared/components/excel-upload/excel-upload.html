@@ -7,11 +7,11 @@
     class="hidden"
   />
 
-  <button
+  <app-primary-button
     type="button"
     (click)="fileInput.click()"
+    [icon]="'file_upload'"
     [disabled]="loading()"
-    class="group relative flex items-center gap-2 overflow-hidden rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white shadow-md transition-all duration-300 hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-70"
   >
     <div
       class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-500 group-hover:translate-x-full"
@@ -19,5 +19,5 @@
 
     <i class="fa-solid fa-file-excel text-lg transition-transform group-hover:scale-110"></i>
     <span>{{ loading() ? 'Cargando...' : text }}</span>
-  </button>
+  </app-primary-button>
 </div>

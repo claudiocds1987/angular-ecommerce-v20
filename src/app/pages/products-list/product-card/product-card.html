@@ -84,11 +84,11 @@
 
   <footer class="relative z-20 mt-4">
     <app-primary-button
-      label="Agregar al carrito"
       [iconUrl]="'icons/shopping-bag.svg'"
       [disabled]="product().stock === 0"
       (btnClicked)="addToCart(product())"
       class="block w-full"
-    ></app-primary-button>
+      >Agregar al carrito</app-primary-button
+    >
   </footer>
 </article>

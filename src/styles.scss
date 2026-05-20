@@ -1,6 +1,17 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. SASS @use SIEMPRE PRIMERO (obligatorio por Sass)
+// ─────────────────────────────────────────────────────────────────────────────
 @use '@angular/material' as mat;
 
-// 1. CONFIGURACIÓN DEL TEMA (Material 3)
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. TAILWIND PRIMERO — antes de cualquier CSS real
+//    Esto registra los cascade layers correctamente
+// ─────────────────────────────────────────────────────────────────────────────
+@import 'tailwindcss';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. CONFIGURACIÓN DEL TEMA (Material 3) — DESPUÉS de Tailwind
+// ─────────────────────────────────────────────────────────────────────────────
 html {
   @include mat.theme(
     (
@@ -14,36 +25,15 @@ html {
   );
 }
 
-// 2. ESTILOS BASE Y TAILWIND
-@import 'tailwindcss';
-
-// --- NUEVA SECCIÓN DE COMPONENTES ---
-@layer components {
-  .form-card {
-    @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
-  }
-
-  .section-header {
-    @apply mb-6 flex items-center gap-2 text-lg font-semibold text-slate-800;
-  }
-
-  .section-dot {
-    @apply h-6 w-1.5 rounded-full;
-  }
-
-  .form-input-field {
-    @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
-  }
-
-  .primary-button {
-    @apply cursor-pointer rounded bg-slate-900 px-4 py-2 text-white shadow-md transition-colors hover:bg-slate-700;
-  }
-}
-
-// 3. MIS ESTILOS DESPUÉS DE TAILWIND
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. IMPORTES DE ESTILOS PROPIOS
+// ─────────────────────────────────────────────────────────────────────────────
 @import './app/shared/styles/buttons/action-button-grid.scss';
 @import './app/shared/styles/buttons/download-button.scss';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. ESTILOS BASE
+// ─────────────────────────────────────────────────────────────────────────────
 html,
 body {
   height: 100%;
@@ -73,7 +63,28 @@ body {
   }
 }
 
-// COMPONENTES PERSONALIZADOS
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. COMPONENTES CON @apply (Tailwind v4)
+// ─────────────────────────────────────────────────────────────────────────────
+.form-card {
+  @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
+}
+
+.section-header {
+  @apply mb-6 flex items-center gap-2 text-lg font-semibold text-slate-800;
+}
+
+.section-dot {
+  @apply h-6 w-1.5 rounded-full;
+}
+
+.form-input-field {
+  @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. COMPONENTES PERSONALIZADOS
+// ─────────────────────────────────────────────────────────────────────────────
 .glass-shine {
   position: relative;
   overflow: hidden;
@@ -101,8 +112,9 @@ body {
   -webkit-backdrop-filter: blur(8px) !important;
 }
 
-// ─── Overrides globales para mat-form-field ──────────────────────────
-
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. OVERRIDES GLOBALES PARA mat-form-field
+// ─────────────────────────────────────────────────────────────────────────────
 .mat-mdc-form-field-infix {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
@@ -148,6 +160,7 @@ body {
 .mdc-notched-outline__leading {
   border-radius: 7px 0 0 7px !important;
 }
+
 .mdc-notched-outline__trailing {
   border-radius: 0 7px 7px 0 !important;
 }

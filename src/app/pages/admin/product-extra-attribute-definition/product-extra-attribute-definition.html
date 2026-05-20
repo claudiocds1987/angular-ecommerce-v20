@@ -191,26 +191,12 @@
       <div
         class="mt-12 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-8"
       >
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="confirmExit()"
-          class="!h-14 !rounded-xl !px-8 !font-bold"
-        >
-          <mat-icon>arrow_back</mat-icon>
-          Salir
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          type="button"
-          (click)="confirmSave()"
-          [disabled]="!isReadyToSave()"
-          class="!h-14 !rounded-xl !px-12 !text-lg !font-bold shadow-indigo-200 transition-all hover:shadow-xl"
-        >
-          <mat-icon>save</mat-icon>
+        <app-primary-button [variant]="'secondary'" (click)="confirmCancel()">
+          Cancelar
+        </app-primary-button>
+        <app-primary-button (click)="confirmSave()" [icon]="'save'" [disabled]="!isReadyToSave()">
           Guardar Configuración
-        </button>
+        </app-primary-button>
       </div>
     </div>
   }
