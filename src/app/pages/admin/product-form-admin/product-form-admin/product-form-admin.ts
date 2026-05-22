@@ -140,6 +140,11 @@ export class ProductFormAdmin {
   });
 
   // Aunque marca como no usado si esta usandose, es necesario para el formulario de extra atributos
+  // Este effect "loadExtraAttributesEffect" escucha los cambios en el mat-select de categoría.
+  // Cuando el usuario elige una categoría distinta, limpia o reconstruye el FormArray de atributos extra con los campos correspondientes.
+  // Si estás en modo edición y ya había datos guardados para esa categoría, los vuelve a cargar en el formulario.
+  // categoryIdSig(); se dispara/actualiza cada vez que se elije una categoria del mat-select
+  // productDataSig() se dispara/actualiza cuando se carga un producto desde el backend en modo edición y se hace .set(...) con esos datos.
   private readonly loadExtraAttributesEffect = effect((onCleanup) => {
     const categoryId = this.categoryIdSig();
     const productData = this.productDataSig();
@@ -148,7 +153,9 @@ export class ProductFormAdmin {
       untracked(() => this.extraAttributesArray.clear());
       return;
     }
-
+    // untracked evita que Angular registre como dependencias los signals leídos dentro.
+    // Eso significa que, aunque cambien esos signals, no harán que se vuelva a ejecutar el effect.
+    // En este caso no hay signals dentro de untracked, pero lo dejo por buenas prácticas.
     untracked(() => {
       const sub = this.productExtraAttributeService
         .getExtraAttributesByCategory(categoryId)
