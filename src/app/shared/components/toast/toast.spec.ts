@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Toast } from './toast';
-import { ToastService, ToastConfig } from '../../services/toast-service';
+import { ToastService, ToastConfig } from '@shared/services/toast-service';
 import { provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 

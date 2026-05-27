@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ProductsList } from './products-list';
-import { ProductService } from '../../shared/services/product-service';
-import { IaChatService } from '../../shared/services/ia-chat-service';
+import { ProductService } from '@features/products/services/product-service';
+import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { ProductFilterData } from '../../shared/models/product-filter-data.model';
-import { DummyResponsePaginated, DummyProduct } from '../../shared/models/dummy-response.model';
+import { DummyResponsePaginated, DummyProduct } from '@features/products/models/dummy-response.model';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 type MockProductType = DummyProduct & { image: string };

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
@@ -9,16 +9,17 @@ import {
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ProductService } from '../../shared/services/product-service'; // Importa tu servicio
-import { Product } from '../../shared/models/product.model';
-import { CartService } from '../../shared/services/cart-service';
-import { ToastService } from '../../shared/services/toast-service';
-import { ProductStore } from '../admin/state/product.store';
-import { BrandStore } from '../admin/state/brand.store';
-import { CategoryStore } from '../admin/state/category.store';
+import { ProductService } from '@features/products/services/product-service'; // Importa tu servicio
+import { Product } from '@features/products/models/product.model';
+import { CartService } from '@features/checkout/services/cart-service';
+import { ToastService } from '@shared/services/toast-service';
+
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { ProductStore } from '@features/products/state/product.store';
+import { BrandStore } from '@features/products/state/brand.store';
+import { CategoryStore } from '@features/products/state/category.store';
 
 @Component({
   selector: 'app-product-detail',

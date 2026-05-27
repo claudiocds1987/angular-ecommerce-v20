@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
@@ -14,11 +14,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ProductExtraAttributeService } from '../../../shared/services/product-extra-attribute-service';
-import { ProductExtraAttribute } from '../../../shared/models/product-extra-attribute.model';
-import { SpinnerService } from '../../../shared/services/spinner-service';
+import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
+import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
+import { SpinnerService } from '@shared/services/spinner-service';
 import { CommonModule } from '@angular/common';
-import { CategoryStore } from '../state/category.store';
+import { CategoryStore } from '@features/products/state/category.store';
 
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,8 +31,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
 import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Router } from '@angular/router';
-import { ToastService } from '../../../shared/services/toast-service';
-import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
+import { ToastService } from '@shared/services/toast-service';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',

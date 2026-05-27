@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   input,
   signal,
@@ -9,9 +9,9 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../models/product.model';
+import { Product } from '@features/products/models/product.model';
 import { MatDialog } from '@angular/material/dialog';
-import { ProductDetail } from '../../../pages/product-detail/product-detail';
+import { ProductDetail } from '@pages/product-detail/product-detail';
 
 @Component({
   selector: 'app-carousel',

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CarouselComponent } from './carousel.component';
-import { Product } from '../../models/product.model';
+import { Product } from '@features/products/models/product.model';
 import { ComponentRef } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
   ViewChild,
@@ -25,7 +25,7 @@ import {
   GridConfiguration,
   GridData,
   PaginationConfig,
-} from '../../models/grid-configuration.model';
+} from '@shared/components/grid/models/grid-configuration.model';
 import {
   MatPaginator,
   MatPaginatorIntl,
@@ -43,7 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
 //import { Chip, ChipsComponent } from '../chips/chips.component';
 import { FeedbackComponent } from '../feedback/feedback.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-import { ProductAdminStore } from '../../../pages/admin/state/product-admin.store';
+import { ProductAdminStore } from '@features/products/state/product-admin.store';
 
 // --- función para el setear paginador ---
 export function getPaginatorIntl(): MatPaginatorIntl {

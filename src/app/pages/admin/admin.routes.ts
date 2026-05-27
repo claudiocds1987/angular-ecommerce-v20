@@ -1,22 +1,26 @@
-import { Routes } from '@angular/router';
-import { ProductsGridAdmin } from './products-grid-admin/products-grid-admin';
-import { AdminDashboard } from './admin-dashboard/admin-dashboard';
-import { ProductExtraAttributeDefinition } from './product-extra-attribute-definition/product-extra-attribute-definition';
+﻿import { Routes } from '@angular/router';
 
 export const ADMIN_ROUTES: Routes = [
   {
-    path: '', // admin
-    component: AdminDashboard,
+    path: '', // /admin
+    loadComponent: () =>
+      import('@pages/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
     title: 'Panel de Administración',
   },
   {
-    path: 'products-grid-admin', // Esto cargará cuando entres a /admin
-    component: ProductsGridAdmin,
+    path: 'products-grid-admin', // /admin/products-grid-admin
+    loadComponent: () =>
+      import('@pages/admin/products-grid-admin/products-grid-admin').then(
+        (m) => m.ProductsGridAdmin,
+      ),
     title: 'Lista de Productos',
   },
   {
-    path: 'product-extra-attribute-definition', // Esto cargará cuando entres a /admin
-    component: ProductExtraAttributeDefinition,
+    path: 'product-extra-attribute-definition', // /admin/product-extra-attribute-definition
+    loadComponent: () =>
+      import('@pages/admin/product-extra-attribute-definition/product-extra-attribute-definition').then(
+        (m) => m.ProductExtraAttributeDefinition,
+      ),
     title: 'Definición de Atributos Extra para el producto',
   },
 ];

@@ -1,5 +1,5 @@
-/* import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CartItem } from '../../shared/models/product.model';
+﻿/* import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CartItem } from '@features/products/models/product.model';
 
 
 

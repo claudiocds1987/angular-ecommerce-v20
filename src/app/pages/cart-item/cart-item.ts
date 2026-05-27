@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -6,8 +6,8 @@ import {
   input,
   ViewChild,
 } from '@angular/core';
-import { CartItem } from '../../shared/models/product.model';
-import { CartService } from '../../shared/services/cart-service';
+import { CartItem } from '@features/products/models/product.model';
+import { CartService } from '@features/checkout/services/cart-service';
 import { CommonModule } from '@angular/common';
 
 @Component({

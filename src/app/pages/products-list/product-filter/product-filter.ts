@@ -1,9 +1,9 @@
-import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
+﻿import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CustomerProductFilter } from '../../../shared/models/costumer-product-filter.model';
-import { ProductStore } from '../../admin/state/product.store';
-import { BrandStore } from '../../admin/state/brand.store';
-import { CategoryStore } from '../../admin/state/category.store';
+import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
+import { BrandStore } from '@features/products/state/brand.store';
+import { CategoryStore } from '@features/products/state/category.store';
+import { ProductStore } from '@features/products/state/product.store';
 
 @Component({
   selector: 'app-product-filter',

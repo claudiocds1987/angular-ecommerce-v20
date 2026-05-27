@@ -1,0 +1,44 @@
+﻿import { inject, Injectable, signal } from '@angular/core';
+
+import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Product } from '@features/products/models/product.model';
+import { environment } from '@env/environment';
+import { GeminiResponse } from '@features/ai-assistant/models/gemini-response.model';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class IaChatService {
+  showIAchat = signal<boolean>(false);
+
+  private _http = inject(HttpClient);
+
+  private _apiUrl = `${environment.serverUrl}/api/Gemini/ask`;
+
+  openIAChat() {
+    this.showIAchat.set(true);
+  }
+  closeIAChat() {
+    this.showIAchat.set(false);
+  }
+
+  // LLama a mi Backend de .NET que ya tiene el catálogo y la seguridad
+  async sendPromptToAI(prompt: string): Promise<{ response: string; products: Product[] }> {
+    const body = { prompt: prompt };
+    return firstValueFrom(this._http.post<GeminiResponse>(this._apiUrl, body));
+  }
+
+  async askAboutProduct(prompt: string, productId: number): Promise<string> {
+    const expertUrl = `${environment.serverUrl}/api/Gemini/seller-expert`;
+    const body = {
+      productId: productId,
+      userMessage: prompt,
+    };
+
+    // Usamos el DTO de respuesta que espera un objeto con { response: "..." }
+    const res = await firstValueFrom(this._http.post<{ response: string }>(expertUrl, body));
+
+    return res.response;
+  }
+}

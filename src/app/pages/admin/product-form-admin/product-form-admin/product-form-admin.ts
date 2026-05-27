@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,15 +22,15 @@ import {
 } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { CategoryStore } from '../../state/category.store';
-import { BrandStore } from '../../state/brand.store';
-import { ProductService } from '../../../../shared/services/product-service';
-import { ExtraAttribute, Product } from '../../../../shared/models/product.model';
-import { UploadImageComponent } from '../../../../shared/components/upload-image/upload-image';
+import { CategoryStore } from '@features/products/state/category.store';
+import { BrandStore } from '@features/products/state/brand.store';
+import { ProductService } from '@features/products/services/product-service';
+import { ExtraAttribute, Product } from '@features/products/models/product.model';
+import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
 import { finalize, startWith } from 'rxjs';
-import { SpinnerService } from '../../../../shared/services/spinner-service';
-import { ProductExtraAttributeService } from '../../../../shared/services/product-extra-attribute-service';
-import { ProductExtraAttribute } from '../../../../shared/models/product-extra-attribute.model';
+import { SpinnerService } from '@shared/services/spinner-service';
+import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
+import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
 import { FormFieldError } from '../../../../shared/components/form-field-error/form-field-error';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -43,7 +43,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
-import { PrimaryButton } from '../../../../shared/components/primary-button/primary-button';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 
 type AdminProductOperation = 'create' | 'edit';
 

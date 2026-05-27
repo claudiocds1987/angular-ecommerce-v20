@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CartService } from '../../../shared/services/cart-service';
-import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
-import { CartDto, MercadoPagoService } from '../../../shared/services/mercado-pago';
+import { CartService } from '@features/checkout/services/cart-service';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { CartDto, MercadoPagoService } from '@features/checkout/services/mercado-pago';
 import { Subject, exhaustMap, Subscription, catchError, of } from 'rxjs';
 
 @Component({

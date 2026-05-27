@@ -86,7 +86,7 @@
     <app-primary-button
       [iconUrl]="'icons/shopping-bag.svg'"
       [disabled]="product().stock === 0"
-      (btnClicked)="addToCart(product())"
+      (click)="addToCart(product())"
       class="block w-full"
       >Agregar al carrito</app-primary-button
     >

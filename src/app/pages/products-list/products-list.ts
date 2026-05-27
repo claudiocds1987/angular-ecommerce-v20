@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged } from 'rxjs';
-import { Product } from '../../shared/models/product.model';
+import { Product } from '@features/products/models/product.model';
 import { ProductCard } from './product-card/product-card';
-import { ProductService } from '../../shared/services/product-service';
+import { ProductService } from '@features/products/services/product-service';
 import { ProductCardSkeleton } from './product-card-skeleton/product-card-skeleton';
-import { IaChat } from '../../shared/components/ia-chat/ia-chat';
-import { IaChatService } from '../../shared/services/ia-chat-service';
-import { CustomerProductFilter } from '../../shared/models/costumer-product-filter.model';
+import { IaChat } from '@features/ai-assistant/components/ia-chat/ia-chat';
+import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
+import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
 import { ProductFilter } from './product-filter/product-filter';
-import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
-import { ProductStore } from '../admin/state/product.store';
+import { CarouselComponent } from '@shared/components/carousel/carousel.component';
+import { ProductStore } from '@features/products/state/product.store';
 
 @Component({
   selector: 'app-products-list',

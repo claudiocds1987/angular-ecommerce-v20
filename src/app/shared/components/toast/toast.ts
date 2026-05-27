@@ -1,5 +1,5 @@
-import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
-import { ToastConfig, ToastService } from '../../services/toast-service';
+﻿import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
+import { ToastConfig, ToastService } from '@shared/services/toast-service';
 import { CommonModule } from '@angular/common';
 
 @Component({

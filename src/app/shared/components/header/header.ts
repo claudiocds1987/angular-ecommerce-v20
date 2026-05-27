@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -7,10 +7,10 @@ import {
   signal,
 } from '@angular/core';
 import { PrimaryButton } from '../primary-button/primary-button';
-import { CartService } from '../../services/cart-service';
+import { CartService } from '@features/checkout/services/cart-service';
 import { Router } from '@angular/router';
-import { IaChatService } from '../../services/ia-chat-service';
-import { AuthStore } from '../../../pages/auth/state/auth.store';
+import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
+import { AuthStore } from '@features/auth/state/auth.store';
 
 @Component({
   selector: 'app-header',

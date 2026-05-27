@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -12,47 +12,47 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { ExcelUpload } from '../../../shared/components/excel-upload/excel-upload';
-import { ImportResultResponse } from '../../../shared/models/import-result-response.model';
-import { ExcelService } from '../../../shared/services/excel-service';
+import { ExcelUpload } from '@features/admin-tools/components/excel-upload/excel-upload';
+import { ImportResultResponse } from '@features/admin-tools/models/import-result-response.model';
+import { ExcelService } from '@features/admin-tools/services/excel-service';
 
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 
-import { ProductAdminStore } from '../state/product-admin.store';
+import { ProductAdminStore } from '@features/products/state/product-admin.store';
 import {
   createDefaultGridConfiguration,
   GridConfiguration,
   GridData,
   PaginationConfig,
-} from '../../../shared/models/grid-configuration.model';
+} from '@shared/components/grid/models/grid-configuration.model';
 
-import { ProductFilterParams } from '../../../shared/models/product-filter-params.model';
-import { GridFilterConfig } from '../../../shared/models/grid-filter-configuration.model';
+import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
+import { GridFilterConfig } from '@shared/components/grid/models/grid-filter-configuration.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Chip, ChipsComponent } from '../../../shared/components/chips/chips.component';
-import { ProductCategory } from '../../../shared/models/product-category.model';
-import { GridComponent } from '../../../shared/components/grid/grid.component';
-import { GridFilterComponent } from '../../../shared/components/grid/grid-filter/grid-filter.component';
+import { ProductCategory } from '@features/products/models/product-category.model';
+import { GridComponent } from '@shared/components/grid/grid.component';
+import { GridFilterComponent } from '@shared/components/grid/grid-filter/grid-filter.component';
 import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
-import { SpinnerService } from '../../../shared/services/spinner-service';
-import { ProductService } from '../../../shared/services/product-service';
+import { SpinnerService } from '@shared/services/spinner-service';
+import { ProductService } from '@features/products/services/product-service';
 import { first, map } from 'rxjs';
-import { ExportService } from '../../../shared/services/export-service';
-import { CategoryStore } from '../state/category.store';
-import { BrandStore } from '../state/brand.store';
-import { ProductBrand } from '../../../shared/models/product-brand.model';
-import { ProductAdminGrid } from '../../../shared/models/product-admin-grid.model';
-import { AdminProductFilter } from '../../../shared/models/admin-product-filter.model';
+import { ExportService } from '@features/admin-tools/services/export-service';
+import { CategoryStore } from '@features/products/state/category.store';
+import { BrandStore } from '@features/products/state/brand.store';
+import { ProductBrand } from '@features/products/models/product-brand.model';
+import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
+import { AdminProductFilter } from '@features/products/models/admin-product-filter.model';
 import { Router } from '@angular/router';
-import { CsvDownloadService } from '../../../shared/services/csv-download-service';
+import { CsvDownloadService } from '@features/admin-tools/services/csv-download-service';
 import { MatDialog } from '@angular/material/dialog';
-import { ProductExtraAttributeService } from '../../../shared/services/product-extra-attribute-service';
+import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { MatDialogModule } from '@angular/material/dialog'; // Importante
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-products-grid-admin',

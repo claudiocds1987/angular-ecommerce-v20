@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthStore } from '../state/auth.store';
+import { AuthStore } from '@features/auth/state/auth.store';
 
 // Importaciones requeridas de Angular Material
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
-import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 @Component({
   selector: 'app-login-component',
   imports: [

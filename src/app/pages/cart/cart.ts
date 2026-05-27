@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { CartService } from '../../shared/services/cart-service';
+﻿import { Component, inject } from '@angular/core';
+import { CartService } from '@features/checkout/services/cart-service';
 import { CartItemComponent } from '../cart-item/cart-item';
 import { OrderSummary } from './order-summary/order-summary';
 

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common'; // Importación necesaria
-import { Product } from '../../../shared/models/product.model';
-import { PrimaryButton } from '../../../shared/components/primary-button/primary-button';
-import { CartService } from '../../../shared/services/cart-service';
+import { Product } from '@features/products/models/product.model';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { CartService } from '@features/checkout/services/cart-service';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductDetail } from '../../product-detail/product-detail';
-import { ToastService } from '../../../shared/services/toast-service';
+import { ToastService } from '@shared/services/toast-service';
 
 @Component({
   selector: 'app-product-card',

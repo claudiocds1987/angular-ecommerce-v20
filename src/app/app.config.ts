@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   ApplicationConfig,
@@ -12,12 +12,12 @@ import { provideRouter, withHashLocation } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from './shared/interceptors/auth.interceptor';
+import { authInterceptor } from '@core/interceptors/auth.interceptor';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client';
-import { environment } from '../environments/environment';
-import { AuthStore } from './pages/auth/state/auth.store';
+import { environment } from '@env/environment';
+import { AuthStore } from '@features/auth/state/auth.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [

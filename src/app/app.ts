@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+﻿import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Header } from './shared/components/header/header';
-import { Footer } from './shared/components/footer/footer';
-import { Toast } from './shared/components/toast/toast';
-import { Spinner } from './shared/components/spinner/spinner';
+import { Header } from '@shared/components/header/header';
+import { Footer } from '@shared/components/footer/footer';
+import { Toast } from '@shared/components/toast/toast';
+import { Spinner } from '@shared/components/spinner/spinner';
 
 @Component({
   selector: 'app-root',
