@@ -77,12 +77,11 @@
             ></app-excel-upload>
           </div>
         </div>
-
         <app-grid
           class="wrapper__grid-component min-h-0 flex-1 overflow-hidden"
           [gridConfigSig]="gridConfigWithTotalSig()"
           [gridDataSig]="mappedProductsSig()"
-          [isLoadingSig]="productAdminStore.loading()"
+          [isLoadingSig]="isDataGridLoadingSig()"
           (pageChange)="onGridPageChange($event)"
           (sortChange)="onGridSortChange($event)"
           (exportExcel)="onExportToExcel()"
@@ -95,7 +94,7 @@
           class="block h-full overflow-y-auto"
           [configSig]="gridFilterConfigSig()"
           [filterFormSig]="gridFilterFormSig()"
-          [isLoadingSig]="productAdminStore.loading()"
+          [isLoadingSig]="isGridFilterLoadingSig()"
           (emitFilterApplied)="applyFilter()"
           (isCollapsedChange)="onFilterCollapseChange($event)"
         ></app-grid-filter>

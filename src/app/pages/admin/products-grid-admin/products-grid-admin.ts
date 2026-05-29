@@ -76,6 +76,7 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
 export class ProductsGridAdmin implements OnInit {
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
   gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
+  isGridFilterLoadingSig = signal<boolean>(true);
   gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
@@ -146,6 +147,10 @@ export class ProductsGridAdmin implements OnInit {
         totalCount: this.productAdminStore.totalItems(),
       },
     };
+  });
+
+  isDataGridLoadingSig = computed(() => {
+    return this.productAdminStore.loading();
   });
 
   constructor() {
@@ -232,9 +237,27 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   applyFilter(): void {
-    const values = this.gridFilterFormSig().value;
-    this._updateChips(values); // Actualizamos los visuales
-    this._loadData(); // Cargamos la data
+    const gridFilterForm = this.gridFilterFormSig();
+    const gridFilterFormValues = gridFilterForm.value;
+    // 1. Validamos si el formulario viene completamente en null (es decir, en caso que se haga clic en "Limpiar Filtro" en grid-filter.component)
+    const isFormReseted = Object.values(gridFilterFormValues).every((value) => value === null);
+    // 2. al "Limpiar Filtro", todos los valores son "null",  se setea por default el formulario del filtro
+    if (isFormReseted) {
+      gridFilterForm.patchValue(
+        {
+          id: '',
+          title: '',
+          categoryId: 'all', // Vuelve a pintar "Todas" en el mat-select
+          brandId: 'all', // Vuelve a pintar "Todas" en el mat-select
+          isActive: 'all', // Vuelve a pintar "Todos" en el mat-select
+        },
+        { emitEvent: false }, // Evitamos bucles de eventos innecesarios
+      );
+    }
+    // 3. actualizadno los chips y cargando la data
+    const updatedValues = gridFilterForm.value;
+    this._updateChips(updatedValues);
+    this._loadData();
   }
 
   private _updateChips(filterValues: AdminProductFilter): void {
@@ -653,6 +676,7 @@ export class ProductsGridAdmin implements OnInit {
 
     // ACTUALIZA SIGNAL DEL FORMULARIO DEL FILTRO DE LA GRILLA CON LOS CONTROLES DINÁMICOS CREADOS
     this.gridFilterFormSig.set(new FormGroup(formControls));
+    this.isGridFilterLoadingSig.set(false);
   }
 
   private _editProduct(id: number): void {

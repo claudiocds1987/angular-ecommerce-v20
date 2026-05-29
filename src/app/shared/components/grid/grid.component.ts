@@ -137,7 +137,7 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
   });
   // Mostramos feedback solo si no está cargando y no hay datos
   showFeedbackSig = computed(() => {
-    const isLoading = this._productAdminStore.loading();
+    const isLoading = this.isLoadingSig();
     const hasNoData = this.gridDataSig().length === 0;
     return !isLoading && hasNoData;
   });
