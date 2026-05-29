@@ -1,57 +1,46 @@
 <article
-  class="fade-in-fwd glass-shine group relative flex h-[500px] w-full flex-col rounded-xl border border-slate-200/60 bg-white p-5 shadow-sm transition-all duration-500 ease-out hover:-translate-y-2 hover:border-blue-400/40 hover:shadow-2xl"
+  class="fade-in-fwd glass-shine group relative flex h-[500px] w-full flex-col rounded-2xl border border-slate-200/50 bg-gradient-to-b from-white/80 to-slate-50/90 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] backdrop-blur-md transition-all duration-500 ease-out hover:-translate-y-2 hover:border-blue-400/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
 >
   <span
-    class="absolute top-3 right-3 z-20 rounded-md bg-white/95 px-2 py-1 text-[10px] font-bold tracking-widest text-green-600 uppercase shadow-sm"
+    class="absolute top-3 right-3 z-20 rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold tracking-widest text-green-600 uppercase shadow-sm backdrop-blur-sm"
   >
     EN STOCK: {{ product().stock }}
   </span>
 
   <div
     [routerLink]="['/product', product().id]"
-    class="relative z-10 aspect-square w-full cursor-pointer overflow-hidden rounded-lg bg-gray-50"
+    class="relative z-10 aspect-square w-full cursor-pointer overflow-hidden rounded-xl bg-slate-100"
   >
     <img
       [src]="product().thumbnail"
       [alt]="product().title"
-      class="h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-110"
+      class="h-full w-full object-contain p-3 transition-transform duration-700 group-hover:scale-105"
       loading="lazy"
     />
   </div>
 
-  <div class="relative z-10 mt-3 flex flex-grow flex-col">
-    <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase"> Producto </span>
+  <div class="relative z-10 mt-4 flex flex-grow flex-col">
+    <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Producto</span>
 
-    <h3 class="mt-0.5 line-clamp-2 text-sm leading-tight font-bold text-slate-900">
-      <a class="transition-colors hover:text-blue-600">
-        {{ product().title }}
-      </a>
+    <h3 class="mt-1 line-clamp-2 text-sm leading-tight font-bold text-slate-900">
+      <a class="transition-colors hover:text-blue-600">{{ product().title }}</a>
     </h3>
 
-    <div class="mt-1 mb-4">
-      <div class="mt-1 mb-4">
-        <button
-          (click)="openDetailModal()"
-          class="group/link inline-flex cursor-pointer items-center text-[10px] font-extrabold tracking-tighter text-blue-500 uppercase transition-colors hover:text-blue-700"
-        >
-          Ver detalle
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="ml-0.5 h-3 w-3 transition-transform group-hover/link:translate-x-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
+    <button
+      (click)="openDetailModal()"
+      class="mt-2 inline-flex cursor-pointer items-center text-[10px] font-extrabold tracking-tighter text-blue-500 uppercase transition-all hover:translate-x-1 hover:text-blue-700"
+    >
+      Ver detalle
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="ml-1 h-3 w-3"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
 
     <div class="mt-auto">
       @if (product().discountPercentage! > 0) {
@@ -61,12 +50,12 @@
         <div class="flex items-center gap-2">
           <data
             [value]="product().finalPrice"
-            class="block text-3xl leading-none font-bold tracking-tighter text-slate-400 text-slate-600"
+            class="block text-3xl font-bold tracking-tight text-slate-800"
           >
             {{ product().finalPrice | currency }}
           </data>
           <span
-            class="rounded border border-green-100 bg-green-50 px-1.5 py-0.5 text-[10px] font-black text-green-600"
+            class="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[10px] font-black text-green-600 shadow-sm"
           >
             {{ product().discountPercentage }}% DESC
           </span>
@@ -74,7 +63,7 @@
       } @else {
         <data
           [value]="product().price"
-          class="block text-3xl leading-none font-black tracking-tighter text-blue-600"
+          class="block text-3xl font-black tracking-tight text-blue-600"
         >
           {{ product().price | currency }}
         </data>
@@ -82,13 +71,14 @@
     </div>
   </div>
 
-  <footer class="relative z-20 mt-4">
+  <footer class="relative z-20 mt-5">
     <app-primary-button
       [iconUrl]="'icons/shopping-bag.svg'"
       [disabled]="product().stock === 0"
       (click)="addToCart(product())"
-      class="block w-full"
-      >Agregar al carrito</app-primary-button
+      class="block w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md transition-all hover:shadow-lg hover:brightness-110"
     >
+      Agregar al carrito
+    </app-primary-button>
   </footer>
 </article>
