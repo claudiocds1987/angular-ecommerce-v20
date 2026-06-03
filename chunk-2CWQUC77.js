@@ -1,1 +1,0 @@
-import{ca as s,wa as n}from"./chunk-UQKTT5Y5.js";var i=class e{config=n(null);show(o,t="success"){this.config.set({message:o,type:t}),setTimeout(()=>{this.config.set(null)},3e3)}static \u0275fac=function(t){return new(t||e)};static \u0275prov=s({token:e,factory:e.\u0275fac,providedIn:"root"})};export{i as a};
