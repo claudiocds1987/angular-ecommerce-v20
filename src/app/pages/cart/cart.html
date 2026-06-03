@@ -1,7 +1,310 @@
-<div class="p-6 flex flex-col gap-4 max-w-full lg:max-w-4xl mx-auto">
-  <h2 class="text-2xl">Shopping Cart</h2>
-  @for (item of cartService.cart(); track item.id) {
-    <app-cart-item [item]="item"></app-cart-item>
-  }
-  <app-order-summary></app-order-summary>
+<div class="mx-auto max-w-full p-4 transition-all duration-300 md:p-8 lg:max-w-5xl">
+  <h2 class="mb-6 text-3xl font-extrabold tracking-tight text-slate-900">Finalizar Compra</h2>
+
+  <mat-stepper
+    #stepper
+    [linear]="true"
+    class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-xl"
+  >
+    <mat-step [editable]="true" [completed]="cartService.cart().length > 0">
+      <ng-template matStepLabel
+        ><span class="font-bold text-slate-700">Mi Carrito</span></ng-template
+      >
+
+      <div class="flex flex-col gap-5 p-6">
+        <h3 class="text-xl font-bold text-slate-800">1. Revisa tus artículos</h3>
+
+        <div class="flex max-h-[50vh] flex-col gap-4 overflow-y-auto pr-2">
+          @for (item of cartService.cart(); track item.id) {
+            <app-cart-item [item]="item"></app-cart-item>
+          } @empty {
+            <div
+              class="animate-fadeIn flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-12 text-slate-400"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="mb-3 h-12 w-12 text-slate-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <span class="text-base font-bold text-slate-500"
+                >Tu carrito está completamente vacío</span
+              >
+              <p class="mt-1 text-xs text-slate-400">
+                Agrega productos para poder continuar con la compra.
+              </p>
+            </div>
+          }
+        </div>
+
+        <div
+          class="-mx-6 mt-4 -mb-6 flex flex-col items-center justify-between gap-4 border-t border-slate-100 bg-slate-50 p-6 pt-6 sm:flex-row"
+        >
+          <div>
+            <span class="block text-sm font-medium text-slate-500">Total parcial:</span>
+            <span class="text-2xl font-black text-slate-900"
+              >${{ cartService.totalPrice() | number: '1.2-2' }}</span
+            >
+          </div>
+
+          <button
+            matStepperNext
+            [disabled]="cartService.cart().length === 0"
+            class="w-full cursor-pointer rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          >
+            Continuar con el Envío
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <mat-step [stepControl]="shippingForm" [editable]="true">
+      <ng-template matStepLabel><span class="font-bold text-slate-700">Envío</span></ng-template>
+
+      <div class="p-6">
+        <h3 class="mb-6 text-xl font-bold text-slate-800">2. Datos de entrega</h3>
+
+        <form [formGroup]="shippingForm" class="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nombre Completo</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="customerName"
+              placeholder="Ej: Claudio Test"
+            />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('customerName')" />
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Correo Electrónico</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="customerEmail"
+              placeholder="Ej: comprador@test.com"
+            />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('customerEmail')" />
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Teléfono de Contacto</mat-label>
+            <input
+              matInput
+              type="tel"
+              formControlName="customerPhone"
+              placeholder="Ej: +541123456789"
+            />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('customerPhone')" />
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Dirección de Entrega</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="shippingAddress"
+              placeholder="Ej: Av. Siempreviva 742"
+            />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('shippingAddress')" />
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Ciudad / Localidad</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="shippingCity"
+              placeholder="Ej: San Fernando"
+            />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('shippingCity')" />
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Código Postal</mat-label>
+            <input matInput type="text" formControlName="shippingZipCode" placeholder="Ej: 1646" />
+            <mat-error>
+              <app-form-field-error [control]="shippingForm.get('shippingZipCode')" />
+            </mat-error>
+          </mat-form-field>
+        </form>
+
+        <div
+          class="-mx-6 mt-8 -mb-6 flex items-center justify-between gap-4 border-t border-slate-100 bg-slate-50 p-6 pt-6"
+        >
+          <button
+            matStepperPrevious
+            class="cursor-pointer rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-600 transition-colors hover:bg-slate-100"
+          >
+            Volver al Carrito
+          </button>
+          <button
+            matStepperNext
+            [disabled]="shippingForm.invalid"
+            class="cursor-pointer rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            Revisar Pedido
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel
+        ><span class="font-bold text-slate-700">Confirmación</span></ng-template
+      >
+
+      <div class="p-6">
+        <h3 class="mb-6 text-xl font-bold text-slate-800">
+          3. Resumen y Confirmación de tu Compra
+        </h3>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div class="flex flex-col gap-6 lg:col-span-2">
+            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 shadow-sm">
+              <h4 class="mb-3 text-sm font-extrabold tracking-wider text-blue-600 uppercase">
+                Datos del Destinatario
+              </h4>
+              <div
+                class="grid grid-cols-1 gap-3 text-sm font-semibold text-slate-700 sm:grid-cols-2"
+              >
+                <p>
+                  <span class="font-medium text-slate-400">Nombre:</span>
+                  {{ shippingForm.get('customerName')?.value }}
+                </p>
+                <p>
+                  <span class="font-medium text-slate-400">Email:</span>
+                  {{ shippingForm.get('customerEmail')?.value }}
+                </p>
+                <p>
+                  <span class="font-medium text-slate-400">Teléfono:</span>
+                  {{ shippingForm.get('customerPhone')?.value }}
+                </p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 shadow-sm">
+              <h4 class="mb-3 text-sm font-extrabold tracking-wider text-blue-600 uppercase">
+                Dirección de Envío
+              </h4>
+              <div class="flex flex-col gap-1 text-sm font-semibold text-slate-700">
+                <p>
+                  <span class="font-medium text-slate-400">Domicilio:</span>
+                  {{ shippingForm.get('shippingAddress')?.value }}
+                </p>
+                <p>
+                  <span class="font-medium text-slate-400">Ciudad:</span>
+                  {{ shippingForm.get('shippingCity')?.value }}
+                </p>
+                <p>
+                  <span class="font-medium text-slate-400">Código Postal:</span>
+                  {{ shippingForm.get('shippingZipCode')?.value }}
+                </p>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+              <h4 class="mb-3 text-sm font-extrabold tracking-wider text-slate-400 uppercase">
+                Artículos a comprar ({{ cartService.cart().length }})
+              </h4>
+              <div class="flex flex-col gap-3">
+                @for (item of cartService.cart(); track item.id) {
+                  <div
+                    class="flex items-center justify-between border-b border-slate-50 p-2 text-sm font-bold last:border-none"
+                  >
+                    <span class="max-w-xs truncate text-slate-800">
+                      {{ item.title }}
+                      <span class="font-medium text-slate-400">x{{ item.quantity }}</span>
+                    </span>
+                    <span class="text-blue-600"
+                      >${{
+                        (item.finalPrice || item.price) * item.quantity | number: '1.2-2'
+                      }}</span
+                    >
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full min-w-0 lg:col-span-1">
+            <div
+              class="sticky top-4 flex flex-col gap-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-slate-100 p-4 shadow-md md:p-5"
+            >
+              <h4 class="text-xs font-black tracking-wider text-slate-800 uppercase">
+                Detalle del Pago
+              </h4>
+
+              <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                <span class="text-xs font-medium whitespace-nowrap text-slate-500"
+                  >Subtotal productos:</span
+                >
+                <span class="truncate text-sm font-bold text-slate-700"
+                  >${{ cartService.totalPrice() | number: '1.2-2' }}</span
+                >
+              </div>
+
+              <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                <span class="text-xs font-medium whitespace-nowrap text-slate-500"
+                  >Costo de Envío:</span
+                >
+                <span class="shrink-0 text-xs font-extrabold tracking-wide text-green-600 uppercase"
+                  >¡Gratis!</span
+                >
+              </div>
+
+              <div class="flex flex-col gap-1 pt-1">
+                <span class="block text-sm font-bold tracking-wider text-slate-900 uppercase"
+                  >Total Neto</span
+                >
+                <span
+                  class="block text-xl leading-none font-black tracking-tight break-all text-blue-600 sm:text-2xl"
+                >
+                  ${{ cartService.totalPrice() | number: '1.2-2' }}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                (click)="onBuy()"
+                [disabled]="shippingForm.invalid || cartService.cart().length === 0"
+                class="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-3.5 text-center text-sm font-black break-words whitespace-normal text-white shadow-md transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40"
+              >
+                Realizar Compra (Mercado Pago)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="-mx-6 mt-8 -mb-6 flex items-center justify-start gap-4 border-t border-slate-100 bg-slate-50 p-6 pt-6"
+        >
+          <button
+            matStepperPrevious
+            class="cursor-pointer rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-600 transition-colors hover:bg-slate-100"
+          >
+            Modificar Envío
+          </button>
+        </div>
+      </div>
+    </mat-step>
+  </mat-stepper>
 </div>

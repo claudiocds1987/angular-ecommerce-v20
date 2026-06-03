@@ -1,9 +1,10 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* 
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CartService } from '@features/checkout/services/cart-service';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
-import { CartDto, MercadoPagoService } from '@features/checkout/services/mercado-pago';
+import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
 import { Subject, exhaustMap, Subscription, catchError, of } from 'rxjs';
+import { CartDto } from '@features/checkout/models/cart-dto.model';
 
 @Component({
   selector: 'app-order-summary',
@@ -87,3 +88,4 @@ export class OrderSummary implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 }
+ */

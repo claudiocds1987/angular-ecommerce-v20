@@ -57,4 +57,9 @@ export class CartService {
   checkItemsRepeated(productId: number): boolean {
     return this.cart().some((item) => item.id === productId);
   }
+
+  // Limpia por completo el carrito de compras
+  clearCart() {
+    this.cart.set([]);
+  }
 }

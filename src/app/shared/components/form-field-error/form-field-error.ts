@@ -30,6 +30,7 @@ export class FormFieldError {
   private readonly errorMap: Record<string, (args: any) => string> = {
     required: () => 'Este campo es obligatorio.',
     duplicated: () => 'Este nombre ya existe.',
+    email: () => 'El correo electrónico no tiene un formato válido.',
     minlength: (err: any) => `Mínimo ${err.requiredLength} caracteres.`,
     maxlength: (err: any) => `Máximo ${err.requiredLength} caracteres.`,
     min: (err: any) => `El valor debe ser mayor o igual a ${err.min}.`,
