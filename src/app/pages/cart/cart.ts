@@ -16,6 +16,7 @@ import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
 import { CartDto } from '@features/checkout/models/cart-dto.model';
 import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
 import { AuthStore } from '@features/auth/state/auth.store';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-cart',
@@ -28,6 +29,7 @@ import { AuthStore } from '@features/auth/state/auth.store';
     MatInputModule,
     CartItemComponent,
     FormFieldError,
+    PrimaryButton,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',

@@ -282,14 +282,11 @@
                 </span>
               </div>
 
-              <button
-                type="button"
+              <app-primary-button
                 (click)="onBuy()"
                 [disabled]="shippingForm.invalid || cartService.cart().length === 0"
-                class="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-3.5 text-center text-sm font-black break-words whitespace-normal text-white shadow-md transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40"
-              >
-                Realizar Compra (Mercado Pago)
-              </button>
+                >Comprar
+              </app-primary-button>
             </div>
           </div>
         </div>
