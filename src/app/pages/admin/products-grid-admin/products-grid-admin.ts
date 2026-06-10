@@ -703,7 +703,7 @@ export class ProductsGridAdmin implements OnInit {
         this._spinnerService.hide();
         this._toastService.show('Producto eliminado exitosamente', 'success');
 
-        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1
+        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1 al borrar un producto.
         this.gridConfigSig.update((config) => ({
           ...config,
           paginator: {
