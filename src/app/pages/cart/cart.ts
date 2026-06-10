@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
 import { CartDto } from '@features/checkout/models/cart-dto.model';
 import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
+import { AuthStore } from '@features/auth/state/auth.store';
 
 @Component({
   selector: 'app-cart',
@@ -36,6 +37,7 @@ export class Cart implements OnInit, OnDestroy {
   cartService = inject(CartService);
   private _fb = inject(FormBuilder);
   private _mpService = inject(MercadoPagoService);
+  private _authStore = inject(AuthStore);
 
   // Formulario Reactivo del Paso 2 (Atado estrictamente a camelCase del backend)
   shippingForm!: FormGroup;
@@ -69,7 +71,7 @@ export class Cart implements OnInit, OnDestroy {
 
           // Construcción quirúrgica del DTO unificado
           const dataParaBackend: CartDto = {
-            userId: null, // Cambiar por tu signal de auth si el usuario está logueado
+            userId: this._authStore.user()?.id || null, // En caso de no ser un usuario logueado, el id es null
             customerName: formValues.customerName,
             customerEmail: formValues.customerEmail,
             customerPhone: formValues.customerPhone,
@@ -81,6 +83,8 @@ export class Cart implements OnInit, OnDestroy {
               quantity: product.quantity,
             })),
           };
+
+          console.log('📦 Datos enviados al backend:', dataParaBackend);
 
           return this._mpService.createPreference(dataParaBackend).pipe(
             catchError((err) => {
