@@ -257,7 +257,12 @@ export class ProductsGridAdmin implements OnInit {
         { emitEvent: false }, // Evitamos bucles de eventos innecesarios
       );
     }
-    // 3. actualizadno los chips y cargando la data
+    // 3. Reseteamos a página 0 antes de filtrar
+    this.gridConfigSig.update((config) => ({
+      ...config,
+      paginator: { ...config.paginator!, pageIndex: 0 },
+    }));
+    // 4. actualizadno los chips y cargando la data
     const updatedValues = gridFilterForm.value;
     this._updateChips(updatedValues);
     this._loadData();
@@ -434,6 +439,11 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   onSearchInputValue(searchValue: string): void {
+    // Reseteamos a página 0
+    this.gridConfigSig.update((config) => ({
+      ...config,
+      paginator: { ...config.paginator!, pageIndex: 0 },
+    }));
     this._loadData(searchValue);
   }
 
