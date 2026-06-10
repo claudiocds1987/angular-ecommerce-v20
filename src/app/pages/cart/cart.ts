@@ -84,8 +84,6 @@ export class Cart implements OnInit, OnDestroy {
             })),
           };
 
-          console.log('📦 Datos enviados al backend:', dataParaBackend);
-
           return this._mpService.createPreference(dataParaBackend).pipe(
             catchError((err) => {
               console.error('Error al generar preferencia:', err);
