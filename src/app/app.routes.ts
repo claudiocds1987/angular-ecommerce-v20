@@ -31,23 +31,4 @@ export const routes: Routes = [
     loadChildren: () => import('@pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // url: http://localhost:5000/#/admin
     canActivate: [authGuard],
   },
-  // Rutas administrativas protegidas y con Lazy Loading
-  {
-    path: 'product/create',
-    loadComponent: () =>
-      import('@pages/admin/product-form-admin/product-form-admin/product-form-admin').then(
-        (m) => m.ProductFormAdmin,
-      ),
-    canActivate: [authGuard],
-    data: { operation: 'create' },
-  },
-  {
-    path: 'product/edit/:id',
-    loadComponent: () =>
-      import('@pages/admin/product-form-admin/product-form-admin/product-form-admin').then(
-        (m) => m.ProductFormAdmin,
-      ),
-    canActivate: [authGuard],
-    data: { operation: 'edit' },
-  },
 ];

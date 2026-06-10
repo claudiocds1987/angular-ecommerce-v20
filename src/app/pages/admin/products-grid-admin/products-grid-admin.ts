@@ -618,7 +618,7 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _onCreateProduct = (): void => {
-    this._router.navigate(['/product/create']);
+    this._router.navigate(['admin/product/create']);
   };
 
   private _initializeGridFilter(categories: ProductCategory[], brands: ProductBrand[]): void {
@@ -680,7 +680,7 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _editProduct(id: number): void {
-    this._router.navigate(['/product/edit', id]);
+    this._router.navigate(['admin/product/edit', id]);
   }
 
   private _deleteProduct(id: number): void {
