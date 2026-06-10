@@ -53,6 +53,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { ToastService } from '@shared/services/toast-service';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -81,11 +82,12 @@ export class ProductsGridAdmin implements OnInit {
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
   isFilterCollapsedSig = signal<boolean>(false);
+  importErrors = signal<string[]>([]);
+
   // Inyeccón del Store product-admin.store que creado con NgRX Signals
   readonly productAdminStore = inject(ProductAdminStore);
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
-  importErrors = signal<string[]>([]);
   apiURL = `${environment.serverUrl}/api/massiveImport/products`;
 
   private _excelService = inject(ExcelService);
@@ -97,6 +99,7 @@ export class ProductsGridAdmin implements OnInit {
   private _csvService = inject(CsvDownloadService);
   private _dialog = inject(MatDialog);
   private _extraAttrService = inject(ProductExtraAttributeService);
+  private _toastService = inject(ToastService);
   @ViewChild('categoryDialog') categoryDialog!: TemplateRef<any>;
 
   // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
@@ -684,6 +687,27 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _deleteProduct(id: number): void {
-    console.log('Delete product with ID:', id);
+    this._spinnerService.show();
+    this._productServices.deleteProduct(id).subscribe({
+      next: () => {
+        this._spinnerService.hide();
+        this._toastService.show('Producto eliminado exitosamente', 'success');
+
+        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1
+        this.gridConfigSig.update((config) => ({
+          ...config,
+          paginator: {
+            ...config.paginator!,
+            pageIndex: 0,
+          },
+        }));
+
+        this._loadData();
+      },
+      error: () => {
+        this._spinnerService.hide();
+        this._toastService.show('Error al eliminar el producto', 'danger');
+      },
+    });
   }
 }

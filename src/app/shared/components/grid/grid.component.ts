@@ -80,7 +80,6 @@ export function getPaginatorIntl(): MatPaginatorIntl {
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    //ChipsComponent,
     FeedbackComponent,
     NgOptimizedImage,
   ],
@@ -229,13 +228,6 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     return `Mostrando ${Math.min(loadedCount, length)} de ${length}`;
   }
 
-  /* showFeeback(): boolean {
-    return (
-      !this.isLoadingSig() &&
-      (this.gridDataSig().length === 0 || this.dataSource.filteredData.length === 0)
-    );
-  }
- */
   getCellValue(row: GridData, colName: string): string {
     const value = row[colName];
     if (colName === 'elipsisActions' && Array.isArray(value)) {
@@ -333,10 +325,6 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.exportExcelClientSide.emit(dataReadyForExport);
   }
-
-  /* onChipRemoved(chip: Chip): void {
-    this.chipRemoved.emit(chip);
-  } */
 
   // Función que ordena la data para exportar excel si se aplica mat-sort (solo para lado cliente)
   private _getSortedData(data: GridData[], sort: MatSort): GridData[] {
