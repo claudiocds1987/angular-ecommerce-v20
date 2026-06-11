@@ -54,6 +54,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 import { ToastService } from '@shared/services/toast-service';
+import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -100,6 +101,7 @@ export class ProductsGridAdmin implements OnInit {
   private _dialog = inject(MatDialog);
   private _extraAttrService = inject(ProductExtraAttributeService);
   private _toastService = inject(ToastService);
+  private _confirmDialog = inject(ConfirmDialogService);
   @ViewChild('categoryDialog') categoryDialog!: TemplateRef<any>;
 
   // Mapeo reactivo: (mappedProductsSig es la data que muestro en la grilla) Transforma la data del Store al formato de las columnas de mi Grid
@@ -130,9 +132,10 @@ export class ProductsGridAdmin implements OnInit {
             action: (id: number) => this._editProduct(id),
           },
           {
-            label: 'Eliminar',
+            label: 'Baja',
             icon: 'delete',
-            action: (id: number) => this._deleteProduct(id),
+            action: (id: number) => this._confirmDeleteProduct(id),
+            condition: (product: ProductAdminGrid) => product.isActive, // Solo muestra "Baja" si el producto está activo
           },
         ],
       } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
@@ -696,13 +699,26 @@ export class ProductsGridAdmin implements OnInit {
     this._router.navigate(['admin/product/edit', id]);
   }
 
+  private _confirmDeleteProduct(id: number): void {
+    this._confirmDialog
+      .open({
+        title: 'Dar de Baja Producto',
+        message: '¿Deseas dar de baja este producto?',
+        confirmLabel: 'Dar de Baja',
+        cancelLabel: 'Cancelar',
+        confirmColor: 'primary',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) this._deleteProduct(id);
+      });
+  }
+
   private _deleteProduct(id: number): void {
     this._spinnerService.show();
     this._productServices.deleteProduct(id).subscribe({
       next: () => {
         this._spinnerService.hide();
-        this._toastService.show('Producto eliminado exitosamente', 'success');
-
+        this._toastService.show('Producto dado de baja exitosamente', 'success');
         // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1 al borrar un producto.
         this.gridConfigSig.update((config) => ({
           ...config,
@@ -716,7 +732,7 @@ export class ProductsGridAdmin implements OnInit {
       },
       error: () => {
         this._spinnerService.hide();
-        this._toastService.show('Error al eliminar el producto', 'danger');
+        this._toastService.show('Error al dar de baja el producto', 'danger');
       },
     });
   }

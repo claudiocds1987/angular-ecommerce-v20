@@ -44,6 +44,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { ToastService } from '@shared/services/toast-service';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -107,8 +108,9 @@ export class ProductFormAdmin {
   readonly brandStore = inject(BrandStore);
   private _router = inject(Router);
   private _confirmDialog = inject(ConfirmDialogService);
+  private _toastService = inject(ToastService);
 
-  productForm: FormGroup = this.createProductForm();
+  productForm: FormGroup = this._createProductForm();
 
   readonly categoriesSig = this.categoryStore.items;
   readonly brandsSig = this.brandStore.items;
@@ -171,7 +173,7 @@ export class ProductFormAdmin {
   });
 
   constructor() {
-    this.initData();
+    this._initData();
     effect(() => {
       const product = this.productDataSig();
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
@@ -209,8 +211,8 @@ export class ProductFormAdmin {
         : this.productService.updateProduct(productToSave.id!, productToSave);
 
     request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
-      next: (product) => this.handleSuccess(product),
-      error: () => this.handleError(),
+      next: (product) => this._handleSuccess(product),
+      error: () => this._handleError(),
     });
   }
 
@@ -343,15 +345,16 @@ export class ProductFormAdmin {
     };
   }
 
-  private handleSuccess(product: Product): void {
-    alert(`Producto ${product.title} guardado con éxito`);
+  private _handleSuccess(product: Product): void {
+    console.log('Producto guardado exitosamente:', product);
+    this._toastService.show(`Producto ${product.title} guardado con éxito`, 'success');
   }
 
-  private handleError(): void {
-    alert(`Error al procesar el producto`);
+  private _handleError(): void {
+    this._toastService.show(`Error al procesar el producto`, 'danger');
   }
 
-  private initData(): void {
+  private _initData(): void {
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
 
@@ -363,7 +366,7 @@ export class ProductFormAdmin {
     }
   }
 
-  private createProductForm(): FormGroup {
+  private _createProductForm(): FormGroup {
     return this.fb.group({
       id: [0],
       title: ['', [Validators.required]],

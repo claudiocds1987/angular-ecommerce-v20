@@ -1,4 +1,5 @@
-﻿import { inject, Injectable } from '@angular/core';
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Product } from '@features/products/models/product.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -134,11 +135,15 @@ export class ProductService {
   }
 
   updateProduct(id: number, product: Partial<Product>): Observable<Product> {
-    return this._http.put<Product>(`${this._apiURL}/${id}`, product);
+    // 1. porque el Backend devuelve un objeto con 'message' y 'data'
+    return this._http
+      .put<{ message: string; data: Product }>(`${this._apiURL}/${id}`, product)
+      .pipe(
+        // 2. Con el map, extraigo solo 'data' (el Product) para mantener el retorno Observable<Product>
+        map((response) => response.data),
+      );
   }
 
-  // que no haga delete de de baja
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deleteProduct(id: number): Observable<any> {
     return this._http.delete(`${this._apiURL}/${id}`);
   }
