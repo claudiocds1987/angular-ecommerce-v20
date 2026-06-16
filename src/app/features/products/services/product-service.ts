@@ -144,7 +144,12 @@ export class ProductService {
       );
   }
 
-  deleteProduct(id: number): Observable<any> {
-    return this._http.delete(`${this._apiURL}/${id}`);
+  updateProductStatus(id: number, isActive: boolean): Observable<Product> {
+    return this._http
+      .patch<{
+        message: string;
+        data: Product;
+      }>(`${this._apiURL}/${id}/status?isActive=${isActive}`, {})
+      .pipe(map((response) => response.data));
   }
 }

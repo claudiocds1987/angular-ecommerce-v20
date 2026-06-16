@@ -126,7 +126,7 @@ export const ProductAdminStore = signalStore(
           tap(() => patchState(state, { loading: true })),
 
           switchMap((id) =>
-            productService.deleteProduct(id as number).pipe(
+            productService.updateProductStatus(id as number, false).pipe(
               tap(() => {
                 // 2. ELIMINAMOS RECIÉN AQUÍ (Cuando el backend confirmó el OK)
                 const currentItems = state.items().filter((p) => String(p.id) !== String(id));

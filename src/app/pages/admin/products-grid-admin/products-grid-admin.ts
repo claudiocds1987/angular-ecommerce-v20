@@ -108,7 +108,7 @@ export class ProductsGridAdmin implements OnInit {
   mappedProductsSig = computed<GridData[]>(() => {
     const products = this.productAdminStore.items();
 
-    return products.map((product) => {
+    return products.map((product: ProductAdminGrid) => {
       // Aseguramos que el ID sea un número para que coincida con el tipado del componente
       const productId = Number(product.id);
 
@@ -136,6 +136,12 @@ export class ProductsGridAdmin implements OnInit {
             icon: 'delete',
             action: (id: number) => this._confirmDeleteProduct(id),
             condition: (product: ProductAdminGrid) => product.isActive, // Solo muestra "Baja" si el producto está activo
+          },
+          {
+            label: 'Alta',
+            icon: 'check_circle',
+            action: (id: number) => this._confirmActivateProduct(id),
+            condition: (product: ProductAdminGrid) => !product.isActive, // Solo muestra "Alta" si el producto está inactivo
           },
         ],
       } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
@@ -713,9 +719,23 @@ export class ProductsGridAdmin implements OnInit {
       });
   }
 
+  private _confirmActivateProduct(id: number): void {
+    this._confirmDialog
+      .open({
+        title: 'Dar de Alta Producto',
+        message: '¿Deseas dar de alta este producto?',
+        confirmLabel: 'Dar de Alta',
+        cancelLabel: 'Cancelar',
+        confirmColor: 'primary',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) this._activateProduct(id);
+      });
+  }
+
   private _deleteProduct(id: number): void {
     this._spinnerService.show();
-    this._productServices.deleteProduct(id).subscribe({
+    this._productServices.updateProductStatus(id, false).subscribe({
       next: () => {
         this._spinnerService.hide();
         this._toastService.show('Producto dado de baja exitosamente', 'success');
@@ -733,6 +753,30 @@ export class ProductsGridAdmin implements OnInit {
       error: () => {
         this._spinnerService.hide();
         this._toastService.show('Error al dar de baja el producto', 'danger');
+      },
+    });
+  }
+
+  private _activateProduct(id: number): void {
+    this._spinnerService.show();
+    this._productServices.updateProductStatus(id, true).subscribe({
+      next: () => {
+        this._spinnerService.hide();
+        this._toastService.show('Producto dado de alta exitosamente', 'success');
+        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1 al borrar un producto.
+        this.gridConfigSig.update((config) => ({
+          ...config,
+          paginator: {
+            ...config.paginator!,
+            pageIndex: 0,
+          },
+        }));
+
+        this._loadData();
+      },
+      error: () => {
+        this._spinnerService.hide();
+        this._toastService.show('Error al dar de alta el producto', 'danger');
       },
     });
   }
