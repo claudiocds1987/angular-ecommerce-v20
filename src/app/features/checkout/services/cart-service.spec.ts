@@ -1,4 +1,4 @@
-﻿import { TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { CartService } from './cart-service';
 import { Product } from '@features/products/models/product.model';
 import { Injector, provideZonelessChangeDetection } from '@angular/core';
@@ -13,12 +13,12 @@ describe('CartService', () => {
     title: 'Smartphone GTR',
     price: 500,
     finalPrice: 450,
-    image: '',
+    images: [''],
     category: 'tech',
     stock: 10,
     rating: 5,
     discountPercentage: 10,
-  };
+  } as unknown as Product;
 
   beforeEach(() => {
     // Limpieza total antes de empezar

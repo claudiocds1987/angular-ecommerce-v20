@@ -1,4 +1,4 @@
-﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
@@ -58,13 +58,13 @@ describe('IaChat', () => {
   it('should render bot response and products on success', async () => {
     // Arrange
     const mockResponse: GeminiResponse = {
-      Response: 'He encontrado estos productos para ti',
-      Products: [
+      response: 'He encontrado estos productos para ti',
+      products: [
         {
           id: 1,
           title: 'Producto Test',
           price: 100,
-          image: '',
+          images: [''],
           category: 'mens-shoes',
           stock: 10,
           discountPercentage: 10,
@@ -134,18 +134,18 @@ describe('IaChat', () => {
   it('should calculate finalPrice correctly when a product has a discount', async () => {
     // Arrange: Definimos el objeto con el tipo GeminiResponse
     const mockResponse: GeminiResponse = {
-      Response: 'Mira este descuento',
-      Products: [
+      response: 'Mira este descuento',
+      products: [
         {
           id: 1,
           title: 'Laptop Pro',
           price: 1000,
-          image: '',
+          images: [''],
           category: 'tech',
           stock: 10,
           discountPercentage: 20,
           rating: 5,
-        } as Product,
+        } as unknown as Product,
       ],
     };
 
@@ -181,7 +181,7 @@ describe('IaChat', () => {
       rating: 5,
       discountPercentage: 0,
       finalPrice: 50,
-    } as Product;
+    } as unknown as Product;
 
     component.selectProduct(mockProduct);
     fixture.detectChanges();

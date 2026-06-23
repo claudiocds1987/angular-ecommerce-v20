@@ -40,7 +40,7 @@ import { signal } from '@angular/core';
 export class Cart implements OnInit, OnDestroy {
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Productos', url: '/' },
-    { label: 'Carrito' }
+    { label: 'Carrito' },
   ]);
 
   // Inyecciones
@@ -108,7 +108,6 @@ export class Cart implements OnInit, OnDestroy {
           if (res && res.id) {
             // URL oficial limpia para redirigir al Sandbox
             const urlSandbox = `https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=${res.id}`;
-            console.log('🚀 Redirigiendo a pasarela:', urlSandbox);
             window.location.href = urlSandbox;
           } else {
             alert('El servidor no retornó un ID de preferencia válido.');

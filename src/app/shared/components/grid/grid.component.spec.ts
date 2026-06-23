@@ -31,7 +31,7 @@ describe("GridComponent", (): void => {
         (component as any).isLoadingSig.set(false);
         (component as any).gridDataSig.set([]);
 
-        const res = component.showFeeback();
+        const res = component.showFeedbackSig();
         expect(res).toBeTrue();
     });
 
