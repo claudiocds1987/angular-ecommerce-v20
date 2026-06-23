@@ -1,4 +1,4 @@
-﻿// src/app/features/checkout/components/cart/cart.ts
+// src/app/features/checkout/components/cart/cart.ts
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,8 @@ import { CartDto } from '@features/checkout/models/cart-dto.model';
 import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
 import { AuthStore } from '@features/auth/state/auth.store';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-cart',
@@ -30,11 +32,17 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
     CartItemComponent,
     FormFieldError,
     PrimaryButton,
+    Breadcrumb,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
 })
 export class Cart implements OnInit, OnDestroy {
+  breadcrumbItems = signal<BreadcrumbItem[]>([
+    { label: 'Productos', url: '/' },
+    { label: 'Carrito' }
+  ]);
+
   // Inyecciones
   cartService = inject(CartService);
   private _fb = inject(FormBuilder);
