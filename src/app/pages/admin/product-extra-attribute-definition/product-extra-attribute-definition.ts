@@ -33,6 +33,7 @@ import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/
 import { Router } from '@angular/router';
 import { ToastService } from '@shared/services/toast-service';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
@@ -50,12 +51,17 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
     MatSlideToggleModule,
     FormFieldError,
     PrimaryButton,
+    Breadcrumb,
   ],
   templateUrl: './product-extra-attribute-definition.html',
   styleUrl: './product-extra-attribute-definition.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductExtraAttributeDefinition implements OnInit {
+  breadcrumbItems = signal<BreadcrumbItem[]>([
+    { label: 'Inicio', url: '/admin' },
+    { label: 'Atributos extra por categoría' },
+  ]);
   private _fb = inject(FormBuilder);
   private _spinnerService = inject(SpinnerService);
   private attributeService = inject(ProductExtraAttributeService);

@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 @Component({
   selector: 'app-login-component',
   imports: [
@@ -28,6 +29,7 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
     MatProgressSpinnerModule,
     FormFieldError,
     PrimaryButton,
+    Breadcrumb,
   ],
   standalone: true,
   templateUrl: './login-component.html',
@@ -35,6 +37,8 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
+  breadcrumbItems = signal<BreadcrumbItem[]>([{ label: 'Inicio', url: '/' }, { label: 'Login' }]);
+
   private _fb = inject(FormBuilder);
   authStore = inject(AuthStore);
 

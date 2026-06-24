@@ -55,6 +55,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 import { ToastService } from '@shared/services/toast-service';
 import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
+import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -70,12 +71,17 @@ import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-
     MatSelectModule, // Agregá esto para el select del modal
     MatButtonModule,
     PrimaryButton,
+    Breadcrumb,
   ], // CommonModule para usar @if, @for, etc.
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsGridAdmin implements OnInit {
+  breadcrumbItems = signal<BreadcrumbItem[]>([
+    { label: 'Inicio', url: '/admin' },
+    { label: 'Gestión de productos' },
+  ]);
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
   gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
   isGridFilterLoadingSig = signal<boolean>(true);
