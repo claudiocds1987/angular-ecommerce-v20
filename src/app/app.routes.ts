@@ -1,5 +1,6 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
+import { unsavedChangesGuard } from '@core/guards/unsaved-changes.guard';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () => import('@pages/cart/cart').then((m) => m.Cart),
+    canDeactivate: [unsavedChangesGuard],
   },
   {
     path: 'payment-result',

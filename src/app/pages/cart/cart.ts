@@ -9,7 +9,7 @@ import { CartService } from '@features/checkout/services/cart-service';
 
 import { CartItemComponent } from '../cart-item/cart-item';
 
-import { Subject, Subscription, of } from 'rxjs';
+import { Observable, Subject, Subscription, of } from 'rxjs';
 import { exhaustMap, catchError } from 'rxjs/operators';
 import { MatInputModule } from '@angular/material/input';
 import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
@@ -19,6 +19,8 @@ import { AuthStore } from '@features/auth/state/auth.store';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 import { signal } from '@angular/core';
+import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
+import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-cart',
@@ -37,7 +39,7 @@ import { signal } from '@angular/core';
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
 })
-export class Cart implements OnInit, OnDestroy {
+export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Productos', url: '/' },
     { label: 'Carrito' },
@@ -48,6 +50,7 @@ export class Cart implements OnInit, OnDestroy {
   private _fb = inject(FormBuilder);
   private _mpService = inject(MercadoPagoService);
   private _authStore = inject(AuthStore);
+  private _dialogService = inject(ConfirmDialogService);
 
   // Formulario Reactivo del Paso 2 (Atado estrictamente a camelCase del backend)
   shippingForm!: FormGroup;
@@ -59,6 +62,20 @@ export class Cart implements OnInit, OnDestroy {
   ngOnInit() {
     this.initForm();
     this.initCheckoutHandler();
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
+    if (!this.shippingForm.dirty || this.cartService.cart().length === 0) return true;
+
+    // Si hay cambios, lanzamos tu servicio (que ya devuelve Observable<boolean>)
+    return this._dialogService.open({
+      title: 'La operación de compra no esta completa',
+      message: '¿Deseas salir?',
+      confirmLabel: 'Salir',
+      cancelLabel: 'Continuar',
+      confirmColor: 'warn',
+    });
   }
 
   private initForm() {
