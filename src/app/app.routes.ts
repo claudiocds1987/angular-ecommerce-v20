@@ -31,6 +31,6 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('@pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // url: http://localhost:5000/#/admin
-    canActivate: [authGuard], // Solo rola dministrador puede acceder a las rutas hijas de /admin
+    canActivate: [authGuard], // Solo rol administrador puede acceder a las rutas hijas de /admin
   },
 ];
