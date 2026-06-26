@@ -4,13 +4,19 @@
 @use '@angular/material' as mat;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. TAILWIND PRIMERO — antes de cualquier CSS real
-//    Esto registra los cascade layers correctamente
+// 2. CONFIGURACIÓN GLOBAL (Nivel Senior)
+// ─────────────────────────────────────────────────────────────────────────────
+// Cambia estas variables para actualizar la tipografía en toda la aplicación
+$font-primary: 'Inter', sans-serif;
+$font-title: 'Montserrat', sans-serif;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. TAILWIND PRIMERO — antes de cualquier CSS real
 // ─────────────────────────────────────────────────────────────────────────────
 @import 'tailwindcss';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. CONFIGURACIÓN DEL TEMA (Material 3) — DESPUÉS de Tailwind
+// 4. CONFIGURACIÓN DEL TEMA (Material 3) — DESPUÉS de Tailwind
 // ─────────────────────────────────────────────────────────────────────────────
 html {
   @include mat.theme(
@@ -19,20 +25,20 @@ html {
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
-      typography: Inter,
+      typography: $font-primary,
       density: 0,
     )
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. IMPORTES DE ESTILOS PROPIOS
+// 5. IMPORTES DE ESTILOS PROPIOS
 // ─────────────────────────────────────────────────────────────────────────────
 @import './app/shared/styles/buttons/action-button-grid.scss';
 @import './app/shared/styles/buttons/download-button.scss';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. ESTILOS BASE
+// 6. ESTILOS BASE
 // ─────────────────────────────────────────────────────────────────────────────
 html,
 body {
@@ -40,7 +46,9 @@ body {
 }
 
 :root {
-  font-family: 'Inter', sans-serif;
+  --font-primary: #{$font-primary};
+  --font-title: #{$font-title};
+  font-family: var(--font-primary);
 }
 
 body {
@@ -48,7 +56,7 @@ body {
   color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-primary) !important;
   font: var(--mat-sys-body-medium);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -61,10 +69,32 @@ body {
     opacity: 0.6;
     font-weight: 300;
   }
+
+  // Aplicar Montserrat automáticamente a títulos y clases de Tailwind
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .text-xl,
+  .text-2xl,
+  .text-3xl,
+  .text-4xl,
+  .text-5xl,
+  .text-6xl {
+    font-family: var(--font-title);
+    font-weight: 700;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. COMPONENTES CON @apply (Tailwind v4)
+// 7. COMPONENTES CON @apply (Tailwind v4)
 // ─────────────────────────────────────────────────────────────────────────────
 .form-card {
   @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
@@ -83,7 +113,7 @@ body {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7. COMPONENTES PERSONALIZADOS
+// 8. COMPONENTES PERSONALIZADOS
 // ─────────────────────────────────────────────────────────────────────────────
 .glass-shine {
   position: relative;
@@ -113,7 +143,7 @@ body {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. OVERRIDES GLOBALES PARA mat-form-field
+// 9. OVERRIDES GLOBALES PARA mat-form-field
 // ─────────────────────────────────────────────────────────────────────────────
 .mat-mdc-form-field-infix {
   padding-top: 10px !important;

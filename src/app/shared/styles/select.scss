@@ -7,7 +7,7 @@
 .ng-select {
   display: inline-block;
   width: 100%; /* ajusta según tus necesidades */
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-primary);
   font-size: 16px;
   position: relative;
 }
@@ -43,7 +43,7 @@
 
 /* El texto seleccionado */
 .ng-select .ng-value {
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-primary);
   font-size: 16px;
   color: rgba(0, 0, 0, 0.87);
   //padding-left: 16px
