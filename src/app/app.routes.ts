@@ -1,5 +1,6 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
+import { redirectIfAuthenticatedGuard } from '@core/guards/redirect-If-authenticated.guard';
 import { unsavedChangesGuard } from '@core/guards/unsaved-changes.guard';
 
 export const routes: Routes = [
@@ -12,6 +13,7 @@ export const routes: Routes = [
     path: 'login', // url http://localhost:5000/#/login
     loadComponent: () =>
       import('@pages/auth/login-component/login-component').then((m) => m.LoginComponent),
+    canActivate: [redirectIfAuthenticatedGuard], // Si ya está logueado, redirige a la ruta correspondiente según su rol
   },
   {
     path: 'cart',
