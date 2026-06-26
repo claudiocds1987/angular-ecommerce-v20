@@ -18,6 +18,7 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () => import('@pages/cart/cart').then((m) => m.Cart),
+    // canDeactivate: Se ejecuta antes de abandonar una ruta actual para ir a otra
     canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
@@ -33,6 +34,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('@pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // url: http://localhost:5000/#/admin
+    // canActivate: Se ejecuta antes de navegar a una ruta
     canActivate: [authGuard], // Solo rol administrador puede acceder a las rutas hijas de /admin
   },
 ];
