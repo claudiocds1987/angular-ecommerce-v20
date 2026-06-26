@@ -1,4 +1,5 @@
 ﻿import { Routes } from '@angular/router';
+import { unsavedChangesGuard } from '@core/guards/unsaved-changes.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -22,6 +23,7 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.ProductExtraAttributeDefinition,
       ),
     title: 'Definición de Atributos Extra',
+    canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
     path: 'product/create', // URL real: /admin/product/create
@@ -31,6 +33,7 @@ export const ADMIN_ROUTES: Routes = [
       ),
     data: { operation: 'create' },
     title: 'Crear Producto',
+    canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
     path: 'product/edit/:id', // URL real: /admin/product/edit/:id
@@ -40,5 +43,6 @@ export const ADMIN_ROUTES: Routes = [
       ),
     data: { operation: 'edit' },
     title: 'Editar Producto',
+    canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
 ];

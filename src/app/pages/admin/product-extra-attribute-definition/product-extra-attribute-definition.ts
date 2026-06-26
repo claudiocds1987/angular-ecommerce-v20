@@ -34,6 +34,8 @@ import { Router } from '@angular/router';
 import { ToastService } from '@shared/services/toast-service';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
@@ -57,16 +59,16 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
   styleUrl: './product-extra-attribute-definition.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductExtraAttributeDefinition implements OnInit {
+export class ProductExtraAttributeDefinition implements OnInit, CanComponentDeactivate {
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', url: '/admin' },
+    { label: 'Admin Dashboard', url: '/admin' },
     { label: 'Atributos extra por categoría' },
   ]);
   private _fb = inject(FormBuilder);
   private _spinnerService = inject(SpinnerService);
   private attributeService = inject(ProductExtraAttributeService);
   private _categoryStore = inject(CategoryStore);
-  private _confirmDialog = inject(ConfirmDialogService);
+  private _confirmDialogService = inject(ConfirmDialogService);
   private _router = inject(Router);
   private _toast = inject(ToastService);
 
@@ -90,6 +92,20 @@ export class ProductExtraAttributeDefinition implements OnInit {
     }
   }
 
+  canDeactivate(): Observable<boolean> | boolean {
+    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
+    if (!this.extraAttributesArray.dirty) return true;
+
+    // Si hay cambios, lanzamos tu servicio (que ya devuelve Observable<boolean>)
+    return this._confirmDialogService.open({
+      title: 'Tiene cambios sin guardar',
+      message: '¿Deseas salir?',
+      confirmLabel: 'Salir',
+      cancelLabel: 'Continuar',
+      confirmColor: 'warn',
+    });
+  }
+
   isReadyToSave() {
     return this.form.valid && this.extraAttributesArray.valid && this.extraAttributesArray.dirty;
   }
@@ -111,7 +127,7 @@ export class ProductExtraAttributeDefinition implements OnInit {
 
   confirmSave(): void {
     if (!this.isReadyToSave()) return;
-    this._confirmDialog
+    this._confirmDialogService
       .open({
         title: 'Guardar configuración',
         message: '¿Deseas guardar los atributos extra de esta categoría en el servidor?',
@@ -129,7 +145,7 @@ export class ProductExtraAttributeDefinition implements OnInit {
       void this._router.navigate(['/admin']);
       return;
     }
-    this._confirmDialog
+    this._confirmDialogService
       .open({
         title: 'Salir sin guardar',
         message:

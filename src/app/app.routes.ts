@@ -16,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () => import('@pages/cart/cart').then((m) => m.Cart),
-    canDeactivate: [unsavedChangesGuard],
+    canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
     path: 'payment-result',
@@ -31,6 +31,6 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('@pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // url: http://localhost:5000/#/admin
-    canActivate: [authGuard],
+    canActivate: [authGuard], // Solo rola dministrador puede acceder a las rutas hijas de /admin
   },
 ];

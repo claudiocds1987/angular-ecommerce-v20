@@ -50,7 +50,7 @@ export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
   private _fb = inject(FormBuilder);
   private _mpService = inject(MercadoPagoService);
   private _authStore = inject(AuthStore);
-  private _dialogService = inject(ConfirmDialogService);
+  private _confirmDialogService = inject(ConfirmDialogService);
 
   // Formulario Reactivo del Paso 2 (Atado estrictamente a camelCase del backend)
   shippingForm!: FormGroup;
@@ -69,7 +69,7 @@ export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
     if (!this.shippingForm.dirty || this.cartService.cart().length === 0) return true;
 
     // Si hay cambios, lanzamos tu servicio (que ya devuelve Observable<boolean>)
-    return this._dialogService.open({
+    return this._confirmDialogService.open({
       title: 'La operación de compra no esta completa',
       message: '¿Deseas salir?',
       confirmLabel: 'Salir',

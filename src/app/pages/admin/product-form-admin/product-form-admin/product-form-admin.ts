@@ -27,7 +27,7 @@ import { BrandStore } from '@features/products/state/brand.store';
 import { ProductService } from '@features/products/services/product-service';
 import { ExtraAttribute, Product } from '@features/products/models/product.model';
 import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
-import { finalize, startWith } from 'rxjs';
+import { finalize, Observable, startWith } from 'rxjs';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
@@ -45,6 +45,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 import { ToastService } from '@shared/services/toast-service';
+import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
+import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -80,12 +82,18 @@ interface ImageFormRow {
     MatSelectModule,
     MatSlideToggleModule,
     PrimaryButton,
+    Breadcrumb,
   ],
   templateUrl: './product-form-admin.html',
   styleUrl: './product-form-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductFormAdmin {
+export class ProductFormAdmin implements CanComponentDeactivate {
+  breadcrumbItems = signal<BreadcrumbItem[]>([
+    { label: 'Lista de productos', url: '/admin/products-grid-admin' },
+    { label: 'Gestión del producto' },
+  ]);
+
   private static readonly TAG_SANITIZE = /[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g;
   private static readonly NUMBER_NAV_KEYS = [
     'Backspace',
@@ -107,7 +115,7 @@ export class ProductFormAdmin {
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
   private _router = inject(Router);
-  private _confirmDialog = inject(ConfirmDialogService);
+  private _confirmDialogService = inject(ConfirmDialogService);
   private _toastService = inject(ToastService);
 
   productForm: FormGroup = this._createProductForm();
@@ -182,6 +190,20 @@ export class ProductFormAdmin {
     });
   }
 
+  canDeactivate(): Observable<boolean> | boolean {
+    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
+    if (!this.productForm.dirty) return true;
+
+    // Si hay cambios, lanzamos tu servicio (que ya devuelve Observable<boolean>)
+    return this._confirmDialogService.open({
+      title: 'Tiene cambios sin guardar',
+      message: '¿Deseas salir?',
+      confirmLabel: 'Salir',
+      cancelLabel: 'Continuar',
+      confirmColor: 'warn',
+    });
+  }
+
   trackByAttributeName(index: number, extraAttributeName: string | undefined): string {
     return extraAttributeName || index.toString();
   }
@@ -242,7 +264,7 @@ export class ProductFormAdmin {
       void this._router.navigate(['/admin']);
       return;
     }
-    this._confirmDialog
+    this._confirmDialogService
       .open({
         title: 'Salir sin guardar',
         message:

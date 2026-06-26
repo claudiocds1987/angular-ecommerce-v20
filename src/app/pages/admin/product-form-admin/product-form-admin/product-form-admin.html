@@ -1,8 +1,11 @@
+<div class="w-full px-4 pt-4 md:px-8 md:pt-8">
+  <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
+</div>
 <div class="product-form-admin min-h-screen bg-slate-50 p-4 md:p-8">
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-8">
-    <div class="mb-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Gestión de Producto</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Gestión del producto</h1>
         <p class="text-sm text-slate-500">Panel de administración avanzada de catálogo.</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">

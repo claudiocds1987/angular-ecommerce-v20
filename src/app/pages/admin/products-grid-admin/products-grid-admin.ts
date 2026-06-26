@@ -48,7 +48,7 @@ import { Router } from '@angular/router';
 import { CsvDownloadService } from '@features/admin-tools/services/csv-download-service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
-import { MatDialogModule } from '@angular/material/dialog'; // Importante
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -66,21 +66,21 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
     GridComponent,
     GridFilterComponent,
     ChipsComponent,
-    MatDialogModule, // Agregá esto
-    MatFormFieldModule, // Agregá esto para el select del modal
-    MatSelectModule, // Agregá esto para el select del modal
+    MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
     MatButtonModule,
     PrimaryButton,
     Breadcrumb,
-  ], // CommonModule para usar @if, @for, etc.
+  ],
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsGridAdmin implements OnInit {
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', url: '/admin' },
-    { label: 'Gestión de productos' },
+    { label: 'Admin Dashboard', url: '/admin' },
+    { label: 'Lista de productos' },
   ]);
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
   gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
