@@ -13,7 +13,7 @@ export const routes: Routes = [
     path: 'login', // url http://localhost:5000/#/login
     loadComponent: () =>
       import('@pages/auth/login-component/login-component').then((m) => m.LoginComponent),
-    canActivate: [redirectIfAuthenticatedGuard], // Si ya está logueado, redirige a la ruta correspondiente según su rol
+    canActivate: [redirectIfAuthenticatedGuard], // leer documentation/redirect-if-authenticated.guard.md
   },
   {
     path: 'cart',
