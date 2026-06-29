@@ -704,7 +704,8 @@ export class ProductsGridAdmin implements OnInit {
 
     // ACTUALIZA SIGNAL DEL FORMULARIO DEL FILTRO DE LA GRILLA CON LOS CONTROLES DINÁMICOS CREADOS
     this.gridFilterFormSig.set(new FormGroup(formControls));
-    this.isGridFilterLoadingSig.set(false);
+    // Diferir el fin de carga para que Angular renderice los campos con skeleton al menos un ciclo
+    setTimeout(() => this.isGridFilterLoadingSig.set(false), 0);
   }
 
   private _editProduct(id: number): void {

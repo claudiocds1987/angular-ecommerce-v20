@@ -15,6 +15,8 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.ProductsGridAdmin,
       ),
     title: 'Lista de Productos',
+    // canDeactivate: Se ejecuta antes de abandonar una ruta actual para ir a otra
+    canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
     path: 'product-extra-attribute-definition', // URL: /admin/product-extra-attribute-definition
@@ -23,6 +25,7 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.ProductExtraAttributeDefinition,
       ),
     title: 'Definición de Atributos Extra',
+    // canDeactivate: Se ejecuta antes de abandonar una ruta actual para ir a otra
     canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
@@ -33,6 +36,7 @@ export const ADMIN_ROUTES: Routes = [
       ),
     data: { operation: 'create' },
     title: 'Crear Producto',
+    // canDeactivate: Se ejecuta antes de abandonar una ruta actual para ir a otra
     canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
   {
@@ -43,6 +47,7 @@ export const ADMIN_ROUTES: Routes = [
       ),
     data: { operation: 'edit' },
     title: 'Editar Producto',
+    // canDeactivate: Se ejecuta antes de abandonar una ruta actual para ir a otra
     canDeactivate: [unsavedChangesGuard], // leer documentation/CanDeactivate-guard.md
   },
 ];

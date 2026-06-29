@@ -7,22 +7,24 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatNativeDateModule } from "@angular/material/core";
+import { SkeletonDirective } from "../../directives/skeleton.directive";
 
 @Component({
     selector: "app-date-range",
     standalone: true,
     imports: [
-        CommonModule, // Necesario para directivas como *ngIf o *ngFor si se usan en la plantilla
-        ReactiveFormsModule, // Fundamental para los formControls y formGroup
+        CommonModule,
+        ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatDatepickerModule,
-        MatButtonModule, // Inclúyelo si tu componente usa botones de Material
+        MatButtonModule,
         MatNativeDateModule,
+        SkeletonDirective,
     ],
 
     templateUrl: "./date-range.component.html",
-    styleUrl: "./date-range.component.scss",
+    styleUrls: ["./date-range.component.scss", "../../styles/skeleton.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateRangeComponent {

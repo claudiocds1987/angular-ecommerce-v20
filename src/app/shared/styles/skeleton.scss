@@ -29,6 +29,13 @@
 }
 
 mat-form-field.skeleton-loading {
+    .mat-mdc-text-field-wrapper,
+    .mat-form-field-flex {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mat-mdc-text-field-wrapper::before,
     .mat-form-field-flex::before {
         content: "";
         position: absolute;

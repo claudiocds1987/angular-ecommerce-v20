@@ -31,14 +31,14 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
               <mat-label>Título</mat-label>
               <input matInput type="text" formControlName="title" />
               <mat-error>
                 <app-form-field-error [control]="productForm.get('title')" />
               </mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
               <mat-label>Descripción</mat-label>
               <textarea matInput formControlName="description" rows="4"></textarea>
               <mat-error>
@@ -108,21 +108,21 @@
 
           <div class="product-form-admin__fields">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>Stock</mat-label>
                 <input matInput type="number" formControlName="stock" />
                 <mat-error>
                   <app-form-field-error [control]="productForm.get('stock')" />
                 </mat-error>
               </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>Mín. compra</mat-label>
                 <input matInput type="number" formControlName="minimumOrderQuantity" />
                 <mat-error>
                   <app-form-field-error [control]="productForm.get('minimumOrderQuantity')" />
                 </mat-error>
               </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>SKU</mat-label>
                 <input matInput type="text" formControlName="sku" class="font-mono uppercase" />
                 <mat-error>
@@ -136,7 +136,7 @@
             </span>
             <div class="grid grid-cols-3 gap-4">
               @for (dim of ['width', 'height', 'depth']; track dim) {
-                <mat-form-field appearance="outline" class="w-full text-center">
+                <mat-form-field appearance="outline" class="w-full text-center" [appSkeleton]="isLoadingSig()">
                   <mat-label>{{ dim === 'depth' ? 'Prof.' : dim }}</mat-label>
                   <input
                     matInput
@@ -172,7 +172,7 @@
               ];
               track item.ctrl
             ) {
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>{{ item.lab }}</mat-label>
                 <input matInput type="text" [formControlName]="item.ctrl" />
               </mat-form-field>
@@ -210,7 +210,7 @@
                           <mat-slide-toggle formControlName="value" color="primary" />
                         </div>
                       } @else {
-                        <mat-form-field appearance="outline" class="w-full">
+                        <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                           <mat-label>{{ extraAttribute.get('label')?.value }}</mat-label>
                           <input
                             matInput
@@ -250,7 +250,7 @@
 
           <div class="product-form-admin__fields">
             <div class="grid grid-cols-2 gap-4">
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>Base ($)</mat-label>
                 <input
                   matInput
@@ -262,7 +262,7 @@
                   <app-form-field-error [control]="productForm.get('price')" />
                 </mat-error>
               </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full">
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
                 <mat-label>Desc. (%)</mat-label>
                 <input
                   matInput
@@ -277,9 +277,12 @@
             </div>
             <mat-divider></mat-divider>
             <div class="flex items-center justify-between">
-              <span class="text-3xl font-black tracking-tight">
+              <div
+                class="min-h-9 min-w-32 text-3xl font-black tracking-tight"
+                [appSkeleton]="isLoadingSig()"
+              >
                 ${{ finalPriceSig() | number: '1.2-2' }}
-              </span>
+              </div>
               <span class="rounded-md bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase">
                 ARS
               </span>
@@ -299,7 +302,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
               <mat-label>Categoría</mat-label>
               <mat-select formControlName="categoryId">
                 @for (cat of categoriesSig(); track cat.id) {
@@ -311,7 +314,7 @@
               </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
               <mat-label>Marca</mat-label>
               <mat-select formControlName="brandId">
                 @for (brand of brandsSig(); track brand.id) {
@@ -348,7 +351,7 @@
           </mat-expansion-panel-header>
 
           <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full">
+            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
               <mat-label>Nueva etiqueta</mat-label>
               <input
                 matInput

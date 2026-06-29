@@ -30,6 +30,7 @@ import { RequiredValidationDirective } from '../../directives/required-validatio
 
 import { CustomValidationMessageDirective } from '../../directives/custom-validation-message.directive';
 import { ReadOnlyDirective } from '../../directives/read-only.directive';
+import { SkeletonDirective } from '../../directives/skeleton.directive';
 
 @Component({
   selector: 'app-date-input',
@@ -45,9 +46,10 @@ import { ReadOnlyDirective } from '../../directives/read-only.directive';
     RequiredValidationDirective,
     ReadOnlyDirective,
     CustomValidationMessageDirective,
+    SkeletonDirective,
   ],
   templateUrl: './date-input.component.html',
-  styleUrl: './date-input.component.scss',
+  styleUrls: ['./date-input.component.scss', '../../styles/skeleton.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
@@ -66,6 +68,7 @@ export class DateInputComponent implements ControlValueAccessor, OnInit, OnDestr
   @Input() label = 'Fecha';
   @Input() placeholder = '';
   @Input() isDisabled = false;
+  @Input() appSkeleton = false;
   // isReadOnly is an input signal, not an Output
   isReadOnly = input<boolean>(false);
 

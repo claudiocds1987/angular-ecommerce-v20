@@ -47,6 +47,7 @@ import { PrimaryButton } from '@shared/components/primary-button/primary-button'
 import { ToastService } from '@shared/services/toast-service';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+import { SkeletonDirective } from '@shared/directives/skeleton.directive';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -83,9 +84,10 @@ interface ImageFormRow {
     MatSlideToggleModule,
     PrimaryButton,
     Breadcrumb,
+    SkeletonDirective,
   ],
   templateUrl: './product-form-admin.html',
-  styleUrl: './product-form-admin.scss',
+  styleUrls: ['./product-form-admin.scss', '../../../../shared/styles/skeleton.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormAdmin implements CanComponentDeactivate {
@@ -93,6 +95,8 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     { label: 'Lista de productos', url: '/admin/products-grid-admin' },
     { label: 'Gestión del producto' },
   ]);
+
+  isLoadingSig = signal<boolean>(true);
 
   private static readonly TAG_SANITIZE = /[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]/g;
   private static readonly NUMBER_NAV_KEYS = [
@@ -188,8 +192,18 @@ export class ProductFormAdmin implements CanComponentDeactivate {
         untracked(() => this.patchFormFromProduct(product));
       }
     });
+    effect(() => {
+      const categoriesReady = this.categoriesSig().length > 0;
+      const brandsReady = this.brandsSig().length > 0;
+      const productReady = this.operation === 'create' || this.productDataSig() !== null;
+      // Si categorias, marcas y producto están cargados, se desactiva el skeleton
+      if (categoriesReady && brandsReady && productReady) {
+        untracked(() => this.isLoadingSig.set(false));
+      }
+    });
   }
 
+  //
   canDeactivate(): Observable<boolean> | boolean {
     // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
     if (!this.productForm.dirty) return true;
@@ -382,9 +396,9 @@ export class ProductFormAdmin implements CanComponentDeactivate {
 
     if (this.operation === 'edit') {
       const productId = Number(this.activeRoute.snapshot.paramMap.get('id'));
-      this.productService
-        .getProductById(productId)
-        .subscribe((data) => this.productDataSig.set(data));
+      this.productService.getProductById(productId).subscribe((data) => {
+        this.productDataSig.set(data);
+      });
     }
   }
 
