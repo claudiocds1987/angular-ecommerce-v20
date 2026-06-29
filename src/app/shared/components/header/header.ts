@@ -11,11 +11,24 @@ import { CartService } from '@features/checkout/services/cart-service';
 import { Router } from '@angular/router';
 import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
 import { AuthStore } from '@features/auth/state/auth.store';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [PrimaryButton],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatBadgeModule,
+    MatMenuModule,
+    MatListModule,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

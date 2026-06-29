@@ -203,3 +203,15 @@ body {
 .mat-mdc-form-field-error-wrapper {
   padding: 0 !important;
 }
+
+// Esta clase la esta usando el carrito en header.component, no las clases del menú que se muestra al hacer clic en carrito.
+.cart-menu-panel {
+  &.mat-mdc-menu-panel {
+    max-width: 340px !important;
+    min-width: 320px !important;
+  }
+
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+  }
+}
