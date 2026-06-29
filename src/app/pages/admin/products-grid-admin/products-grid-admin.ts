@@ -638,7 +638,7 @@ export class ProductsGridAdmin implements OnInit {
         {
           class: 'download-button',
           type: 'download',
-          icon: '/icons/download.svg',
+          icon: 'icons/download.svg',
           tooltip: 'Descargar excel',
         },
       ],
