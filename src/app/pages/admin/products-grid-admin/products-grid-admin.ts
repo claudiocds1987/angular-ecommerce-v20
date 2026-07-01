@@ -381,6 +381,12 @@ export class ProductsGridAdmin implements OnInit {
     });
   }
 
+  onGridRowDblClick(rowData: any): void {
+    const productId = rowData.id;
+    console.log(`Fila doble clic: ID del producto = ${productId}`);
+    this._editProduct(productId);
+  }
+
   private _generateDynamicCSV(categoryId: number): void {
     this._spinnerService.show();
 

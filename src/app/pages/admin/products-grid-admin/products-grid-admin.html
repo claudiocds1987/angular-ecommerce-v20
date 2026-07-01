@@ -9,18 +9,6 @@
           <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
         </div>
 
-        <div
-          class="mb-4 flex shrink-0 flex-col gap-4 md:flex-row md:items-start md:justify-between"
-        >
-          <div>
-            <h1 class="text-2xl font-bold text-gray-800">Lista de productos</h1>
-            <p class="text-sm text-gray-500">
-              Mostrando {{ productAdminStore.productsCount() }} de
-              {{ productAdminStore.totalItems() }} artículos
-            </p>
-          </div>
-        </div>
-
         @if (importErrors().length > 0) {
           <div
             class="group relative mb-4 flex shrink-0 items-center justify-between rounded-lg border-l-4 border-red-500 bg-red-50 p-4"
@@ -90,6 +78,7 @@
           (sortChange)="onGridSortChange($event)"
           (exportExcel)="onExportToExcel()"
           (searchInputValue)="onSearchInputValue($event)"
+          (rowDblClick)="onGridRowDblClick($event)"
         ></app-grid>
       </div>
 
