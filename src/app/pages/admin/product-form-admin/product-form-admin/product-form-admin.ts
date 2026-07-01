@@ -249,6 +249,7 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
       next: (product) => {
         this._handleSuccess(product);
+        // Una vez guardado, marcamos el formulario como "pristine" para que no aparezca como modificado. y el boton Guardar se desactive hasta que se hagan nuevos cambios.
         this.productForm.markAsPristine();
       },
       error: () => this._handleError(),
