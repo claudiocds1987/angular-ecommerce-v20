@@ -44,7 +44,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 0 0 0 10px;
   overflow: hidden;
 }
 
@@ -117,15 +117,20 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  // Estado visible
   opacity: 1;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  pointer-events: auto;
+  transform: scaleX(1); /* expandido */
+  transform-origin: left; /* colapsa desde la izquierda */
   transition:
-    opacity 0.3s ease-in-out,
-    height 0.3s ease-in-out;
+    opacity 0.8s ease-in-out,
+    transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); /* curva más lenta y suave */
+  pointer-events: auto;
+}
+
+/* Estado colapsado */
+.form-content.collapsed {
+  opacity: 0;
+  transform: scaleX(0); /* colapsa horizontalmente */
+  pointer-events: none;
 }
 
 // ─── Estado oculto: colapsa sin ocupar espacio ────────────────────────────────
@@ -221,109 +226,4 @@ app-date-range {
 
 mat-form-field.skeleton-loading {
   margin-bottom: 30px !important;
-}
-
-// ─── Overrides globales para mat-form-field outline dentro del filtro ─────────
-
-// Reducción del espaciado vertical entre campos
-.form-fields {
-  .mat-mdc-form-field {
-    margin-bottom: 4px; // Reemplaza el margin-bottom: 15px heredado
-  }
-}
-
-.form-fields > * {
-  margin-bottom: 4px; // Compacta el espaciado general
-}
-
-.form-fields > *:last-child {
-  margin-bottom: 8px;
-}
-
-// ─── Tipografía del label flotante (ej: "Género", "Puesto") ──────────────────
-
-.mat-mdc-form-field {
-  width: 100%;
-
-  // Label en estado reposo (dentro del campo)
-  .mat-mdc-floating-label {
-    font-size: 13px;
-    font-weight: 400;
-    color: #9ca3af;
-    letter-spacing: 0.2px;
-  }
-
-  // Label flotando arriba (estado activo/con valor)
-  &.mat-focused .mat-mdc-floating-label,
-  &.mat-form-field-should-float .mat-mdc-floating-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    color: $primary-material-color;
-  }
-
-  // Texto del valor seleccionado / ingresado
-  .mat-mdc-input-element,
-  .mat-mdc-select-value-text {
-    font-size: 13px;
-    font-weight: 400;
-    color: #374151;
-    letter-spacing: 0.1px;
-  }
-
-  // Placeholder del input de texto
-  input::placeholder {
-    color: #b0b8c4;
-    font-size: 13px;
-  }
-
-  // Borde del campo en reposo
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-color: #d1d9e0 !important;
-    border-width: 1.5px !important;
-  }
-
-  // Borde al hacer focus
-  &.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-color: $primary-material-color !important;
-      border-width: 1.5px !important;
-    }
-  }
-
-  // Border-radius del campo outline
-  .mdc-notched-outline__leading {
-    border-radius: 7px 0 0 7px !important;
-  }
-  .mdc-notched-outline__trailing {
-    border-radius: 0 7px 7px 0 !important;
-  }
-
-  // Altura interna del campo más compacta
-  .mat-mdc-text-field-wrapper {
-    padding: 0 12px;
-  }
-
-  .mat-mdc-form-field-infix {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 44px;
-  }
-}
-
-// ─── Texto del placeholder en mat-select ("Todos", etc.) ─────────────────────
-
-.mat-mdc-select-placeholder {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-// ─── Ícono del dropdown (flecha del select) ───────────────────────────────────
-
-.mat-mdc-select-arrow {
-  color: #9ca3af;
 }
