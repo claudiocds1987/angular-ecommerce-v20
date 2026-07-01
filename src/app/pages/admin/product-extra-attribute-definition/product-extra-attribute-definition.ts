@@ -162,7 +162,7 @@ export class ProductExtraAttributeDefinition implements OnInit, CanComponentDeac
   // Escuchar cuando cambia la categoría
   onCategoryChange(categoryId: number) {
     this.attributeService.getExtraAttributesByCategory(categoryId).subscribe({
-      next: (defs) => this.buildForm(defs),
+      next: (productExtraAttributes) => this.buildForm(productExtraAttributes),
       error: () => this.extraAttributesArray.clear(),
     });
   }
@@ -192,11 +192,13 @@ export class ProductExtraAttributeDefinition implements OnInit, CanComponentDeac
     this.extraAttributesSig.set([...(this.extraAttributesArray.controls as FormGroup[])]);
   }
 
-  private buildForm(defs: ProductExtraAttribute[]) {
+  private buildForm(productExtraAttributes: ProductExtraAttribute[]) {
     // 1. Limpiamos el FormArray físico
     this.extraAttributesArray.clear();
     // 2. Creamos las NUEVAS instancias de FormGroup
-    const newGroups = defs.map((def) => this.createAttributeGroup(def));
+    const newGroups = productExtraAttributes.map((extraAttribute) =>
+      this.createAttributeGroup(extraAttribute),
+    );
     // 3. Las agregamos al FormArray para que el formulario sea válido
     newGroups.forEach((g) => this.extraAttributesArray.push(g));
     // 4. Seteamos el Signal con un NUEVO array
@@ -235,14 +237,43 @@ export class ProductExtraAttributeDefinition implements OnInit, CanComponentDeac
     this.refreshAttributesSig(); // Notifica el cambio
   }
 
-  // CRÍTICO: Solo borrar si es nuevo (id === 0)
   removeAttribute(index: number) {
     const control = this.extraAttributesArray.at(index);
-    if (control.get('id')?.value === 0) {
+    const id = control.get('id')?.value;
+
+    if (id === 0) {
+      // Es nuevo, simplemente lo quitamos del formulario
       this.extraAttributesArray.removeAt(index);
-      this.refreshAttributesSig(); // Notifica el cambio
+      this.refreshAttributesSig();
     } else {
-      alert('No puedes borrar un atributo existente porque afectaría a los productos ya creados.');
+      // Es un atributo existente, pedimos confirmación antes de borrar en la DB
+      this._confirmDialogService
+        .open({
+          title: 'Eliminar atributo',
+          message:
+            '¿Estás seguro de que deseas eliminar este atributo? Se eliminarán también todos los valores asociados en productos existentes.',
+          confirmLabel: 'Eliminar',
+          cancelLabel: 'Cancelar',
+          confirmColor: 'warn',
+        })
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this._spinnerService.show();
+            this.attributeService.deleteAttribute(id).subscribe({
+              next: () => {
+                this.extraAttributesArray.removeAt(index);
+                this.refreshAttributesSig();
+                this._toast.show('Atributo eliminado correctamente', 'success');
+                this._spinnerService.hide();
+              },
+              error: (err) => {
+                this._spinnerService.hide();
+                this._toast.show('Error al eliminar el atributo', 'danger');
+                console.error(err);
+              },
+            });
+          }
+        });
     }
   }
 }

@@ -247,7 +247,10 @@ export class ProductFormAdmin implements CanComponentDeactivate {
         : this.productService.updateProduct(productToSave.id!, productToSave);
 
     request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
-      next: (product) => this._handleSuccess(product),
+      next: (product) => {
+        this._handleSuccess(product);
+        this.productForm.markAsPristine();
+      },
       error: () => this._handleError(),
     });
   }

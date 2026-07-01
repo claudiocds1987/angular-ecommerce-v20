@@ -57,7 +57,7 @@
           [formGroupName]="$index"
           class="group relative rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:border-indigo-300 hover:shadow-lg"
         >
-          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Nombre Técnico</mat-label>
               <input matInput formControlName="name" placeholder="ej. color_primario" />
@@ -86,28 +86,6 @@
                 <app-form-field-error [control]="attr.get('dataType')" />
               </mat-error>
             </mat-form-field>
-
-            <div class="flex items-center justify-center">
-              @if (attr.get('id')?.value !== 0) {
-                <div class="flex flex-col items-center gap-1 opacity-60">
-                  <mat-icon class="text-emerald-500">check_circle</mat-icon>
-                  <span class="text-[10px] font-black text-emerald-600 uppercase italic"
-                    >Guardado</span
-                  >
-                </div>
-              } @else {
-                <button
-                  mat-stroked-button
-                  color="warn"
-                  type="button"
-                  (click)="removeAttribute($index)"
-                  class="!rounded-lg !border-red-100 hover:!bg-red-50"
-                >
-                  <mat-icon>delete_outline</mat-icon>
-                  ELIMINAR
-                </button>
-              }
-            </div>
           </div>
 
           <div class="mt-6 border-t border-slate-50 pt-6">
@@ -127,27 +105,16 @@
                   <mat-form-field appearance="outline" class="w-full lg:w-28">
                     <mat-label>Min</mat-label>
                     <input matInput type="number" formControlName="minLength" />
-                    <mat-error>
-                      <app-form-field-error [control]="attr.get('minLength')" />
-                    </mat-error>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="w-full lg:w-28">
                     <mat-label>Max</mat-label>
                     <input matInput type="number" formControlName="maxLength" />
-                    <mat-error>
-                      <app-form-field-error [control]="attr.get('maxLength')" />
-                    </mat-error>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="w-full lg:min-w-[200px] lg:flex-1">
                     <mat-label>RegEx Pattern</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      formControlName="pattern"
-                      placeholder="^[a-zA-Z]+$"
-                    />
+                    <input matInput type="text" formControlName="pattern" />
                     <span matPrefix class="px-1 text-slate-400">/</span>
                   </mat-form-field>
                 }
@@ -156,20 +123,35 @@
                   <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
                     <mat-label>Mínimo</mat-label>
                     <input matInput type="number" formControlName="min" />
-                    <mat-error>
-                      <app-form-field-error [control]="attr.get('min')" />
-                    </mat-error>
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
                     <mat-label>Máximo</mat-label>
                     <input matInput type="number" formControlName="max" />
-                    <mat-error>
-                      <app-form-field-error [control]="attr.get('max')" />
-                    </mat-error>
                   </mat-form-field>
                 }
               </div>
             </div>
+          </div>
+
+          <div class="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
+            @if (attr.get('id')?.value !== 0) {
+              <div class="flex items-center gap-2 text-emerald-600">
+                <mat-icon>check_circle</mat-icon>
+                <span class="text-xs font-bold uppercase">Guardado</span>
+              </div>
+            } @else {
+              <div></div>
+            }
+            <button
+              mat-stroked-button
+              color="warn"
+              type="button"
+              (click)="removeAttribute($index)"
+              class="!rounded-lg !border-red-100 hover:!bg-red-50"
+            >
+              <mat-icon>delete_outline</mat-icon>
+              ELIMINAR
+            </button>
           </div>
         </div>
       } @empty {

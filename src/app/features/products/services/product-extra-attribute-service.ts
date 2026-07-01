@@ -25,4 +25,8 @@ export class ProductExtraAttributeService {
       attributes,
     );
   }
+
+  deleteAttribute(attributeId: number): Observable<void> {
+    return this._http.delete<void>(`${this._baseUrl}/${attributeId}`);
+  }
 }
