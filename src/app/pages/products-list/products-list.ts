@@ -84,10 +84,17 @@ export class ProductsList {
         // distinctUntilChanged evita que no haga nada si el valor nuevo es igual al anterior
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       )
-      .subscribe(({ filters, page }) => {
+      .subscribe(({ page }) => {
         this.productStore.searchProducts({
-          // Si filters es null o undefined, mandamos un objeto vacío con el tipo correcto
-          filters: filters ?? ({} as CustomerProductFilter),
+          filters: {
+            search: '',
+            minPrice: null,
+            maxPrice: null,
+            categoryId: '',
+            brandId: '',
+            sortBy: 'rating',
+            order: 'asc',
+          },
           page: page,
           size: this.pageSize,
         });
@@ -95,6 +102,7 @@ export class ProductsList {
   }
 
   handleFilter(filters: CustomerProductFilter) {
+    console.log('Filters applied:', filters);
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 
