@@ -1,4 +1,4 @@
-﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged } from 'rxjs';
 import { Product } from '@features/products/models/product.model';
@@ -40,7 +40,7 @@ export class ProductsList {
   }));
 
   constructor() {
-    this._syncProductsWithFilters();
+    this._loadProducts();
     this._loadCarouselProducts();
   }
 
@@ -78,15 +78,15 @@ export class ProductsList {
     });
   }
 
-  private _syncProductsWithFilters() {
+  private _loadProducts() {
     toObservable(this._queryState)
       .pipe(
         // distinctUntilChanged evita que no haga nada si el valor nuevo es igual al anterior
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       )
-      .subscribe(({ page }) => {
+      .subscribe(({ page, filters }) => {
         this.productStore.searchProducts({
-          filters: {
+          filters: filters || {
             search: '',
             minPrice: null,
             maxPrice: null,
@@ -94,7 +94,7 @@ export class ProductsList {
             brandId: '',
             sortBy: 'rating',
             order: 'asc',
-          },
+          } as CustomerProductFilter,
           page: page,
           size: this.pageSize,
         });
@@ -102,7 +102,6 @@ export class ProductsList {
   }
 
   handleFilter(filters: CustomerProductFilter) {
-    console.log('Filters applied:', filters);
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 
