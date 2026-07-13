@@ -606,7 +606,7 @@ export class ProductsGridAdmin implements OnInit {
         { name: 'discountPercentage', width: '100px', label: 'Descuento' },
         { name: 'finalPrice', width: '120px', isSortable: false, label: 'Precio Final' },
         { name: 'sku', label: 'SKU' },
-        { name: 'stock', isSortable: false, label: 'Stock' },
+        { name: 'stock', isSortable: true, label: 'Stock' },
         { name: 'categoryId', isSortable: false, label: 'Categoría' },
         { name: 'brandId', isSortable: false, label: 'Marca' },
         {
