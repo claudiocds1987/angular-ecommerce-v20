@@ -96,20 +96,24 @@ body {
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. COMPONENTES CON @apply (Tailwind v4)
 // ─────────────────────────────────────────────────────────────────────────────
-.form-card {
+/* .form-card {
   @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
-}
+} */
 
-.section-header {
+/* .section-header {
   @apply mb-6 flex items-center gap-2 text-lg font-semibold text-slate-800;
-}
+} */
 
-.section-dot {
+/* .section-dot {
   @apply h-6 w-1.5 rounded-full;
-}
+} */
 
-.form-input-field {
+/* .form-input-field {
   @apply w-full rounded-xl border border-slate-200 px-4 py-3 transition-all outline-none focus:ring-4;
+} */
+
+.bg-primary-color {
+  @apply bg-gradient-to-r from-violet-500 to-indigo-500;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

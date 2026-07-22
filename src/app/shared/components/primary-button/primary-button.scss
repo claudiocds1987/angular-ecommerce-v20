@@ -14,11 +14,23 @@ button.primary-button {
 
   &.primary {
     color: white;
+    background: linear-gradient(to right, #8b5cf6, #6366f1) !important; // violet-500 → indigo-500
+    &:hover:not(:disabled):not(.mat-mdc-button-disabled) {
+      background: linear-gradient(
+        to right,
+        #7c3aed,
+        #4f46e5
+      ) !important; // hover más oscuro (violet-600 → indigo-600)
+    }
+  }
+
+  /*   &.primary {
+    color: white;
     background-color: #4f46e5 !important;
     &:hover:not(:disabled):not(.mat-mdc-button-disabled) {
       background-color: #4338ca !important;
     }
-  }
+  } */
 
   &.secondary {
     color: #3b82f6 !important;

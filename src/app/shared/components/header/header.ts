@@ -6,7 +6,6 @@
   inject,
   signal,
 } from '@angular/core';
-import { PrimaryButton } from '../primary-button/primary-button';
 import { CartService } from '@features/checkout/services/cart-service';
 import { Router } from '@angular/router';
 import { IaChatService } from '@features/ai-assistant/services/ia-chat-service';
@@ -34,7 +33,7 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
-  title = signal<string>('Angular Ecommerce-v20');
+  title = signal<string>('Ecommerce Productos');
   isMenuOpen = signal(false);
 
   cartService = inject(CartService);
