@@ -22,7 +22,6 @@ import { ProductDetail } from '@pages/product-detail/product-detail';
 })
 export class CarouselComponent implements OnInit, OnDestroy {
   products = input.required<Product[]>();
-  title = input('¡Aprovechá las ofertas destacadas!');
 
   currentIndex = signal(0);
   itemsPerView = signal(4);
