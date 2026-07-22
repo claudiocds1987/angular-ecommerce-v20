@@ -5,7 +5,7 @@
   (mouseleave)="startAutoplay()"
 >
   <!-- Header -->
-  <div class="bg-primary-color px-6 py-4 shadow-inner">
+  <div class="bg-gradient-to-r from-violet-500 px-6 py-4 shadow-inner">
     <h2 class="text-xl font-extrabold tracking-wide text-white drop-shadow-sm">
       {{ title() }}
     </h2>
@@ -34,13 +34,13 @@
               <div class="mb-2 flex min-h-[24px] gap-2">
                 @if (product.discountPercentage) {
                   <span
-                    class="rounded bg-[#990099] px-2 py-0.5 text-[10px] font-bold text-white uppercase shadow-sm"
+                    class="bg-primary-color rounded px-2 py-0.5 text-[10px] font-bold text-white uppercase shadow-sm"
                   >
                     {{ product.discountPercentage }}% OFF
                   </span>
                 }
                 <span
-                  class="rounded bg-[#702095] px-2 py-0.5 text-[9px] font-bold text-white uppercase shadow-sm"
+                  class="rounded bg-gradient-to-r from-violet-700 to-indigo-800 px-2 py-0.5 text-[9px] font-bold text-white uppercase shadow-sm"
                 >
                   Mismo precio
                 </span>
