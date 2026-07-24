@@ -166,14 +166,7 @@
                 {{ cartService.totalPrice() | currency }}
               </span>
             </div>
-            <button
-              mat-flat-button
-              color="primary"
-              class="!w-full !rounded-lg"
-              (click)="redirectToCart()"
-            >
-              Ver carrito
-            </button>
+            <app-primary-button (click)="redirectToCart()">Ver carrito</app-primary-button>
           </div>
         }
       </div>

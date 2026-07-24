@@ -58,13 +58,9 @@
             >
           </div>
 
-          <button
-            matStepperNext
-            [disabled]="cartService.cart().length === 0"
-            class="w-full cursor-pointer rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          <app-primary-button [disabled]="cartService.cart().length === 0" (click)="stepper.next()"
+            >Continuar con el Envío</app-primary-button
           >
-            Continuar con el Envío
-          </button>
         </div>
       </div>
     </mat-step>
@@ -153,19 +149,10 @@
         <div
           class="-mx-6 mt-8 -mb-6 flex items-center justify-between gap-4 border-t border-slate-100 bg-slate-50 p-6 pt-6"
         >
-          <button
-            matStepperPrevious
-            class="cursor-pointer rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-600 transition-colors hover:bg-slate-100"
+          <app-primary-button (click)="stepper.previous()">Volver al Carrito</app-primary-button>
+          <app-primary-button [disabled]="shippingForm.invalid" (click)="stepper.next()"
+            >Revisar Pedido</app-primary-button
           >
-            Volver al Carrito
-          </button>
-          <button
-            matStepperNext
-            [disabled]="shippingForm.invalid"
-            class="cursor-pointer rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            Revisar Pedido
-          </button>
         </div>
       </div>
     </mat-step>
