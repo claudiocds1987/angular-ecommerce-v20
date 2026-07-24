@@ -11,11 +11,19 @@ import { CustomerProductFilter } from '@features/products/models/costumer-produc
 import { ProductFilter } from './product-filter/product-filter';
 import { CarouselComponent } from '@shared/components/carousel/carousel.component';
 import { ProductStore } from '@features/products/state/product.store';
+import { PrimaryButton } from '@shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [ProductCard, ProductCardSkeleton, IaChat, ProductFilter, CarouselComponent],
+  imports: [
+    ProductCard,
+    ProductCardSkeleton,
+    IaChat,
+    ProductFilter,
+    CarouselComponent,
+    PrimaryButton,
+  ],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,15 +94,17 @@ export class ProductsList {
       )
       .subscribe(({ page, filters }) => {
         this.productStore.searchProducts({
-          filters: filters || {
-            search: '',
-            minPrice: null,
-            maxPrice: null,
-            categoryId: '',
-            brandId: '',
-            sortBy: 'rating',
-            order: 'asc',
-          } as CustomerProductFilter,
+          filters:
+            filters ||
+            ({
+              search: '',
+              minPrice: null,
+              maxPrice: null,
+              categoryId: '',
+              brandId: '',
+              sortBy: 'rating',
+              order: 'asc',
+            } as CustomerProductFilter),
           page: page,
           size: this.pageSize,
         });
@@ -113,6 +123,6 @@ export class ProductsList {
   }
 
   loadMore() {
-    this.currentPage.update((p) => p + 1);
+    this.currentPage.update((page) => page + 1);
   }
 }
