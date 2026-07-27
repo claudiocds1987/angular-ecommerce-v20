@@ -176,12 +176,10 @@
       <div
         class="mt-12 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-8"
       >
-        <app-primary-button [variant]="'secondary'" (click)="confirmCancel()">
-          Cancelar
-        </app-primary-button>
-        <app-primary-button (click)="confirmSave()" [icon]="'save'" [disabled]="!isReadyToSave()">
+        <app-button [variant]="'secondary'" (click)="confirmCancel()"> Cancelar </app-button>
+        <app-button (click)="confirmSave()" [icon]="'save'" [disabled]="!isReadyToSave()">
           Guardar Configuración
-        </app-primary-button>
+        </app-button>
       </div>
     </div>
   }

@@ -52,14 +52,14 @@
             <app-chips [chips]="chipsSig()" (chipRemoved)="onRemoveChip($event)"> </app-chips>
           </div>
           <div class="flex shrink-0">
-            <app-primary-button
+            <app-button
               [variant]="'secondary'"
               [icon]="'file_download'"
               (click)="downloadCSVTemplate()"
               class="mr-2"
             >
               Ejemplo .csv
-            </app-primary-button>
+            </app-button>
             <app-excel-upload
               [text]="'Carga Masiva'"
               [endpointUrl]="apiURL"

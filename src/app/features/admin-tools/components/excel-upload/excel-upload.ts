@@ -4,12 +4,12 @@ import { ExcelService } from '@features/admin-tools/services/excel-service';
 import { ImportResultResponse } from '@features/admin-tools/models/import-result-response.model';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-excel-upload',
   standalone: true,
-  imports: [CommonModule, PrimaryButton],
+  imports: [CommonModule, Button],
   templateUrl: './excel-upload.html',
   styleUrl: './excel-upload.scss',
 })

@@ -166,9 +166,7 @@
                 {{ cartService.totalPrice() | currency }}
               </span>
             </div>
-            <app-primary-button (click)="redirectToCart()" [icon]="'shopping_cart'"
-              >Ver carrito</app-primary-button
-            >
+            <app-button (click)="redirectToCart()" [icon]="'shopping_cart'">Ver carrito</app-button>
           </div>
         }
       </div>

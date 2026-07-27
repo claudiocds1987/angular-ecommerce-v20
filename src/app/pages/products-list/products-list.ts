@@ -11,19 +11,12 @@ import { CustomerProductFilter } from '@features/products/models/costumer-produc
 import { ProductFilter } from './product-filter/product-filter';
 import { CarouselComponent } from '@shared/components/carousel/carousel.component';
 import { ProductStore } from '@features/products/state/product.store';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [
-    ProductCard,
-    ProductCardSkeleton,
-    IaChat,
-    ProductFilter,
-    CarouselComponent,
-    PrimaryButton,
-  ],
+  imports: [ProductCard, ProductCardSkeleton, IaChat, ProductFilter, CarouselComponent, Button],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

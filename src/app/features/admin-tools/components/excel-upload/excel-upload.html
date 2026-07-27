@@ -7,7 +7,7 @@
     class="hidden"
   />
 
-  <app-primary-button
+  <app-button
     type="button"
     (click)="fileInput.click()"
     [icon]="'file_upload'"
@@ -19,5 +19,5 @@
 
     <i class="fa-solid fa-file-excel text-lg transition-transform group-hover:scale-110"></i>
     <span>{{ loading() ? 'Cargando...' : text }}</span>
-  </app-primary-button>
+  </app-button>
 </div>

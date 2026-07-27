@@ -16,11 +16,12 @@ import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
 import { CartDto } from '@features/checkout/models/cart-dto.model';
 import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
 import { AuthStore } from '@features/auth/state/auth.store';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 import { signal } from '@angular/core';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-cart',
@@ -33,7 +34,7 @@ import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-
     MatInputModule,
     CartItemComponent,
     FormFieldError,
-    PrimaryButton,
+    Button,
     Breadcrumb,
   ],
   templateUrl: './cart.html',

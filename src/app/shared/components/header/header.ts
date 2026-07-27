@@ -16,7 +16,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
-import { PrimaryButton } from '../primary-button/primary-button';
+import { Button } from '../button/button';
 
 @Component({
   selector: 'app-header',
@@ -28,7 +28,7 @@ import { PrimaryButton } from '../primary-button/primary-button';
     MatBadgeModule,
     MatMenuModule,
     MatListModule,
-    PrimaryButton,
+    Button,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',

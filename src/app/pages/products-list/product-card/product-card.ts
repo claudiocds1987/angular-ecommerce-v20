@@ -1,7 +1,7 @@
 ﻿import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common'; // Importación necesaria
 import { Product } from '@features/products/models/product.model';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 import { CartService } from '@features/checkout/services/cart-service';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,7 +11,7 @@ import { ToastService } from '@shared/services/toast-service';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [PrimaryButton, CommonModule, CurrencyPipe, RouterLink],
+  imports: [Button, CommonModule, CurrencyPipe, RouterLink],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -32,7 +32,7 @@ import { FormFieldError } from '../../../shared/components/form-field-error/form
 import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Router } from '@angular/router';
 import { ToastService } from '@shared/services/toast-service';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 import { Observable } from 'rxjs';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
@@ -52,7 +52,7 @@ import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
     MatDividerModule,
     MatSlideToggleModule,
     FormFieldError,
-    PrimaryButton,
+    Button,
     Breadcrumb,
   ],
   templateUrl: './product-extra-attribute-definition.html',

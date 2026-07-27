@@ -10,8 +10,8 @@
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <button mat-stroked-button type="button" (click)="confirmCancel()">Cancelar</button>
-        <app-primary-button type="submit" [disabled]="!isReadyToSave()" [icon]="'save'"
-          >Guardar producto</app-primary-button
+        <app-button type="submit" [disabled]="!isReadyToSave()" [icon]="'save'"
+          >Guardar producto</app-button
         >
       </div>
     </div>
@@ -136,7 +136,11 @@
             </span>
             <div class="grid grid-cols-3 gap-4">
               @for (dim of ['width', 'height', 'depth']; track dim) {
-                <mat-form-field appearance="outline" class="w-full text-center" [appSkeleton]="isLoadingSig()">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-full text-center"
+                  [appSkeleton]="isLoadingSig()"
+                >
                   <mat-label>{{ dim === 'depth' ? 'Prof.' : dim }}</mat-label>
                   <input
                     matInput
@@ -210,7 +214,11 @@
                           <mat-slide-toggle formControlName="value" color="primary" />
                         </div>
                       } @else {
-                        <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                        <mat-form-field
+                          appearance="outline"
+                          class="w-full"
+                          [appSkeleton]="isLoadingSig()"
+                        >
                           <mat-label>{{ extraAttribute.get('label')?.value }}</mat-label>
                           <input
                             matInput

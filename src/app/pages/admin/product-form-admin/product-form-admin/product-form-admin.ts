@@ -43,7 +43,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
@@ -82,7 +82,7 @@ interface ImageFormRow {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    PrimaryButton,
+    Button,
     Breadcrumb,
     SkeletonDirective,
   ],

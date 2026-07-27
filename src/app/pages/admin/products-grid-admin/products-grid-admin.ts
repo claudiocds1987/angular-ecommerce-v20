@@ -52,7 +52,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
 import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
@@ -70,7 +70,7 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
-    PrimaryButton,
+    Button,
     Breadcrumb,
   ],
   templateUrl: './products-grid-admin.html',

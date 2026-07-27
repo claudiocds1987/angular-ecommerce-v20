@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
-import { PrimaryButton } from '@shared/components/primary-button/primary-button';
+import { Button } from '@shared/components/button/button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 @Component({
   selector: 'app-login-component',
@@ -28,7 +28,7 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
     MatButtonModule,
     MatProgressSpinnerModule,
     FormFieldError,
-    PrimaryButton,
+    Button,
     Breadcrumb,
   ],
   standalone: true,

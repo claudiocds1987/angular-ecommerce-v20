@@ -5,13 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 export type ButtonVariant = 'primary' | 'secondary';
 
 @Component({
-  selector: 'app-primary-button',
+  selector: 'app-button',
   standalone: true,
   imports: [MatButtonModule, MatIconModule],
-  templateUrl: './primary-button.html',
-  styleUrl: './primary-button.scss',
+  templateUrl: './button.html',
+  styleUrl: './button.scss',
 })
-export class PrimaryButton {
+export class Button {
   type = input<'button' | 'submit'>('button'); // ¡Importante para que procese el formulario reactivo!
   disabled = input<boolean>(false);
   variant = input<ButtonVariant>('primary'); // por default
