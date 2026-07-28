@@ -35,7 +35,6 @@ import { Button } from '../button/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
-  title = signal<string>('Ecommerce Productos');
   isMenuOpen = signal(false);
 
   cartService = inject(CartService);

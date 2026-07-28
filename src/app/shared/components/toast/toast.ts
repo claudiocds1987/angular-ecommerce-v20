@@ -13,9 +13,9 @@ export class Toast {
   showAnimation = signal(false);
 
   typeStyles = {
-    success: 'bg-emerald-600/90 border-emerald-400 text-white',
-    danger: 'bg-rose-600/90 border-rose-400 text-white',
-    warning: 'bg-amber-500/90 border-amber-300 text-black',
+    success: 'bg-cyan-500 border-[0.5px] border-cyan-300 text-white',
+    danger: 'bg-rose-600/90 border-[0.5px] border-rose-400 text-white',
+    warning: 'bg-amber-500/90 border-[0.5px] border-amber-300 text-black',
   };
 
   private _toastService = inject(ToastService);
