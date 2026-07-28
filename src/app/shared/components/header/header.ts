@@ -77,6 +77,14 @@ export class Header {
     this.isMenuOpen.update((prev) => !prev);
   }
 
+  deleteProduct(productId: number, event?: MouseEvent) {
+    if (event) {
+      // Para que no se cierre el menu cuando se hace clic en el botón de eliminar, prevenimos la propagación del evento
+      event.stopPropagation();
+    }
+    this.cartService.removeFromCart(productId);
+  }
+
   // Para cerrar menu login al hacer clic por fuera
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

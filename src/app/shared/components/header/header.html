@@ -121,42 +121,53 @@
           <!-- Items: scroll vertical, nunca horizontal -->
           <div class="max-h-80 overflow-x-hidden overflow-y-auto">
             @for (product of cartService.cart(); track product.id) {
-              <button
-                type="button"
-                class="flex w-full items-center gap-3 border-b-[0.5px] border-gray-50 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-gray-50"
-                (click)="redirectToCart()"
+              <div
+                class="flex w-full items-center border-b-[0.5px] border-gray-50/10 transition-colors last:border-b-0 hover:bg-white/5"
               >
-                <!-- Thumbnail -->
-                <div
-                  class="bg-waves h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200"
+                <!-- Botón principal: Redirigir al carrito -->
+                <button
+                  type="button"
+                  (click)="redirectToCart()"
+                  class="flex flex-1 items-center gap-3 px-4 py-3 text-left outline-none focus-visible:bg-white/10"
                 >
-                  <img
-                    [src]="product.thumbnail"
-                    alt="{{ product.title }}"
-                    class="h-full w-full object-contain"
-                  />
-                </div>
-
-                <!-- Info -->
-                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span class="truncate text-sm font-medium text-white">
-                    {{ product.title }}
-                  </span>
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-sm font-bold text-white">
-                      {{ product.finalPrice ?? product.price | currency }}
-                    </span>
-                    @if (product.quantity > 1) {
-                      <span class="text-xs text-white"> x{{ product.quantity }} </span>
-                    }
+                  <!-- Thumbnail -->
+                  <div
+                    class="bg-waves h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <img
+                      [src]="product.thumbnail"
+                      [alt]="product.title"
+                      class="h-full w-full object-contain"
+                    />
                   </div>
-                </div>
 
-                <!-- Chevron -->
-                <mat-icon class="icon-white !h-5 !w-5 flex-shrink-0 !text-lg"
-                  >chevron_right</mat-icon
+                  <!-- Info -->
+                  <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span class="truncate text-sm font-medium text-white">
+                      {{ product.title }}
+                    </span>
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-sm font-bold text-white">
+                        {{ product.finalPrice ?? product.price | currency }}
+                      </span>
+                      @if (product.quantity > 1) {
+                        <span class="text-xs text-white/80"> x{{ product.quantity }} </span>
+                      }
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Botón independiente: Eliminar producto -->
+                <button
+                  type="button"
+                  (click)="$event.stopPropagation(); deleteProduct(product.id, $event)"
+                  class="mr-3 flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-red-500/20 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+                  title="Eliminar producto"
+                  aria-label="Eliminar producto"
                 >
-              </button>
+                  <mat-icon class="!h-5 !w-5 !text-lg">delete</mat-icon>
+                </button>
+              </div>
             }
           </div>
 
