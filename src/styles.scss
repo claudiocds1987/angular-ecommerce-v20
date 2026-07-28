@@ -110,6 +110,10 @@ body {
   background-blend-mode: overlay; // suaviza la mezcla entre ambos
 }
 
+.icon-white {
+  color: white !important;
+}
+
 /* .bg-waves {
   background-image:
     repeating-radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.1), transparent 50px),
