@@ -20,11 +20,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProductStore } from '@features/products/state/product.store';
 import { BrandStore } from '@features/products/state/brand.store';
 import { CategoryStore } from '@features/products/state/category.store';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatExpansionModule, MatListModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatListModule,
+    MatIconModule,
+    Button,
+  ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

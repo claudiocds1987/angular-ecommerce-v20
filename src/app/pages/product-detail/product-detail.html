@@ -1,7 +1,7 @@
 <button
   type="button"
   (click)="closeModal()"
-  class="absolute top-4 right-4 z-50 rounded-full bg-white/80 p-2 text-gray-400 shadow-sm backdrop-blur-sm transition-colors hover:text-red-500"
+  class="absolute top-4 right-4 z-50 cursor-pointer rounded-full bg-white/80 p-2 text-gray-400 shadow-sm backdrop-blur-sm transition-colors hover:text-red-500"
   aria-label="Cerrar detalle"
 >
   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,7 +16,7 @@
 
 @if (product()) {
   <article class="relative max-h-[90vh] overflow-y-auto bg-white p-6 lg:p-10">
-    <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-10 p-4 lg:grid-cols-2">
       <section class="space-y-4">
         <div
           class="relative aspect-square overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 shadow-inner"
@@ -150,20 +150,13 @@
         </div>
 
         <div class="mt-auto flex space-x-4 pt-8">
-          <button
+          <app-button
             (click)="addToCart(product()!)"
-            class="flex flex-grow transform items-center justify-center space-x-2 rounded-xl bg-blue-600 py-4 text-lg font-bold text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95"
+            [iconUrl]="'icons/shopping-cart.svg'"
+            class="bg-waves flex flex-grow rounded-xl"
           >
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-            <span>Añadir al carrito</span>
-          </button>
+            Añadir al carrito
+          </app-button>
         </div>
 
         <p class="mt-4 text-center text-xs font-medium text-gray-400 italic">
