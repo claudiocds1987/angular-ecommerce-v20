@@ -28,6 +28,7 @@
     "@primeuix/themes": "^3.0.0",
     "@tailwindcss/postcss": "^4.1.18",
     "apollo-angular": "^13.0.0",
+    "chart.js": "^4.5.1",
     "graphql": "^16",
     "luxon": "^3.7.2",
     "ngx-image-compress": "^18.1.7",
