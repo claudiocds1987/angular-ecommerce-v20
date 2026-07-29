@@ -37,4 +37,10 @@ export const routes: Routes = [
     // canActivate: Se ejecuta antes de navegar a una ruta
     canActivate: [authGuard], // Solo rol administrador puede acceder a las rutas hijas de /admin
   },
+  {
+    // Smoke test PrimeNG (tema Lara + p-datepicker / p-button). Eliminable tras verificar.
+    path: 'primeng-smoke',
+    loadComponent: () =>
+      import('@shared/components/primeng-smoke/primeng-smoke').then((m) => m.PrimengSmoke),
+  },
 ];
