@@ -12,7 +12,7 @@ import { CartItemComponent } from '../cart-item/cart-item';
 import { Observable, Subject, Subscription, of } from 'rxjs';
 import { exhaustMap, catchError } from 'rxjs/operators';
 import { MatInputModule } from '@angular/material/input';
-import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
+import { OrderService } from '@features/checkout/services/order-service';
 import { CartDto } from '@features/checkout/models/cart-dto.model';
 import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
 import { AuthStore } from '@features/auth/state/auth.store';
@@ -49,7 +49,7 @@ export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
   // Inyecciones
   cartService = inject(CartService);
   private _fb = inject(FormBuilder);
-  private _mpService = inject(MercadoPagoService);
+  private _mpService = inject(OrderService);
   private _authStore = inject(AuthStore);
   private _confirmDialogService = inject(ConfirmDialogService);
 

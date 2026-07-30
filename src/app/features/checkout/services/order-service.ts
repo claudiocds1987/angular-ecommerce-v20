@@ -9,7 +9,7 @@ import { CartDto } from '../models/cart-dto.model';
 @Injectable({
   providedIn: 'root',
 })
-export class MercadoPagoService {
+export class OrderService {
   private readonly _apiUrl = `${environment.serverUrl}/api/Orders`;
   private readonly _http = inject(HttpClient);
 
