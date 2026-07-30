@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
+import { OrderService } from '@features/checkout/services/order-service';
 import { CartService } from '@features/checkout/services/cart-service';
 
 @Component({
@@ -13,7 +13,7 @@ import { CartService } from '@features/checkout/services/cart-service';
 })
 export class PaymentResult implements OnInit {
   private _route = inject(ActivatedRoute);
-  private _mpService = inject(MercadoPagoService);
+  private _orderService = inject(OrderService);
   private _cartService = inject(CartService);
 
   status: string | null = '';
@@ -36,7 +36,7 @@ export class PaymentResult implements OnInit {
     // 3. ENVIAMOS LA CONFIRMACIÓN AL BACKEND AUTOMÁTICAMENTE
     // Si Mercado Pago nos devolvió el ID de preferencia y el ID de pago, se lo mandamos al backend
     if (this.preferenceId && this.paymentId) {
-      this._mpService
+      this._orderService
         .confirmPayment(this.preferenceId, this.paymentId, this.status || 'pending')
         .subscribe({
           next: (res) => {
