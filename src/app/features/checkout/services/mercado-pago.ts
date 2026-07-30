@@ -10,7 +10,7 @@ import { CartDto } from '../models/cart-dto.model';
   providedIn: 'root',
 })
 export class MercadoPagoService {
-  private readonly _apiUrl = `${environment.serverUrl}/api/MercadoPago`;
+  private readonly _apiUrl = `${environment.serverUrl}/api/Orders`;
   private readonly _http = inject(HttpClient);
 
   // 1. Enviar el DTO unificado al backend para obtener la preferencia
@@ -18,7 +18,7 @@ export class MercadoPagoService {
     cart: CartDto,
   ): Observable<{ id: string; init_point: string; sandbox_init_point: string }> {
     return this._http.post<{ id: string; init_point: string; sandbox_init_point: string }>(
-      `${this._apiUrl}/create-preference`,
+      `${this._apiUrl}/checkout`,
       cart,
     );
   }
