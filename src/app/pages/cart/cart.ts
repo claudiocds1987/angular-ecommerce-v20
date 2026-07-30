@@ -49,7 +49,7 @@ export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
   // Inyecciones
   cartService = inject(CartService);
   private _fb = inject(FormBuilder);
-  private _mpService = inject(OrderService);
+  private _orderService = inject(OrderService);
   private _authStore = inject(AuthStore);
   private _confirmDialogService = inject(ConfirmDialogService);
 
@@ -112,7 +112,7 @@ export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {
             })),
           };
 
-          return this._mpService.createPreference(dataParaBackend).pipe(
+          return this._orderService.createPreference(dataParaBackend).pipe(
             catchError((err) => {
               console.error('Error al generar preferencia:', err);
               alert('Hubo un error al procesar la orden de compra. Reintenta.');
