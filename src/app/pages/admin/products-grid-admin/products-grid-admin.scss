@@ -15,7 +15,11 @@
 
 .wrapper__content-area {
   display: grid;
-  grid-template-columns: 1fr 260px;
+  /* Usamos 'auto' para que la primera columna tome el ancho del sidebar
+     (que tiene su propia transición entre 16rem y 3.5rem). De esta forma
+     al colapsar el sidebar los demás contenedores se ajustan automáticamente.
+  */
+  grid-template-columns: auto 1fr 260px;
   gap: 16px;
   width: 100%;
   flex: 1; // IMPORTANTE: hace que esta área use todo el alto disponible
@@ -24,14 +28,14 @@
 }
 
 .wrapper__content-area--filter-collapsed {
-  grid-template-columns: 1fr 50px;
+  /* Mantiene el sidebar (auto) y colapsa el panel de filtros a un ancho reducido */
+  grid-template-columns: auto 1fr 50px;
 }
 
 .wrapper__grid-area {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0;
+  height: 82%;
   overflow: hidden;
 }
 
