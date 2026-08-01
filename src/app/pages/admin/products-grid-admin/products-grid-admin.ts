@@ -56,6 +56,7 @@ import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
 import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 
 @Component({
   selector: 'app-products-grid-admin',
@@ -72,6 +73,7 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
     MatButtonModule,
     Button,
     Breadcrumb,
+    AdminSidebar,
   ],
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',

@@ -4,6 +4,7 @@
       class="wrapper__content-area h-full"
       [class.wrapper__content-area--filter-collapsed]="isFilterCollapsedSig()"
     >
+      <app-admin-sidebar></app-admin-sidebar>
       <div class="wrapper__grid-area flex h-full min-h-0 flex-col overflow-hidden p-6">
         <div class="mb-4">
           <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
