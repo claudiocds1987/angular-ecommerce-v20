@@ -1,7 +1,7 @@
 <button
   type="button"
   (click)="closeModal()"
-  class="absolute top-4 right-4 z-50 cursor-pointer rounded-full bg-white/80 p-2 text-gray-400 shadow-sm backdrop-blur-sm transition-colors hover:text-red-500"
+  class="absolute top-4 right-4 z-50 rounded-full bg-white/80 p-2 text-gray-400 shadow-sm backdrop-blur-sm transition-colors hover:text-red-500"
   aria-label="Cerrar detalle"
 >
   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
             <button
               type="button"
               (click)="changeImage(img)"
-              class="aspect-square cursor-pointer overflow-hidden rounded-xl border bg-gray-50 shadow-sm transition-all focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              class="aspect-square overflow-hidden rounded-xl border bg-gray-50 shadow-sm transition-all focus:ring-2 focus:ring-blue-400 focus:outline-none"
               [class.border-blue-500]="safeThumbnail() === img"
               [class.border-gray-100]="safeThumbnail() !== img"
               aria-label="Ver imagen del producto"

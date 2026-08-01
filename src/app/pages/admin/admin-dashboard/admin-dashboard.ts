@@ -8,18 +8,11 @@ import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { DatePicker } from 'primeng/datepicker';
 import { AdminDashboardService } from './admin-dashboard-service';
+import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [
-    CommonModule,
-    FormsModule,
-    Button,
-    UIChart,
-    TableModule,
-    Tag,
-    DatePicker,
-  ],
+  imports: [CommonModule, FormsModule, Button, UIChart, TableModule, Tag, DatePicker, AdminSidebar],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
 })
@@ -30,7 +23,6 @@ export class AdminDashboard implements OnInit {
   dateRange: Date[] | undefined;
   globalSearch = '';
   orderFilter = signal('');
-  sidebarCollapsed = signal(false);
 
   readonly filteredOrders = computed(() => {
     const query = this.orderFilter().trim().toLowerCase();
@@ -114,13 +106,10 @@ export class AdminDashboard implements OnInit {
   }
 
   refreshDashboard(): void {
-    this.dashboardService.loadDashboardData(
-      this.dateRange?.[0],
-      this.dateRange?.[1],
-    );
+    this.dashboardService.loadDashboardData(this.dateRange?.[0], this.dateRange?.[1]);
   }
 
-  toggleSidebar(): void {
+  /* toggleSidebar(): void {
     this.sidebarCollapsed.update((v) => !v);
   }
 
@@ -130,11 +119,9 @@ export class AdminDashboard implements OnInit {
 
   goToExtraAttributes(): void {
     this._router.navigate(['admin/product-extra-attribute-definition']);
-  }
+  } */
 
-  getSeverity(
-    status: string,
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+  getSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (status.toLowerCase()) {
       case 'approved':
       case 'completed':

@@ -1,0 +1,69 @@
+aside {
+  width: 16rem;
+  transition: width 0.25s ease-in-out;
+}
+
+aside.collapsed {
+  width: 3.5rem !important;
+  min-width: 3.5rem !important;
+  overflow: hidden;
+}
+
+aside.collapsed .sidebar-brand-text,
+aside.collapsed .sidebar-version,
+aside.collapsed .sidebar-section-title,
+aside.collapsed .sidebar-item-text,
+aside.collapsed .sidebar-badge {
+  display: none !important;
+}
+
+aside.collapsed .sidebar-item {
+  justify-content: center;
+}
+
+aside.collapsed .sidebar-icon {
+  margin-right: 0 !important;
+}
+
+aside.collapsed nav {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+aside.collapsed .sidebar-item,
+aside.collapsed .flex.items-center.gap-3 {
+  justify-content: center;
+  gap: 0;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.sidebar-toggle-button {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+}
+
+.sidebar-toggle-button:hover {
+  background-color: #e2e8f0;
+}
+
+.sidebar-toggle-button i {
+  font-size: 1.25rem;
+}
+
+aside.collapsed .sidebar-icon {
+  margin-right: 0 !important;
+}
+
+aside.collapsed .sidebar-item-text,
+aside.collapsed .sidebar-badge {
+  display: none !important;
+}
+
+aside.collapsed .flex.items-center.gap-2 {
+  justify-content: center;
+}
+
+aside.collapsed .flex.items-center.gap-2 button {
+  margin-left: 0;
+}
