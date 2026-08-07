@@ -24,12 +24,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "web.config"
             ],
-            "styles": [
-              "node_modules/primeicons/primeicons.css",
-              "src/styles.scss"
-            ]
+            "styles": ["node_modules/primeicons/primeicons.css", "src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -89,12 +87,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "web.config"
             ],
-            "styles": [
-              "node_modules/primeicons/primeicons.css",
-              "src/styles.scss"
-            ]
+            "styles": ["node_modules/primeicons/primeicons.css", "src/styles.scss"]
           }
         },
         "lint": {
