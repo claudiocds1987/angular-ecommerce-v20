@@ -40,12 +40,9 @@ jobs:
           EOF
 
       - name: Build Project
-        # Eliminamos el --base-href porque al ser SSR en servidor propio
-        # usualmente se sirve desde la raíz '/'
-        # FTP_SERVER, FTP_USERNAME y FTP_PASSWORD sus valores estan puestas el repositorio GitHub en Settings > Secrets and variables > Actions
         run: npx ng build --configuration production
 
-- name: Deploy to MonsterASP via FTP
+      - name: Deploy to MonsterASP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: site83861.siteasp.net
