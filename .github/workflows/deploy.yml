@@ -51,5 +51,5 @@ jobs:
           server: site83861.siteasp.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/e-commerce-v20/browser/
+          local-dir: ./dist/e-commerce-v20/
           server-dir: ./wwwroot/
