@@ -138,21 +138,22 @@ export class ProductDetail implements OnInit {
   }
 
   private _updateSeo(p: Product) {
-    // Usamos ?. por seguridad en caso de que brand sea opcional
+    // 1. Armamos el título juntando el nombre del producto y su marca
     const title = `${p.title} | ${this.brandName()}`;
+
+    // 2. Le decimos a Angular que cambie el texto de la pestaña arriba en el navegador
     this._titleService.setTitle(title);
+
+    // 3. Le decimos a WhatsApp/Redes Sociales qué título usar al compartir el link (og:title)
     this._metaService.updateTag({ property: 'og:title', content: title });
 
     if (p.description) {
+      // 4. Le decimos a Google qué texto mostrar como resumen debajo del enlace azul en el buscador
       this._metaService.updateTag({ name: 'description', content: p.description });
-      this._metaService.updateTag({ property: 'og:description', content: p.description });
     }
 
-    this._metaService.updateTag({ property: 'og:type', content: 'product' });
-    this._metaService.updateTag({ property: 'og:price:amount', content: p.price.toString() });
-    this._metaService.updateTag({ property: 'og:price:currency', content: 'USD' });
-    
     if (p.thumbnail) {
+      // 5. Le pasamos la imagen para que WhatsApp dibuje la tarjeta bonita con la foto del producto
       this._metaService.updateTag({ property: 'og:image', content: p.thumbnail });
     }
   }
