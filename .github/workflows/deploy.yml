@@ -45,7 +45,7 @@ jobs:
       - name: Deploy to MonsterASP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: site83861.siteasp.net
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/e-commerce-v20/browser/
