@@ -1,4 +1,5 @@
-﻿import { computed, effect, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CartItem, Product } from '@features/products/models/product.model';
 
 @Injectable({
@@ -11,17 +12,23 @@ export class CartService {
     this.cart().reduce((total, item) => total + (item.finalPrice ?? item.price) * item.quantity, 0),
   );
 
+  private _platformId = inject(PLATFORM_ID);
+
   constructor() {
     // Cada vez que 'cart' cambie, se guarda en localStorage para que en caso de refrescar la pagina
     // o cerrar la pestaña, el carrito persista con los productos seleccionados
     effect(() => {
-      localStorage.setItem('shopping_cart', JSON.stringify(this.cart()));
+      if (isPlatformBrowser(this._platformId)) {
+        localStorage.setItem('shopping_cart', JSON.stringify(this.cart()));
+      }
     });
 
     // Al iniciar, cargamos el carrito desde localStorage si existe
-    const savedCart = localStorage.getItem('shopping_cart');
-    if (savedCart) {
-      this.cart.set(JSON.parse(savedCart));
+    if (isPlatformBrowser(this._platformId)) {
+      const savedCart = localStorage.getItem('shopping_cart');
+      if (savedCart) {
+        this.cart.set(JSON.parse(savedCart));
+      }
     }
   }
 

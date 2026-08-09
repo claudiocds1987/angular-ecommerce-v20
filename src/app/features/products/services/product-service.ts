@@ -1,6 +1,7 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { inject, Injectable, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { map, Observable, of, tap } from 'rxjs';
 import { Product } from '@features/products/models/product.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 //import { DummyResponsePaginated } from '@features/products/models/dummy-response.model';
@@ -15,6 +16,8 @@ import { ProductFilterParams } from '@features/products/models/product-filter-pa
 })
 export class ProductService {
   private _http = inject(HttpClient);
+  private _transferState = inject(TransferState);
+  private _platformId = inject(PLATFORM_ID);
   private _apiURL = `${environment.serverUrl}/api/products`;
 
   /**
@@ -35,9 +38,25 @@ export class ProductService {
   // Obtener productos paginados
   getProductsPaginated(pageNumber: number, pageSize: number): Observable<ProductPaginated> {
     const url = `${this._apiURL}?page=${pageNumber}&size=${pageSize}`;
+    const STATE_KEY = makeStateKey<ProductPaginated>(`products-${pageNumber}-${pageSize}`);
+
+    const storedData = this._transferState.get(STATE_KEY, null);
+    if (storedData) {
+      this._transferState.remove(STATE_KEY);
+      // Map stored data back to the format using _mapToProduct
+      return of({
+        ...storedData,
+        items: storedData.items.map(p => this._mapToProduct(p))
+      });
+    }
 
     // 2. Tipamos el GET con la estructura real del JSON (BackendResponse)
     return this._http.get<ProductPaginated>(url).pipe(
+      tap((res) => {
+        if (isPlatformServer(this._platformId)) {
+          this._transferState.set(STATE_KEY, res);
+        }
+      }),
       map((res): ProductPaginated => {
         // 3. Retornamos el modelo de Angular (ProductPaginated) mapeando las mayúsculas
         return {
@@ -127,7 +146,22 @@ export class ProductService {
   }
 
   getProductById(id: number): Observable<Product> {
-    return this._http.get<Product>(`${this._apiURL}/${id}`).pipe(map((p) => this._mapToProduct(p)));
+    const STATE_KEY = makeStateKey<Product>(`product-${id}`);
+    const storedData = this._transferState.get(STATE_KEY, null);
+
+    if (storedData) {
+      this._transferState.remove(STATE_KEY);
+      return of(this._mapToProduct(storedData));
+    }
+
+    return this._http.get<Product>(`${this._apiURL}/${id}`).pipe(
+      tap((p) => {
+        if (isPlatformServer(this._platformId)) {
+          this._transferState.set(STATE_KEY, p);
+        }
+      }),
+      map((p) => this._mapToProduct(p))
+    );
   }
 
   createProduct(product: Product): Observable<Product> {

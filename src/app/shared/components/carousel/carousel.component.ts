@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   input,
   signal,
@@ -7,8 +7,9 @@
   OnInit,
   OnDestroy,
   inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Product } from '@features/products/models/product.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductDetail } from '@pages/product-detail/product-detail';
@@ -51,6 +52,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
   autoPlayInterval = input(5000);
   private _intervalId: any;
   private _matDialog = inject(MatDialog);
+  private _platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
     this.updateItemsPerView();
@@ -83,6 +85,11 @@ export class CarouselComponent implements OnInit, OnDestroy {
   }
 
   updateItemsPerView() {
+    if (!isPlatformBrowser(this._platformId)) {
+      this.itemsPerView.set(4);
+      return;
+    }
+
     const width = window.innerWidth;
     if (width < 640) {
       this.itemsPerView.set(1);
