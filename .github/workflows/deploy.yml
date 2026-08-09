@@ -1,5 +1,6 @@
+# Nombre del workflow que aparecerá en GitHub Actions
 name: Build and Deploy to MonsterASP
-
+# Evento que dispara el workflow: cada vez que se hace push a la rama main
 on:
   push:
     branches:
@@ -7,20 +8,24 @@ on:
 
 jobs:
   build-and-deploy:
+    # El job se ejecuta en un runner con Ubuntu
     runs-on: ubuntu-latest
-
+    # 1. Descarga el código del repositorio en el runner
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+      # 2. Configura Node.js en la versión 20 para poder compilar el proyecto Angular
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
+      # 3. Instala las dependencias definidas en package.json
       - name: Install Dependencies
         run: npm install
-
+        # 4. Crea los archivos de entorno necesarios para Angular
+        #    - environment.production.ts: configuración para producción
+        #    - environment.ts: configuración para desarrollo local
+        #    Se usan secretos de GitHub para no exponer claves sensibles
       - name: Create Environment Files
         run: |
           mkdir -p src/environments
@@ -38,15 +43,21 @@ jobs:
             geminiApiKey: ''
           };
           EOF
-
+      # 5. Compila el proyecto Angular en modo producción
+      #    El resultado se guarda en la carpeta dist/
       - name: Build Project
         run: npx ng build --configuration production
-
+        # 6. Despliega los archivos compilados al servidor MonsterASP donde se aloja el frontend vía FTP
+        #    Usa la acción SamKirkland/FTP-Deploy-Action y las credenciales guardadas
       - name: Deploy to MonsterASP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
+          # Estas son las credenciales FTP para el servidor MonsterASP
+          # Estas variables FTP las brinda monsterasp.net, estas mismas se deben guardar en los secretos del repositorio GitHub para no exponerlas públicamente
+          # Desde el panel de control de MonsterASP, se puede acceder a la sección "FTP Accounts" para obtener el servidor, usuario y contraseña FTP.
+          # Desde GitHub, se agregaron estos valores como secretos del repositorio en la sección "Settings" -> "Secrets and variables" -> "Actions".
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/e-commerce-v20/browser/
-          server-dir: ./wwwroot/
+          local-dir: ./dist/e-commerce-v20/browser/ # Carpeta local generada por Angular
+          server-dir: ./wwwroot/ # Carpeta destino en el servidor
