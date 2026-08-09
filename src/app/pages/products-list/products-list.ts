@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged } from 'rxjs';
+import { Title, Meta } from '@angular/platform-browser';
 import { Product } from '@features/products/models/product.model';
 import { ProductCard } from './product-card/product-card';
 import { ProductService } from '@features/products/services/product-service';
@@ -21,7 +22,7 @@ import { Button } from '@shared/components/button/button';
   styleUrl: './products-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsList {
+export class ProductsList implements OnInit {
   isLoading = computed(() => this.productStore.loading());
   totalProducts = computed(() => this.productStore.totalItems());
   pageSize = 30; // Cantidad de productos por página
@@ -34,6 +35,8 @@ export class ProductsList {
   readonly productStore = inject(ProductStore);
   iaChatService = inject(IaChatService);
   private _productsService = inject(ProductService);
+  private _titleService = inject(Title);
+  private _metaService = inject(Meta);
 
   private _queryState = computed(() => ({
     filters: this.currentFilters(),
@@ -43,6 +46,13 @@ export class ProductsList {
   constructor() {
     this._loadProducts();
     this._loadCarouselProducts();
+  }
+
+  ngOnInit(): void {
+    this._titleService.setTitle('Catálogo de Productos | E-Commerce');
+    this._metaService.updateTag({ name: 'description', content: 'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.' });
+    this._metaService.updateTag({ property: 'og:title', content: 'Catálogo de Productos | E-Commerce' });
+    this._metaService.updateTag({ property: 'og:description', content: 'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.' });
   }
 
   private _loadCarouselProducts() {

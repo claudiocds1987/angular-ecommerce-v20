@@ -1,4 +1,5 @@
-﻿import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { firstValueFrom, pipe, switchMap, tap, catchError, of } from 'rxjs'; // Añadimos catchError y of
@@ -28,6 +29,9 @@ export const AuthStore = signalStore(
       },
 
       initializeAuth: async () => {
+        const platformId = inject(PLATFORM_ID);
+        if (!isPlatformBrowser(platformId)) return;
+
         const token = localStorage.getItem('token');
         if (!token) return;
 
@@ -50,8 +54,9 @@ export const AuthStore = signalStore(
               tap((user: User) => {
                 // ÉXITO
                 patchState(state, { user, loading: false });
+                const platformId = inject(PLATFORM_ID);
 
-                if (user.token) {
+                if (user.token && isPlatformBrowser(platformId)) {
                   localStorage.setItem('token', user.token);
                 }
 
@@ -79,8 +84,11 @@ export const AuthStore = signalStore(
       ),
 
       logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('shopping_cart');
+        const platformId = inject(PLATFORM_ID);
+        if (isPlatformBrowser(platformId)) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('shopping_cart');
+        }
         cartService.cart.set([]);
         patchState(state, { user: null });
         router.navigate(['/login']);

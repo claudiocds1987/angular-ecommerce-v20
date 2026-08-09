@@ -1,4 +1,4 @@
-﻿import {
+import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
@@ -139,14 +139,21 @@ export class ProductDetail implements OnInit {
 
   private _updateSeo(p: Product) {
     // Usamos ?. por seguridad en caso de que brand sea opcional
-    this._titleService.setTitle(`${p.title} | ${this.brandName()}`);
+    const title = `${p.title} | ${this.brandName()}`;
+    this._titleService.setTitle(title);
+    this._metaService.updateTag({ property: 'og:title', content: title });
 
     if (p.description) {
       this._metaService.updateTag({ name: 'description', content: p.description });
+      this._metaService.updateTag({ property: 'og:description', content: p.description });
     }
 
     this._metaService.updateTag({ property: 'og:type', content: 'product' });
     this._metaService.updateTag({ property: 'og:price:amount', content: p.price.toString() });
     this._metaService.updateTag({ property: 'og:price:currency', content: 'USD' });
+    
+    if (p.thumbnail) {
+      this._metaService.updateTag({ property: 'og:image', content: p.thumbnail });
+    }
   }
 }
