@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment'; // Ajustá según tu alias o ruta
 import { CartDto } from '../models/cart-dto.model';
+import { Order } from '../models/order.modelt';
 
 @Injectable({
   providedIn: 'root',
@@ -35,5 +36,17 @@ export class OrderService {
     };
 
     return this._http.post(`${this._apiUrl}/confirm-payment`, body, { headers });
+  }
+
+  getOrders(): Observable<Order[]> {
+    return this._http.get<Order[]>(`${this._apiUrl}`);
+  }
+
+  getOrderById(orderId: number): Observable<Order> {
+    return this._http.get<Order>(`${this._apiUrl}/${orderId}`);
+  }
+
+  getOrderMetrics(): Observable<any> {
+    return this._http.get<any>(`${this._apiUrl}/metrics`);
   }
 }
