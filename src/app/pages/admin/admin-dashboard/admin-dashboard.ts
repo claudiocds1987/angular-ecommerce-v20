@@ -9,6 +9,7 @@ import { Tag } from 'primeng/tag';
 import { DatePicker } from 'primeng/datepicker';
 import { AdminDashboardService } from './admin-dashboard-service';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
+import { OrderService } from '@features/checkout/services/order-service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -17,7 +18,9 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
   styleUrl: './admin-dashboard.scss',
 })
 export class AdminDashboard implements OnInit {
+  orderServices = inject(OrderService);
   readonly dashboardService = inject(AdminDashboardService);
+
   private readonly _router = inject(Router);
 
   dateRange: Date[] | undefined;
@@ -108,18 +111,6 @@ export class AdminDashboard implements OnInit {
   refreshDashboard(): void {
     this.dashboardService.loadDashboardData(this.dateRange?.[0], this.dateRange?.[1]);
   }
-
-  /* toggleSidebar(): void {
-    this.sidebarCollapsed.update((v) => !v);
-  }
-
-  goToProducts(): void {
-    this._router.navigate(['admin/products-grid-admin']);
-  }
-
-  goToExtraAttributes(): void {
-    this._router.navigate(['admin/product-extra-attribute-definition']);
-  } */
 
   getSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (status.toLowerCase()) {
