@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment'; // Ajustá según tu alias o ruta
 import { CartDto } from '../models/cart-dto.model';
 import { Order } from '../models/order.modelt';
+import { OrderMetrics } from '../models/order-metrics.model';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +47,7 @@ export class OrderService {
     return this._http.get<Order>(`${this._apiUrl}/${orderId}`);
   }
 
-  getOrderMetrics(): Observable<any> {
-    return this._http.get<any>(`${this._apiUrl}/metrics`);
+  getOrderMetrics(): Observable<OrderMetrics> {
+    return this._http.get<OrderMetrics>(`${this._apiUrl}/metrics`);
   }
 }

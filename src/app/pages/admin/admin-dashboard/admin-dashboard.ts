@@ -10,6 +10,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { AdminDashboardService } from './admin-dashboard-service';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { OrderService } from '@features/checkout/services/order-service';
+import { OrderMetrics, RecentOrder } from '@features/checkout/models/order-metrics.model';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -18,10 +19,11 @@ import { OrderService } from '@features/checkout/services/order-service';
   styleUrl: './admin-dashboard.scss',
 })
 export class AdminDashboard implements OnInit {
-  orderServices = inject(OrderService);
-  readonly dashboardService = inject(AdminDashboardService);
+  readonly orderService = inject(OrderService);
+  readonly dashboardService = inject(AdminDashboardService); // Reemplazar por OrderService endpoint metrics
 
   private readonly _router = inject(Router);
+  readonly orderMetricsSig = signal<OrderMetrics | null>(null);
 
   dateRange: Date[] | undefined;
   globalSearch = '';
@@ -29,15 +31,15 @@ export class AdminDashboard implements OnInit {
 
   readonly filteredOrders = computed(() => {
     const query = this.orderFilter().trim().toLowerCase();
-    const orders = this.dashboardService.recentOrders();
+    const orders = this.orderMetricsSig()?.recentOrders || [];
     if (!query) {
       return orders;
     }
     return orders.filter(
-      (order) =>
-        order.shippingCity.toLowerCase().includes(query) ||
-        order.customerName.toLowerCase().includes(query) ||
-        order.customerEmail.toLowerCase().includes(query),
+      (order: RecentOrder) =>
+        order.destination.toLowerCase().includes(query) ||
+        order.customerName.toLowerCase().includes(query), //||
+      //order.customerEmail.toLowerCase().includes(query),
     );
   });
 
@@ -96,6 +98,7 @@ export class AdminDashboard implements OnInit {
 
   ngOnInit(): void {
     this.dashboardService.loadDashboardData();
+    this._getOrderMetrics();
   }
 
   onDateFilterChange(): void {
@@ -131,5 +134,16 @@ export class AdminDashboard implements OnInit {
   formatTrend(value: number): string {
     const sign = value > 0 ? '+' : '';
     return `${sign}${value.toFixed(1)}%`;
+  }
+
+  private _getOrderMetrics(): void {
+    this.orderService.getOrderMetrics().subscribe({
+      next: (metrics: OrderMetrics) => {
+        this.orderMetricsSig.set(metrics);
+      },
+      error: (error) => {
+        console.error('Error fetching order metrics:', error);
+      },
+    });
   }
 }

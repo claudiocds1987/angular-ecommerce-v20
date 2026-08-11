@@ -101,7 +101,7 @@
               </span>
             </div>
             <p class="mt-2 text-2xl font-bold text-slate-900">
-              {{ kpis.totalRevenue | currency: 'USD' : 'symbol' : '1.2-2' }}
+              {{ orderMetricsSig()?.metrics?.totalRevenue | currency: 'USD' : 'symbol' : '1.2-2' }}
             </p>
             <p
               class="mt-2 flex items-center gap-1 text-xs font-medium"
@@ -130,7 +130,7 @@
               </span>
             </div>
             <p class="mt-2 text-2xl font-bold text-slate-900">
-              {{ kpis.totalOrders | number }}
+              {{ orderMetricsSig()?.metrics?.totalOrders | number }}
             </p>
             <p
               class="mt-2 flex items-center gap-1 text-xs font-medium"
@@ -159,7 +159,9 @@
               </span>
             </div>
             <p class="mt-2 text-2xl font-bold text-slate-900">
-              {{ kpis.averageOrderValue | currency: 'USD' : 'symbol' : '1.2-2' }}
+              {{
+                orderMetricsSig()?.metrics?.averageOrderValue | currency: 'USD' : 'symbol' : '1.2-2'
+              }}
             </p>
             <p
               class="mt-2 flex items-center gap-1 text-xs font-medium"
@@ -305,9 +307,9 @@
                   <div class="font-medium text-slate-800">{{ order.customerName }}</div>
                   <div class="text-xs text-slate-400">{{ order.customerEmail }}</div>
                 </td>
-                <td>{{ order.shippingCity }}</td>
+                <td>{{ order.destination }}</td>
                 <td class="whitespace-nowrap text-slate-600">
-                  {{ order.createdAt | date: 'yyyy-MM-dd HH:mm' }}
+                  {{ order.date | date: 'yyyy-MM-dd HH:mm' }}
                 </td>
                 <td class="font-semibold text-slate-900">
                   {{ order.totalAmount | currency: 'USD' : 'symbol' : '1.2-2' }}
