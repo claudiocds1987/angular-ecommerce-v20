@@ -293,7 +293,6 @@
               <tr>
                 <th>ID</th>
                 <th>Cliente</th>
-                <th>Email</th>
                 <th>Destino</th>
                 <th>Fecha</th>
                 <th>Monto Total</th>
@@ -306,8 +305,8 @@
                 <td class="font-semibold text-slate-800">#{{ order.id }}</td>
                 <td>
                   <div class="font-medium text-slate-800">{{ order.customerName }}</div>
+                  <div class="text-xs text-slate-400">{{ order.customerEmail }}</div>
                 </td>
-                <td>{{ order.customerEmail }}</td>
                 <td>{{ order.destination }}</td>
                 <td class="whitespace-nowrap text-slate-600">
                   {{ order.date | date: 'yyyy-MM-dd HH:mm' }}
