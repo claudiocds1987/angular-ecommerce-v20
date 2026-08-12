@@ -11,6 +11,7 @@ import { AdminDashboardService } from './admin-dashboard-service';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { OrderService } from '@features/checkout/services/order-service';
 import { OrderMetrics, RecentOrder } from '@features/checkout/models/order-metrics.model';
+import { ChartData } from '@shared/models/chart-data.model';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -28,9 +29,9 @@ export class AdminDashboard implements OnInit {
   dateRange: Date[] | undefined;
   globalSearch = '';
   orderFilter = signal('');
-  barChartData: any;
-  doughnutChartData: any;
-  lineChartData: any;
+  barChartData: ChartData | null = null;
+  doughnutChartData: ChartData | null = null;
+  lineChartData: ChartData | null = null;
 
   readonly filteredOrders = computed(() => {
     const query = this.orderFilter().trim().toLowerCase();
