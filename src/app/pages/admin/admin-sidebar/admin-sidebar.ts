@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminDashboardService } from '../admin-dashboard/admin-dashboard-service';
@@ -6,7 +7,7 @@ import { AdminDashboardService } from '../admin-dashboard/admin-dashboard-servic
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TooltipModule],
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.scss',
 })
