@@ -28,6 +28,9 @@ export class AdminDashboard implements OnInit {
   dateRange: Date[] | undefined;
   globalSearch = '';
   orderFilter = signal('');
+  barChartData: any;
+  doughnutChartData: any;
+  lineChartData: any;
 
   readonly filteredOrders = computed(() => {
     const query = this.orderFilter().trim().toLowerCase();
@@ -136,10 +139,48 @@ export class AdminDashboard implements OnInit {
     return `${sign}${value.toFixed(1)}%`;
   }
 
+  // cambiar nombre genrico loadDashboardData
   private _getOrderMetrics(): void {
     this.orderService.getOrderMetrics().subscribe({
       next: (metrics: OrderMetrics) => {
         this.orderMetricsSig.set(metrics);
+
+        // Gráfico de barras de top productos
+        this.barChartData = {
+          labels: metrics.topProducts.map((p) => p.productName),
+          datasets: [
+            {
+              label: 'Cantidad vendida',
+              data: metrics.topProducts.map((p) => p.quantity),
+              backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#FF7043'],
+            },
+          ],
+        };
+
+        // Gráfico doughnut de estados
+        this.doughnutChartData = {
+          labels: metrics.orderStatuses.map((s) => s.status),
+          datasets: [
+            {
+              data: metrics.orderStatuses.map((s) => s.count),
+              backgroundColor: ['#42A5F5', '#FF6384', '#FFCE56', '#66BB6A'],
+            },
+          ],
+        };
+
+        // Gráfico de línea de evolución de ventas
+        this.lineChartData = {
+          labels: metrics.salesEvolution.map((s) => s.date),
+          datasets: [
+            {
+              label: 'Ingresos',
+              data: metrics.salesEvolution.map((s) => s.revenue),
+              fill: false,
+              borderColor: '#42A5F5',
+              tension: 0.1, // suaviza la curva
+            },
+          ],
+        };
       },
       error: (error) => {
         console.error('Error fetching order metrics:', error);

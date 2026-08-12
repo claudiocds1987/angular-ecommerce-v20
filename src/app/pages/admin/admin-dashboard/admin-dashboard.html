@@ -213,15 +213,17 @@
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
           <div class="mb-4">
-            <h2 class="text-base font-semibold text-slate-800">
-              Evolución de Ventas
-              <span class="font-normal text-slate-400">(Orders.totalAmount)</span>
-            </h2>
+            <h2 class="text-base font-semibold text-slate-800">Evolución de Ventas</h2>
             <p class="text-xs text-slate-400">Ingresos agrupados por rango de tiempo</p>
           </div>
-          @if (dashboardService.salesTrendChart(); as chart) {
+          @if (lineChartData) {
             <div class="h-[280px]">
-              <p-chart type="line" [data]="chart" [options]="lineChartOptions" height="280px" />
+              <p-chart
+                type="line"
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                height="280px"
+              />
             </div>
           }
         </section>
@@ -229,13 +231,12 @@
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div class="mb-4">
             <h2 class="text-base font-semibold text-slate-800">Estado de Pedidos</h2>
-            <p class="text-xs text-slate-400">Distribución por Orders.status</p>
           </div>
-          @if (dashboardService.statusDistributionChart(); as chart) {
+          @if (doughnutChartData) {
             <div class="h-[280px]">
               <p-chart
                 type="doughnut"
-                [data]="chart"
+                [data]="doughnutChartData"
                 [options]="doughnutChartOptions"
                 height="280px"
               />
@@ -249,11 +250,15 @@
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div class="mb-4">
             <h2 class="text-base font-semibold text-slate-800">Top Productos Vendidos</h2>
-            <p class="text-xs text-slate-400">Sumatoria de OrderDetails.quantity</p>
           </div>
-          @if (dashboardService.topProductsChart(); as chart) {
+          @if (barChartData) {
             <div class="h-[260px]">
-              <p-chart type="bar" [data]="chart" [options]="barChartOptions" height="260px" />
+              <p-chart
+                type="bar"
+                [data]="barChartData"
+                [options]="barChartOptions"
+                height="260px"
+              />
             </div>
           }
         </section>
