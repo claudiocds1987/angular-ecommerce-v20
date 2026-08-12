@@ -1,6 +1,6 @@
 <aside
   class="bg-waves-reverse sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-hidden text-slate-300 transition-all duration-300"
-  [class.collapsed]="sidebarCollapsed()"
+  [class.collapsed]="isSidebarCollapsed()"
 >
   <div class="flex items-center gap-2 border-b border-slate-500 px-5 py-5">
     <span class="sidebar-brand-text text-lg font-bold tracking-tight text-white">AdminPanel</span>
@@ -28,19 +28,20 @@
       </p>
       <ul class="space-y-1">
         <li>
-          <a
-            href="#"
-            class="sidebar-item flex items-center gap-3 rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-medium text-white shadow-sm"
-            aria-current="page"
+          <button
+            type="button"
+            (click)="goToDashboard()"
+            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
+            [class.bg-blue-600]="isActive('/admin')"
           >
             <i class="pi pi-chart-bar sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Dashboard</span>
-          </a>
+          </button>
         </li>
         <li>
           <a
             href="#"
-            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
           >
             <i class="pi pi-shopping-bag sidebar-icon text-sm"></i>
             <span class="sidebar-item-text flex-1">Órdenes</span>
@@ -55,7 +56,8 @@
           <button
             type="button"
             (click)="goToProducts()"
-            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
+            [class.bg-blue-600]="isActive('/admin/products-grid-admin')"
           >
             <i class="pi pi-box sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Productos</span>
@@ -64,7 +66,7 @@
         <li>
           <a
             href="#"
-            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
           >
             <i class="pi pi-users sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Clientes</span>
@@ -83,7 +85,7 @@
         <li>
           <a
             href="#"
-            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
           >
             <i class="pi pi-chart-line sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Reportes de Ventas</span>
@@ -93,7 +95,8 @@
           <button
             type="button"
             (click)="goToExtraAttributes()"
-            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
+            [class.bg-blue-600]="isActive('/admin/product-extra-attribute-definition')"
           >
             <i class="pi pi-tags sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Atributos Extra</span>
@@ -102,7 +105,7 @@
         <li>
           <a
             href="#"
-            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 hover:text-white"
+            class="sidebar-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
           >
             <i class="pi pi-cog sidebar-icon text-sm"></i>
             <span class="sidebar-item-text">Configuración</span>
