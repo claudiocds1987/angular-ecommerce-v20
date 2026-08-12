@@ -19,7 +19,7 @@ export class AdminSidebar {
   // La función isActive detecta si estás en la ruta que se le indicó,
   // y si es así aplica la clase azul al botón para que el usuario sepa
   // en qué sección del sistema se encuentra.
-  // Se llama en el HTML, por ejemplo:
+  // Se llama en el <button>, por ejemplo:
   // [class.bg-blue-600]="isActive('/admin/product-extra-attribute-definition')"
 
   isActive(path: string): boolean {
