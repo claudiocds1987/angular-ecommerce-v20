@@ -52,12 +52,9 @@ jobs:
       - name: Deploy to MonsterASP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          # Estas son las credenciales FTP para el servidor MonsterASP
-          # Estas variables FTP las brinda monsterasp.net, estas mismas se deben guardar en los secretos del repositorio GitHub para no exponerlas públicamente
-          # Desde el panel de control de MonsterASP, se puede acceder a la sección "FTP Accounts" para obtener el servidor, usuario y contraseña FTP.
-          # Desde GitHub, se agregaron estos valores como secretos del repositorio en la sección "Settings" -> "Secrets and variables" -> "Actions".
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/e-commerce-v20/ # Carpeta local generada por Angular (incluye browser y server)
-          server-dir: /wwwroot/
+          local-dir: ./dist/e-commerce-v20/browser/ # carpeta generada por Angular
+          server-dir: /wwwroot/ # carpeta pública del sitio
+
