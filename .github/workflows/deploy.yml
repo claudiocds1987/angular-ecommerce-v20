@@ -56,5 +56,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/e-commerce-v20/browser/ # carpeta generada por Angular
-          server-dir: /wwwroot/ # carpeta pública del sitio
+          server-dir: /wwwroot/ # carpeta pública del servidor donde se suben los archivos
+          dangerous-clean-slate: true #  Limpia todo antes de subir
 
