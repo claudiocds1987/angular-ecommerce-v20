@@ -12,10 +12,21 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { OrderService } from '@features/checkout/services/order-service';
 import { OrderMetrics, RecentOrder } from '@features/checkout/models/order-metrics.model';
 import { ChartData } from '@shared/models/chart-data.model';
+import { UsersListComponent } from '@features/users/users-list/users-list.component';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CommonModule, FormsModule, Button, UIChart, TableModule, Tag, DatePicker, AdminSidebar],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Button,
+    UIChart,
+    TableModule,
+    Tag,
+    DatePicker,
+    AdminSidebar,
+    UsersListComponent,
+  ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
 })

@@ -50,12 +50,12 @@
 .wrapper__filter-container {
   // Quitamos el width: 95% y height: 99.7% para que sea una columna sólida
   width: 100%;
-  height: 100%;
+  height: 82.5%;
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: white;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
+  //border-radius: 8px;
   overflow: hidden; // Para que el app-grid-filter controle su propio scroll
 }

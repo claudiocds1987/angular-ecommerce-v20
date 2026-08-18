@@ -95,13 +95,31 @@ export const ProductAdminStore = signalStore(
             // --- LLAMADA A GRAPHQL ---
             return graphqlService.getProducts(variables).pipe(
               tap((res) => {
+                const current = {
+                  totalItems: state.totalItems(),
+                  endCursor: state.endCursor(),
+                  startCursor: state.startCursor(),
+                };
+
+                // Si el resultado es idéntico al estado actual, no volvemos a patchear.
+                // Evita disparar recomputes/CD innecesarios que puedan realimentar al paginador.
+                const isSameResult =
+                  current.totalItems === res.totalItems &&
+                  current.endCursor === res.endCursor &&
+                  current.startCursor === res.startCursor &&
+                  state.items().length === res.items.length;
+
+                if (isSameResult && !state.loading()) {
+                  return;
+                }
+
                 patchState(state, {
                   items: res.items,
                   totalItems: res.totalItems,
                   hasNextPage: res.hasNextPage,
-                  hasPreviousPage: res.hasPreviousPage, // Guardamos estado para navegar atrás
-                  endCursor: res.endCursor, // Cursor para "Siguiente"
-                  startCursor: res.startCursor, // VITAL: Cursor para "Anterior"
+                  hasPreviousPage: res.hasPreviousPage,
+                  endCursor: res.endCursor,
+                  startCursor: res.startCursor,
                   filterQuery: params.query ?? state.filterQuery(),
                   loading: false,
                 });

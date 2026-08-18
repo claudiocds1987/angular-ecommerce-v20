@@ -70,17 +70,22 @@
           </div>
         </div>
 
-        <app-grid
-          class="wrapper__grid-component min-h-0 flex-1 overflow-hidden"
-          [gridConfigSig]="gridConfigWithTotalSig()"
-          [gridDataSig]="mappedProductsSig()"
-          [isLoadingSig]="isDataGridLoadingSig()"
-          (pageChange)="onGridPageChange($event)"
-          (sortChange)="onGridSortChange($event)"
-          (exportExcel)="onExportToExcel()"
-          (searchInputValue)="onSearchInputValue($event)"
+        <app-grid-prime
+          class="wrapper__grid-component block min-h-0 flex-1 overflow-hidden"
+          [data]="mappedProductsSig()"
+          [columns]="gridPrimeColumns()"
+          mode="server"
+          paginationType="paginator"
+          [loading]="isDataGridLoadingSig()"
+          [totalRecords]="stableTotalRecordsSig()"
+          [rowsPerPage]="25"
+          [actions]="gridPrimeActions()"
+          [showExport]="true"
+          (lazyLoad)="onGridPrimeLazyLoad($event)"
+          (export)="onExportToExcel()"
           (rowDblClick)="onGridRowDblClick($event)"
-        ></app-grid>
+        >
+        </app-grid-prime>
       </div>
 
       <div class="wrapper__filter-container h-full border-l border-gray-200 bg-white shadow-xl">

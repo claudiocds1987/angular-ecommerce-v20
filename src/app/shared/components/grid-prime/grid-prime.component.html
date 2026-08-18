@@ -1,0 +1,145 @@
+<div class="grid-prime-container">
+  <!-- Toolbar for Actions like Export -->
+  @if (showExport()) {
+    <div class="grid-toolbar">
+      <p-button
+        label="Exportar a Excel"
+        icon="pi pi-file-excel"
+        severity="success"
+        (onClick)="handleExport()"
+      >
+      </p-button>
+    </div>
+  }
+
+  <div class="grid-prime-table">
+    <p-table
+      [value]="data()"
+      [columns]="columns()"
+      [lazy]="isServerMode()"
+      [lazyLoadOnInit]="isServerMode()"
+      (onLazyLoad)="handleLazyLoad($event)"
+      [paginator]="!isVirtualScroll()"
+      [rows]="rowsPerPage()"
+      [rowsPerPageOptions]="rowsPerPageOptions()"
+      paginatorDropdownAppendTo="body"
+      [totalRecords]="isServerMode() ? totalRecords() : data().length"
+      [loading]="loading()"
+      [virtualScroll]="isVirtualScroll()"
+      [virtualScrollItemSize]="46"
+      [scrollable]="true"
+      scrollHeight="flex"
+      [tableStyle]="{ 'min-width': '50rem', 'table-layout': 'fixed', width: '100%' }"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm p-datatable-gridlines grid-prime-datatable"
+    >
+      <!-- Headers -->
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          @for (col of columns; track col.field) {
+            <th
+              [pSortableColumn]="col.sortable ? col.field : undefined"
+              [style.width]="col.width || 'auto'"
+            >
+              <span [pTooltip]="col.tooltip" tooltipPosition="top">
+                {{ col.header }}
+              </span>
+              @if (col.sortable) {
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+              }
+            </th>
+          }
+          <!-- Extra header for actions if they exist -->
+          @if (actions().length > 0) {
+            <th style="width: 4rem; text-align: center"></th>
+          }
+        </tr>
+      </ng-template>
+
+      <!-- Body Rows -->
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr (dblclick)="handleRowDblClick(rowData)" class="cursor-pointer">
+          @for (col of columns; track col.field) {
+            <td
+              [style.width]="col.width || 'auto'"
+              [class.grid-prime-cell--text]="!col.type || col.type === 'text'"
+            >
+              @if (false) {
+                <span class="p-column-title">{{ col.header }}</span>
+                <!-- For mobile stack -->
+              }
+
+              <!-- Skeleton Loader -->
+              @if (loading()) {
+                <p-skeleton width="100%" height="1.5rem"></p-skeleton>
+              } @else {
+                @if (!col.type || col.type === 'text') {
+                  <span
+                    class="grid-prime-cell-text"
+                    [pTooltip]="getCellText(rowData, col.field)"
+                    [tooltipDisabled]="!getCellText(rowData, col.field)"
+                    tooltipPosition="top"
+                    appendTo="body"
+                  >
+                    {{ rowData[col.field] }}
+                  </span>
+                }
+
+                <!-- Image -->
+                @if (col.type === 'image') {
+                  <img
+                    [src]="rowData[col.field]"
+                    alt="Image"
+                    class="grid-img-cell"
+                    (error)="handleImageError($event)"
+                  />
+                }
+
+                <!-- Badge -->
+                @if (col.type === 'badge' && col.badgeMappings) {
+                  <p-tag
+                    [severity]="col.badgeMappings[rowData[col.field]]?.severity || 'info'"
+                    [value]="col.badgeMappings[rowData[col.field]]?.label || rowData[col.field]"
+                  >
+                  </p-tag>
+                }
+              }
+            </td>
+          }
+
+          <!-- Actions Column (Ellipsis) -->
+          @if (actions().length > 0 && !loading()) {
+            <td style="width: 4rem; text-align: center">
+              <p-menu #menu [model]="getMenuItems(rowData)" [popup]="true" appendTo="body"></p-menu>
+              <p-button
+                icon="pi pi-ellipsis-v"
+                [text]="true"
+                [rounded]="true"
+                severity="secondary"
+                (onClick)="menu.toggle($event)"
+              >
+              </p-button>
+            </td>
+          }
+          @if (actions().length > 0 && loading()) {
+            <td style="width: 4rem; text-align: center">
+              <p-skeleton width="2rem" height="2rem" shape="circle"></p-skeleton>
+            </td>
+          }
+        </tr>
+      </ng-template>
+
+      <!-- Empty Message -->
+      <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+          <td
+            [attr.colspan]="columns.length + (actions().length > 0 ? 1 : 0)"
+            style="text-align: center; padding: 2rem"
+          >
+            {{ emptyMessage() }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

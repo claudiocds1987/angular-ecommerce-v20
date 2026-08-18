@@ -1,7 +1,11 @@
-﻿import { inject, Injectable } from '@angular/core';
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { inject, Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { map, Observable } from 'rxjs';
-import { GQLProductNode, GraphQLProductResponse } from '@features/products/models/graphql-product-response';
+import {
+  GQLProductNode,
+  GraphQLProductResponse,
+} from '@features/products/models/graphql-product-response';
 import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
 
 @Injectable({
@@ -75,7 +79,7 @@ export class ProductGraphqlService {
       .watchQuery<GraphQLProductResponse>({
         query: this.GET_PRODUCTS_QUERY,
         variables: params,
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'cache-and-network', // o 'network-only'
       })
       .valueChanges.pipe(
         map((result) => {

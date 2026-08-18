@@ -1,4 +1,4 @@
-﻿import {
+import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -25,6 +25,12 @@ import {
   GridData,
   PaginationConfig,
 } from '@shared/components/grid/models/grid-configuration.model';
+import { GridPrimeComponent } from '@shared/components/grid-prime/grid-prime.component';
+import {
+  GridColumn,
+  GridAction,
+  GridLazyLoadEvent,
+} from '@shared/components/grid-prime/grid-prime.model';
 
 import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
 import { GridFilterConfig } from '@shared/components/grid/models/grid-filter-configuration.model';
@@ -74,6 +80,7 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
     Button,
     Breadcrumb,
     AdminSidebar,
+    GridPrimeComponent,
   ],
   templateUrl: './products-grid-admin.html',
   styleUrl: './products-grid-admin.scss',
@@ -92,6 +99,8 @@ export class ProductsGridAdmin implements OnInit {
   chipsSig = signal<Chip[]>([]);
   isFilterCollapsedSig = signal<boolean>(false);
   importErrors = signal<string[]>([]);
+  // Nuevo: total "estable", no se mueve mientras hay un fetch en curso
+  private _stableTotalSig = signal(0);
 
   // Inyeccón del Store product-admin.store que creado con NgRX Signals
   readonly productAdminStore = inject(ProductAdminStore);
@@ -132,6 +141,7 @@ export class ProductsGridAdmin implements OnInit {
         categoryId: product.categoryName || 'N/A',
         brandId: product.brandName || 'N/A',
         isActive: product.isActive,
+        isActiveStr: product.isActive ? 'Activo' : 'Inactivo',
         elipsisActions: [
           {
             label: 'Editar',
@@ -173,9 +183,86 @@ export class ProductsGridAdmin implements OnInit {
     return this.productAdminStore.loading();
   });
 
-  constructor() {
-    this.gridConfigSig.set(this._setGridConfiguration());
+  // Grid Prime Configuration
+  gridPrimeColumns = signal<GridColumn[]>([
+    { field: 'imgUrl', header: '', type: 'image', width: '80px' },
+    { field: 'id', header: 'ID', sortable: true, width: '100px' },
+    { field: 'title', header: 'Título', sortable: true, width: '250px' },
+    { field: 'price', header: 'Precio', sortable: true, width: '120px' },
+    { field: 'discountPercentage', header: 'Desc (%)', sortable: true, width: '120px' },
+    { field: 'finalPrice', header: 'Precio Final', width: '120px' },
+    { field: 'sku', header: 'SKU', sortable: true, width: '150px' },
+    { field: 'stock', header: 'Stock', sortable: true, width: '100px' },
+    { field: 'categoryId', header: 'Categoría', width: '150px' },
+    { field: 'brandId', header: 'Marca', width: '150px' },
+    {
+      field: 'isActiveStr',
+      header: 'Estado',
+      type: 'badge',
+      sortable: true,
+      width: '100px',
+      badgeMappings: {
+        Activo: { label: 'Activo', severity: 'success' },
+        Inactivo: { label: 'Inactivo', severity: 'danger' },
+      },
+    },
+  ]);
 
+  gridPrimeActions = signal<GridAction[]>([
+    {
+      label: 'Editar',
+      icon: 'pi pi-pencil',
+      action: (row) => this._editProduct(row.id),
+    },
+    {
+      label: 'Baja',
+      icon: 'pi pi-trash',
+      action: (row) => this._confirmDeleteProduct(row.id),
+      visible: (row) => row.isActive,
+    },
+    {
+      label: 'Alta',
+      icon: 'pi pi-check-circle',
+      action: (row) => this._confirmActivateProduct(row.id),
+      visible: (row) => !row.isActive,
+    },
+  ]);
+
+  onGridPrimeLazyLoad(event: GridLazyLoadEvent): void {
+    console.log('onGridPrimeLazyLoad: ', event);
+    if (event.sortField) {
+      const sortEvent: Sort = {
+        active: event.sortField,
+        direction: event.sortOrder || '',
+      };
+      this.productAdminStore.updateSort(sortEvent);
+      this._updateGridConfigOnSortChange(sortEvent);
+    }
+
+    const pageSize = event.rows;
+    const pageIndex = Math.floor(event.first / pageSize);
+    const pageEvent: PageEvent = {
+      pageIndex,
+      pageSize,
+      length: this.productAdminStore.totalItems(),
+    };
+
+    this.onGridPageChange(pageEvent);
+  }
+
+  stableTotalRecordsSig = computed(() => this._stableTotalSig());
+
+  constructor() {
+    effect(
+      () => {
+        const loading = this.productAdminStore.loading();
+        const total = this.productAdminStore.totalItems();
+        if (!loading) {
+          this._stableTotalSig.set(total);
+        }
+      },
+      { allowSignalWrites: true },
+    );
     // ¿por qué lo hago asi?, effect es "observador reactivo" (sensor) que queda a la espera:
     // se activa en el constructor pero se re-ejecuta automáticamente cada vez que
     // los items de los Stores cambian (cuando loadAll() en ngOnInit recibe la respuesta de la API).
@@ -215,8 +302,13 @@ export class ProductsGridAdmin implements OnInit {
 
   onGridPageChange(event: PageEvent): void {
     const currentPageIndex = Number(this.gridConfigSig().paginator?.pageIndex || 0);
-    const totalPages = Math.ceil(event.length / event.pageSize);
+    // Evita relanzar exactamente la misma request si ya hay una en curso
+    // (defensa extra ante una posible auto-corrección del paginador)
+    if (this.productAdminStore.loading() && event.pageIndex === currentPageIndex) {
+      return;
+    }
 
+    const totalPages = Math.ceil(event.length / event.pageSize);
     const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
     const isFirstPage = event.pageIndex === 0;
     const isForward = event.pageIndex > currentPageIndex;
@@ -590,68 +682,6 @@ export class ProductsGridAdmin implements OnInit {
     totalCount: 0,
     isServerSide: true,
   };
-
-  private _setGridConfiguration(): GridConfiguration {
-    return createDefaultGridConfiguration({
-      columns: [
-        {
-          name: 'thumbnail',
-          width: '100px',
-          type: 'img',
-          isSortable: false,
-          hasHeader: false,
-          label: 'Img',
-        },
-        { name: 'id', width: '100px', isSortable: true, label: 'ID' },
-        { name: 'title', width: '200px', label: 'Título' },
-        { name: 'price', width: '120px', label: 'Precio' },
-        { name: 'discountPercentage', width: '100px', label: 'Descuento' },
-        { name: 'finalPrice', width: '120px', isSortable: false, label: 'Precio Final' },
-        { name: 'sku', label: 'SKU' },
-        { name: 'stock', isSortable: true, label: 'Stock' },
-        { name: 'categoryId', isSortable: false, label: 'Categoría' },
-        { name: 'brandId', isSortable: false, label: 'Marca' },
-        {
-          name: 'isActive',
-          class: 'status-circle',
-          align: 'center',
-          width: '75px',
-          label: 'Estado',
-        },
-        {
-          name: 'elipsisActions',
-          width: '100px',
-          align: 'center',
-          type: 'elipsis',
-          hasHeader: false,
-        },
-      ],
-      paginator: {
-        pageSize: 25,
-        pageSizeOptions: [25, 50],
-        totalCount: 0,
-        pageIndex: 0,
-        isServerSide: true,
-      },
-      hasSorting: { isServerSide: true },
-      hasInputSearch: true,
-      OrderBy: { columnName: 'id', direction: 'asc' },
-      actionButtons: [
-        {
-          class: 'action-button-grid',
-          icon: 'icons/product-icon.svg',
-          text: 'Agregar',
-          action: (): void => this._onCreateProduct(),
-        },
-        {
-          class: 'download-button',
-          type: 'download',
-          icon: 'icons/download.svg',
-          tooltip: 'Descargar excel',
-        },
-      ],
-    });
-  }
 
   private _onCreateProduct = (): void => {
     this._router.navigate(['admin/product/create']);
