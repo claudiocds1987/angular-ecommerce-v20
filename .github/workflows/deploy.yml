@@ -60,4 +60,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/e-commerce-v20/ # Carpeta local generada por Angular (incluye browser y server)
-          server-dir: / # Dependiendo del host Node.js, usualmente va a la raíz o wwwroot
+          server-dir: /wwwroot/
