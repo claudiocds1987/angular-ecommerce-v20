@@ -1,0 +1,24 @@
+<div class="users-list-container">
+  <h2>Gestión de Usuarios</h2>
+  <p>Ejemplo de implementación de grid-prime en modo servidor con skeleton loaders y paginación.</p>
+
+  <p-toast></p-toast>
+
+  <div class="card">
+    <app-grid-prime
+      [data]="usersData()"
+      [columns]="columns()"
+      mode="server"
+      paginationType="paginator"
+      [loading]="loading()"
+      [totalRecords]="totalRecords()"
+      [rowsPerPage]="10"
+      [actions]="actions()"
+      [showExport]="true"
+      (lazyLoad)="onLazyLoad($event)"
+      (action)="onAction($event)"
+      (export)="onExport()"
+    >
+    </app-grid-prime>
+  </div>
+</div>
