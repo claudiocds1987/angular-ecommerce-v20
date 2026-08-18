@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -140,8 +140,7 @@ export class ProductsGridAdmin implements OnInit {
         stock: product.stock,
         categoryId: product.categoryName || 'N/A',
         brandId: product.brandName || 'N/A',
-        isActive: product.isActive,
-        isActiveStr: product.isActive ? 'Activo' : 'Inactivo',
+        isActive: product.isActive ? 'Activo' : 'Inactivo',
         elipsisActions: [
           {
             label: 'Editar',
@@ -196,7 +195,7 @@ export class ProductsGridAdmin implements OnInit {
     { field: 'categoryId', header: 'Categoría', width: '150px' },
     { field: 'brandId', header: 'Marca', width: '150px' },
     {
-      field: 'isActiveStr',
+      field: 'isActive',
       header: 'Estado',
       type: 'badge',
       sortable: true,
@@ -229,7 +228,6 @@ export class ProductsGridAdmin implements OnInit {
   ]);
 
   onGridPrimeLazyLoad(event: GridLazyLoadEvent): void {
-    console.log('onGridPrimeLazyLoad: ', event);
     if (event.sortField) {
       const sortEvent: Sort = {
         active: event.sortField,
