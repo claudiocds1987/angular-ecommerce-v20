@@ -19,12 +19,7 @@ import { ExcelService } from '@features/admin-tools/services/excel-service';
 import { environment } from '@env/environment';
 
 import { ProductAdminStore } from '@features/products/state/product-admin.store';
-import {
-  createDefaultGridConfiguration,
-  GridConfiguration,
-  GridData,
-  PaginationConfig,
-} from '@shared/components/grid/models/grid-configuration.model';
+import { GridData } from '@shared/components/grid/models/grid-configuration.model';
 import { GridPrimeComponent } from '@shared/components/grid-prime/grid-prime.component';
 import {
   GridColumn,
@@ -99,7 +94,9 @@ export class ProductsGridAdmin implements OnInit {
   chipsSig = signal<Chip[]>([]);
   isFilterCollapsedSig = signal<boolean>(false);
   importErrors = signal<string[]>([]);
-  // Nuevo: total "estable", no se mueve mientras hay un fetch en curso
+  // _stableTotalSig: Signal auxiliar para mantener el total de registros "estable"
+  // mientras se está realizando un fetch. Evita que el contador
+  // de productos salte a 0 o cambie bruscamente durante la carga.
   private _stableTotalSig = signal(0);
 
   // Inyeccón del Store product-admin.store que creado con NgRX Signals
@@ -216,6 +213,9 @@ export class ProductsGridAdmin implements OnInit {
     },
   ]);
 
+  // onGridPrimeLazyLoad: Handler del evento (lazyLoad) emitido por <app-grid-prime>.
+  // Se dispara cuando el paginador o el orden cambian, y calcula
+  // pageIndex + pageSize antes de llamar al store.
   onGridPrimeLazyLoad(event: GridLazyLoadEvent): void {
     if (event.sortField) {
       const sortEvent: Sort = {
@@ -296,41 +296,15 @@ export class ProductsGridAdmin implements OnInit {
       pageSize: event.pageSize,
     });
 
-    // Actualizamos los signals locales
+    // Guardamos los últimos valores de paginación en signals.
+    // Esto mantiene el estado interno sincronizado con el paginador,
+    // permitiendo saber en qué página y con qué tamaño estaba el usuario.
+    // Ejemplo: si el usuario estaba en la página 2 con 25 registros,
+    // pageIndexSig() = 2 y pageSizeSig() = 25.
+    // Se usa luego en otras funciones (ej: loadMore, reset de filtros, exportaciones).
     this.pageIndexSig.set(event.pageIndex);
     this.pageSizeSig.set(event.pageSize);
   }
-
-  /*   onGridPageChange(event: PageEvent): void {
-    const currentPageIndex = this.pageIndexSig();
-    if (this.productAdminStore.loading() && event.pageIndex === currentPageIndex) {
-      return;
-    }
-
-    const totalPages = Math.ceil(event.length / event.pageSize);
-    const isLastPage = event.pageIndex === totalPages - 1 && totalPages > 1;
-    const isFirstPage = event.pageIndex === 0;
-    const isForward = event.pageIndex > currentPageIndex;
-
-    if (isFirstPage) {
-      this._loadData();
-    } else if (isLastPage) {
-      this.productAdminStore.loadProducts({ last: event.pageSize });
-    } else if (isForward) {
-      this.productAdminStore.loadProducts({
-        first: event.pageSize,
-        after: this.productAdminStore.endCursor() || undefined,
-      });
-    } else {
-      this.productAdminStore.loadProducts({
-        last: event.pageSize,
-        before: this.productAdminStore.startCursor() || undefined,
-      });
-    }
-
-    this.pageIndexSig.set(event.pageIndex);
-    this.pageSizeSig.set(event.pageSize);
-  } */
 
   applyFilter(): void {
     const gridFilterForm = this.gridFilterFormSig();
@@ -457,7 +431,6 @@ export class ProductsGridAdmin implements OnInit {
 
   onGridRowDblClick(rowData: any): void {
     const productId = rowData.id;
-    console.log(`Fila doble clic: ID del producto = ${productId}`);
     this._editProduct(productId);
   }
 
@@ -518,7 +491,6 @@ export class ProductsGridAdmin implements OnInit {
   onSearchInputValue(searchValue: string): void {
     // Reseteamos a página 0
     this.pageIndexSig.set(0);
-
     // Recargamos la data con el valor de búsqueda
     this._loadData(searchValue);
   }
@@ -534,15 +506,12 @@ export class ProductsGridAdmin implements OnInit {
     const exportParams: ProductFilterParams = {
       // Búsqueda rápida
       search: quickSearch,
-
       // Ordenamiento
       sortBy: sortConfig?.active || 'id',
       order: sortConfig?.direction || 'desc',
-
       // FILTROS DEL PANEL
       id: panelFilters.id,
       title: panelFilters.title,
-
       // Validamos 'all' para Categoría y Marca
       categoryId:
         panelFilters.categoryId && panelFilters.categoryId !== 'all'
@@ -550,11 +519,9 @@ export class ProductsGridAdmin implements OnInit {
           : null,
 
       brandId: panelFilters.brandId && panelFilters.brandId !== 'all' ? panelFilters.brandId : null,
-
       // Lógica para isActive (convertir a lo que el Backend REST espera)
       isActive: panelFilters.isActive === 'all' ? null : panelFilters.isActive,
     };
-
     // 2. Llamada al servicio REST enviando todos los filtros
     this._productServices
       .getFilteredProductsAdmin(1, 1000, exportParams)
@@ -746,10 +713,8 @@ export class ProductsGridAdmin implements OnInit {
       next: () => {
         this._spinnerService.hide();
         this._toastService.show('Producto dado de baja exitosamente', 'success');
-
         // Reseteamos el pageIndex para que el paginador vuelva a la primera página
         this.pageIndexSig.set(0);
-
         // Recargamos la data
         this._loadData();
       },
