@@ -3,8 +3,7 @@ import { inject } from '@angular/core';
 import { signalStore, withState, withMethods, patchState, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY, delay } from 'rxjs';
-import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model'; // Ajusta la ruta
-
+import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
 import { computed } from '@angular/core';
 import { ProductGraphqlService } from '@features/products/services/product-graphql-service';
 import { ProductService } from '@features/products/services/product-service';
@@ -16,13 +15,9 @@ export const ProductAdminStore = signalStore(
   withState({
     items: [] as ProductAdminGrid[],
     totalItems: 0,
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: '', // 1er registro de la página actual
-    endCursor: '', // último registro de la página actual
     loading: false,
     filterQuery: '',
-    sortConfig: { active: 'id', direction: 'asc' } as Sort, // Estado para el orden
+    sortConfig: { active: 'id', direction: 'asc' } as Sort,
   }),
 
   withComputed((state) => ({
@@ -35,14 +30,12 @@ export const ProductAdminStore = signalStore(
       graphqlService = inject(ProductGraphqlService),
       productService = inject(ProductService),
     ) => ({
-      // recibir filtros y el cursor
+      // recibir filtros y paginación offset
       loadProducts: rxMethod<{
         query?: string;
         filters?: ProductFilterParams;
-        first?: number;
-        after?: string;
-        last?: number;
-        before?: string;
+        pageIndex?: number;
+        pageSize?: number;
       }>(
         pipe(
           tap(() => patchState(state, { loading: true })),
@@ -78,48 +71,22 @@ export const ProductAdminStore = signalStore(
 
             const whereArg = andConditions.length > 0 ? { and: andConditions } : undefined;
 
-            // --- CONSTRUCCIÓN DINÁMICA DE VARIABLES (Limpieza de null/undefined) ---
-            // Esto evita enviar "first: undefined" o "after: null" al servidor
+            // --- VARIABLES skip/take ---
             const variables: any = {
               where: whereArg,
               order: state.sortConfig().direction
                 ? [{ [state.sortConfig().active]: state.sortConfig().direction.toUpperCase() }]
                 : [],
+              skip: (params.pageIndex ?? 0) * (params.pageSize ?? 25),
+              take: params.pageSize ?? 25,
             };
-
-            if (params.first) variables.first = params.first;
-            if (params.after) variables.after = params.after;
-            if (params.last) variables.last = params.last;
-            if (params.before) variables.before = params.before;
 
             // --- LLAMADA A GRAPHQL ---
             return graphqlService.getProducts(variables).pipe(
               tap((res) => {
-                const current = {
-                  totalItems: state.totalItems(),
-                  endCursor: state.endCursor(),
-                  startCursor: state.startCursor(),
-                };
-
-                // Si el resultado es idéntico al estado actual, no volvemos a patchear.
-                // Evita disparar recomputes/CD innecesarios que puedan realimentar al paginador.
-                const isSameResult =
-                  current.totalItems === res.totalItems &&
-                  current.endCursor === res.endCursor &&
-                  current.startCursor === res.startCursor &&
-                  state.items().length === res.items.length;
-
-                if (isSameResult && !state.loading()) {
-                  return;
-                }
-
                 patchState(state, {
                   items: res.items,
                   totalItems: res.totalItems,
-                  hasNextPage: res.hasNextPage,
-                  hasPreviousPage: res.hasPreviousPage,
-                  endCursor: res.endCursor,
-                  startCursor: res.startCursor,
                   filterQuery: params.query ?? state.filterQuery(),
                   loading: false,
                 });
@@ -140,21 +107,16 @@ export const ProductAdminStore = signalStore(
 
       removeProduct: rxMethod<string | number>(
         pipe(
-          // 1. Solo marcamos que estamos procesando (opcional)
           tap(() => patchState(state, { loading: true })),
-
           switchMap((id) =>
             productService.updateProductStatus(id as number, false).pipe(
               tap(() => {
-                // 2. ELIMINAMOS RECIÉN AQUÍ (Cuando el backend confirmó el OK)
                 const currentItems = state.items().filter((p) => String(p.id) !== String(id));
-
                 patchState(state, {
                   items: currentItems,
                   totalItems: state.totalItems() - 1,
                   loading: false,
                 });
-                // agregar toast de éxito
                 console.log('Producto desactivado con éxito');
               }),
               catchError(() => {
