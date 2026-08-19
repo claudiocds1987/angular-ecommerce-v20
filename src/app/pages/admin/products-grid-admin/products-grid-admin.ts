@@ -37,7 +37,6 @@ import { GridFilterConfig } from '@shared/components/grid/models/grid-filter-con
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Chip, ChipsComponent } from '../../../shared/components/chips/chips.component';
 import { ProductCategory } from '@features/products/models/product-category.model';
-import { GridComponent } from '@shared/components/grid/grid.component';
 import { GridFilterComponent } from '@shared/components/grid/grid-filter/grid-filter.component';
 import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
@@ -70,7 +69,6 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
   imports: [
     CommonModule,
     ExcelUpload,
-    GridComponent,
     GridFilterComponent,
     ChipsComponent,
     MatDialogModule,
@@ -94,7 +92,9 @@ export class ProductsGridAdmin implements OnInit {
   gridFilterConfigSig = signal<GridFilterConfig[]>([]);
   gridFilterFormSig = signal<FormGroup>(new FormGroup({}));
   isGridFilterLoadingSig = signal<boolean>(true);
-  gridConfigSig = signal<GridConfiguration>({} as GridConfiguration);
+  currentSortSig = signal<Sort | null>(null);
+  pageIndexSig = signal(0);
+  pageSizeSig = signal(25);
   gridDataSig = signal<GridData[]>([]);
   chipsSig = signal<Chip[]>([]);
   isFilterCollapsedSig = signal<boolean>(false);
@@ -165,25 +165,14 @@ export class ProductsGridAdmin implements OnInit {
     });
   });
 
-  // Paginación reactiva: Mezcla la config base con el total del store
-  gridConfigWithTotalSig = computed(() => {
-    const config = this.gridConfigSig();
-    if (!config.paginator) return config;
-    return {
-      ...config,
-      paginator: {
-        ...config.paginator,
-        totalCount: this.productAdminStore.totalItems(),
-      },
-    };
-  });
-
-  isDataGridLoadingSig = computed(() => {
+  isDataLoadingSig = computed(() => {
     return this.productAdminStore.loading();
   });
 
+  totalRecordsSig = computed(() => this.productAdminStore.totalItems());
+
   // Grid Prime Configuration
-  gridPrimeColumns = signal<GridColumn[]>([
+  gridColumns = signal<GridColumn[]>([
     { field: 'imgUrl', header: '', type: 'image', width: '80px' },
     { field: 'id', header: 'ID', sortable: true, width: '100px' },
     { field: 'title', header: 'Título', sortable: true, width: '250px' },
@@ -207,7 +196,7 @@ export class ProductsGridAdmin implements OnInit {
     },
   ]);
 
-  gridPrimeActions = signal<GridAction[]>([
+  gridActions = signal<GridAction[]>([
     {
       label: 'Editar',
       icon: 'pi pi-pencil',
@@ -233,12 +222,16 @@ export class ProductsGridAdmin implements OnInit {
         active: event.sortField,
         direction: event.sortOrder || '',
       };
+      this.currentSortSig.set(sortEvent);
       this.productAdminStore.updateSort(sortEvent);
-      this._updateGridConfigOnSortChange(sortEvent);
     }
 
     const pageSize = event.rows;
     const pageIndex = Math.floor(event.first / pageSize);
+
+    this.pageIndexSig.set(pageIndex);
+    this.pageSizeSig.set(pageSize);
+
     const pageEvent: PageEvent = {
       pageIndex,
       pageSize,
@@ -247,8 +240,6 @@ export class ProductsGridAdmin implements OnInit {
 
     this.onGridPageChange(pageEvent);
   }
-
-  stableTotalRecordsSig = computed(() => this._stableTotalSig());
 
   constructor() {
     effect(
@@ -299,9 +290,19 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   onGridPageChange(event: PageEvent): void {
-    const currentPageIndex = Number(this.gridConfigSig().paginator?.pageIndex || 0);
-    // Evita relanzar exactamente la misma request si ya hay una en curso
-    // (defensa extra ante una posible auto-corrección del paginador)
+    // Llamamos al store con pageIndex y pageSize
+    this.productAdminStore.loadProducts({
+      pageIndex: event.pageIndex,
+      pageSize: event.pageSize,
+    });
+
+    // Actualizamos los signals locales
+    this.pageIndexSig.set(event.pageIndex);
+    this.pageSizeSig.set(event.pageSize);
+  }
+
+  /*   onGridPageChange(event: PageEvent): void {
+    const currentPageIndex = this.pageIndexSig();
     if (this.productAdminStore.loading() && event.pageIndex === currentPageIndex) {
       return;
     }
@@ -312,64 +313,46 @@ export class ProductsGridAdmin implements OnInit {
     const isForward = event.pageIndex > currentPageIndex;
 
     if (isFirstPage) {
-      // Caso 1: Primera página -> Usamos la carga inicial (first)
       this._loadData();
     } else if (isLastPage) {
-      // Caso 2: Última página -> GraphQL requiere LAST sin AFTER ni FIRST
-      this.productAdminStore.loadProducts({
-        last: event.pageSize,
-        // Importante: Asegúrate de que tu Store limpie 'first' y 'after'
-        // al recibir el parámetro 'last'
-      });
+      this.productAdminStore.loadProducts({ last: event.pageSize });
     } else if (isForward) {
-      // Caso 3: Siguiente -> first + after
       this.productAdminStore.loadProducts({
         first: event.pageSize,
         after: this.productAdminStore.endCursor() || undefined,
       });
     } else {
-      // Caso 4: Anterior -> last + before
       this.productAdminStore.loadProducts({
         last: event.pageSize,
         before: this.productAdminStore.startCursor() || undefined,
       });
     }
 
-    // Actualizamos el índice localmente para que el paginador sepa dónde está
-    this.gridConfigSig.update((config) => ({
-      ...config,
-      paginator: {
-        ...config.paginator!,
-        pageIndex: event.pageIndex,
-        pageSize: event.pageSize,
-      },
-    }));
-  }
+    this.pageIndexSig.set(event.pageIndex);
+    this.pageSizeSig.set(event.pageSize);
+  } */
 
   applyFilter(): void {
     const gridFilterForm = this.gridFilterFormSig();
     const gridFilterFormValues = gridFilterForm.value;
-    // 1. Validamos si el formulario viene completamente en null (es decir, en caso que se haga clic en "Limpiar Filtro" en grid-filter.component)
+    // 1. Validamos si el formulario viene completamente en null
     const isFormReseted = Object.values(gridFilterFormValues).every((value) => value === null);
-    // 2. al "Limpiar Filtro", todos los valores son "null",  se setea por default el formulario del filtro
+    // 2. Si se hizo "Limpiar Filtro", seteamos valores por defecto
     if (isFormReseted) {
       gridFilterForm.patchValue(
         {
           id: '',
           title: '',
-          categoryId: 'all', // Vuelve a pintar "Todas" en el mat-select
-          brandId: 'all', // Vuelve a pintar "Todas" en el mat-select
-          isActive: 'all', // Vuelve a pintar "Todos" en el mat-select
+          categoryId: 'all',
+          brandId: 'all',
+          isActive: 'all',
         },
-        { emitEvent: false }, // Evitamos bucles de eventos innecesarios
+        { emitEvent: false },
       );
     }
     // 3. Reseteamos a página 0 antes de filtrar
-    this.gridConfigSig.update((config) => ({
-      ...config,
-      paginator: { ...config.paginator!, pageIndex: 0 },
-    }));
-    // 4. actualizadno los chips y cargando la data
+    this.pageIndexSig.set(0);
+    // 4. Actualizamos los chips y recargamos la data
     const updatedValues = gridFilterForm.value;
     this._updateChips(updatedValues);
     this._loadData();
@@ -442,14 +425,11 @@ export class ProductsGridAdmin implements OnInit {
     const control = form.get(chip.key);
 
     if (!control) return;
-
     // 2. Definimos el valor de "reset" según el campo
     // Para los selects volvemos a 'all', para texto a vacío ''
     const defaultValue = ['categoryId', 'brandId', 'isActive'].includes(chip.key) ? 'all' : '';
-
     // 3. Actualizamos el formulario
     control.setValue(defaultValue);
-
     // 4. Disparamos la lógica de filtrado (esto actualiza los chips y recarga la DB)
     this.applyFilter();
   }
@@ -457,9 +437,11 @@ export class ProductsGridAdmin implements OnInit {
   onGridSortChange(sortEvent: Sort): void {
     // 1. Actualizamos el estado de orden en el Store
     this.productAdminStore.updateSort(sortEvent);
-    // 2. Sincronizamos la UI local
-    this._updateGridConfigOnSortChange(sortEvent);
-    // 3. Recargamos los datos (el Store aplicará el sortConfig internamente)
+    // 2. Guardamos el sort en la signal local
+    this.currentSortSig.set(sortEvent);
+    // 3. Reseteamos a la primera página
+    this.pageIndexSig.set(0);
+    // 4. Recargamos los datos (el Store aplicará el sortConfig internamente)
     this._loadData(this.productAdminStore.filterQuery());
   }
 
@@ -533,30 +515,11 @@ export class ProductsGridAdmin implements OnInit {
     });
   }
 
-  private _updateGridConfigOnSortChange(sortEvent: Sort): void {
-    const basePaginationConfig = this.gridConfigSig().paginator || this._defaultPaginatorOptions;
-    // cambio de referencia de un objeto signal
-    this.gridConfigSig.update(
-      (currentValue): GridConfiguration => ({
-        ...currentValue,
-        OrderBy: {
-          columnName: sortEvent.active,
-          direction: sortEvent.direction,
-        },
-        paginator: {
-          ...basePaginationConfig,
-          pageIndex: 0,
-        },
-      }),
-    );
-  }
-
   onSearchInputValue(searchValue: string): void {
     // Reseteamos a página 0
-    this.gridConfigSig.update((config) => ({
-      ...config,
-      paginator: { ...config.paginator!, pageIndex: 0 },
-    }));
+    this.pageIndexSig.set(0);
+
+    // Recargamos la data con el valor de búsqueda
     this._loadData(searchValue);
   }
 
@@ -564,19 +527,19 @@ export class ProductsGridAdmin implements OnInit {
     this._spinnerService.show();
 
     // 1. Capturamos TODO el estado actual: Orden, Búsqueda Rápida y Filtros del Panel
-    const sortConfig = this.gridConfigSig().OrderBy;
-    const quickSearch = this.productAdminStore.filterQuery(); // El input de arriba
-    const panelFilters = this.gridFilterFormSig().value; // El panel de la derecha
+    const sortConfig = this.currentSortSig(); // usamos la nueva signal
+    const quickSearch = this.productAdminStore.filterQuery(); // el input de arriba
+    const panelFilters = this.gridFilterFormSig().value; // el panel de la derecha
 
     const exportParams: ProductFilterParams = {
       // Búsqueda rápida
       search: quickSearch,
 
       // Ordenamiento
-      sortBy: sortConfig?.columnName || 'id',
+      sortBy: sortConfig?.active || 'id',
       order: sortConfig?.direction || 'desc',
 
-      // FILTROS DEL PANEL (Esto es lo que te faltaba conectar)
+      // FILTROS DEL PANEL
       id: panelFilters.id,
       title: panelFilters.title,
 
@@ -656,30 +619,31 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   loadMore() {
-    if (this.productAdminStore.hasNextPage()) {
-      this.productAdminStore.loadProducts({
-        query: this.productAdminStore.filterQuery(),
-        first: 30,
-        after: this.productAdminStore.endCursor(), // Aquí es donde GraphQL sabe dónde quedó
-      });
-    }
+    // Ahora simplemente calculamos la siguiente página usando pageIndexSig y pageSizeSig
+    const nextPageIndex = this.pageIndexSig() + 1;
+    const pageSize = this.pageSizeSig();
+
+    this.productAdminStore.loadProducts({
+      query: this.productAdminStore.filterQuery(),
+      filters: this.gridFilterFormSig().value,
+      pageIndex: nextPageIndex,
+      pageSize: pageSize,
+    });
+
+    this.pageIndexSig.set(nextPageIndex);
   }
 
   private _loadData(quickQuery?: string) {
     this.productAdminStore.loadProducts({
-      query: quickQuery ?? this.productAdminStore.filterQuery(), // El valor del input superior
-      filters: this.gridFilterFormSig().value, // Los valores del panel lateral
-      first: 25,
+      query: quickQuery ?? this.productAdminStore.filterQuery(), // valor del input superior
+      filters: this.gridFilterFormSig().value, // valores del panel lateral
+      pageIndex: 0, // primera página
+      pageSize: 25, // tamaño por defecto
     });
-  }
 
-  private _defaultPaginatorOptions: PaginationConfig = {
-    pageIndex: 0,
-    pageSize: 25,
-    pageSizeOptions: [5, 10, 25, 100],
-    totalCount: 0,
-    isServerSide: true,
-  };
+    this.pageIndexSig.set(0);
+    this.pageSizeSig.set(25);
+  }
 
   private _onCreateProduct = (): void => {
     this._router.navigate(['admin/product/create']);
@@ -782,15 +746,11 @@ export class ProductsGridAdmin implements OnInit {
       next: () => {
         this._spinnerService.hide();
         this._toastService.show('Producto dado de baja exitosamente', 'success');
-        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1 al borrar un producto.
-        this.gridConfigSig.update((config) => ({
-          ...config,
-          paginator: {
-            ...config.paginator!,
-            pageIndex: 0,
-          },
-        }));
 
+        // Reseteamos el pageIndex para que el paginador vuelva a la primera página
+        this.pageIndexSig.set(0);
+
+        // Recargamos la data
         this._loadData();
       },
       error: () => {
@@ -806,15 +766,9 @@ export class ProductsGridAdmin implements OnInit {
       next: () => {
         this._spinnerService.hide();
         this._toastService.show('Producto dado de alta exitosamente', 'success');
-        // Reseteamos el pageIndex para que el paginador sepa que volvemos a la página 1 al borrar un producto.
-        this.gridConfigSig.update((config) => ({
-          ...config,
-          paginator: {
-            ...config.paginator!,
-            pageIndex: 0,
-          },
-        }));
-
+        // Reseteamos el pageIndex para que el paginador vuelva a la primera página
+        this.pageIndexSig.set(0);
+        // Recargamos la data
         this._loadData();
       },
       error: () => {

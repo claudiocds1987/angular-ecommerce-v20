@@ -14,31 +14,17 @@ import { ProductAdminGrid } from '@features/products/models/product-admin-grid.m
 export class ProductGraphqlService {
   private _apollo = inject(Apollo);
 
+  // ✅ Query ajustada para usar skip/take con items
   private readonly GET_PRODUCTS_QUERY = gql`
     query GetProducts(
-      $first: Int
-      $after: String
-      $last: Int
-      $before: String
+      $skip: Int
+      $take: Int
       $where: ProductFilterInput
       $order: [ProductSortInput!]
     ) {
-      products(
-        first: $first
-        after: $after
-        last: $last
-        before: $before
-        where: $where
-        order: $order
-      ) {
+      products(skip: $skip, take: $take, where: $where, order: $order) {
         totalCount
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          endCursor
-          startCursor
-        }
-        nodes {
+        items {
           id
           thumbnail
           title
@@ -60,20 +46,9 @@ export class ProductGraphqlService {
     }
   `;
 
-  getProducts(params: {
-    first?: number;
-    after?: string;
-    last?: number;
-    before?: string;
-    where?: any;
-    order?: any;
-  }): Observable<{
+  getProducts(params: { skip?: number; take?: number; where?: any; order?: any }): Observable<{
     items: ProductAdminGrid[];
     totalItems: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor: string;
-    endCursor: string;
   }> {
     return this._apollo
       .watchQuery<GraphQLProductResponse>({
@@ -85,14 +60,10 @@ export class ProductGraphqlService {
         map((result) => {
           const data = result.data?.products;
           return {
-            items: (data?.nodes || []).map((node) =>
+            items: (data?.items || []).map((node) =>
               this._mapGraphqlNodeToAdminProduct(node as GQLProductNode),
             ),
             totalItems: data?.totalCount || 0,
-            hasNextPage: data?.pageInfo?.hasNextPage || false,
-            hasPreviousPage: data?.pageInfo?.hasPreviousPage || false,
-            endCursor: data?.pageInfo?.endCursor || '',
-            startCursor: data?.pageInfo?.startCursor || '',
           };
         }),
       );

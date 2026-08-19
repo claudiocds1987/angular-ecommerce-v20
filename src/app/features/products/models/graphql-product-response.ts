@@ -24,12 +24,6 @@ export interface GQLProductNode {
 export interface GraphQLProductResponse {
   products: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
-    nodes: GQLProductNode[];
+    items: GQLProductNode[];
   };
 }
