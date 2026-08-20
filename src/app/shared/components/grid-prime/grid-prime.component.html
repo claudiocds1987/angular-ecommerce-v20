@@ -109,19 +109,17 @@
 
           <!-- Actions Column (Ellipsis) -->
           @if (actions().length > 0 && !loading()) {
-            <td style="width: 4rem; text-align: center">
-              <p-menu #menu [model]="getMenuItems(rowData)" [popup]="true" appendTo="body"></p-menu>
+            <td class="w-16 text-center">
               <p-button
                 icon="pi pi-ellipsis-v"
                 [text]="true"
                 [rounded]="true"
                 severity="secondary"
-                (onClick)="menu.toggle($event)"
+                (onClick)="onMenuClick($event, rowData, globalMenu)"
               >
               </p-button>
             </td>
-          }
-          @if (actions().length > 0 && loading()) {
+          } @else if (actions().length > 0 && loading()) {
             <td style="width: 4rem; text-align: center">
               <p-skeleton width="2rem" height="2rem" shape="circle"></p-skeleton>
             </td>
@@ -141,5 +139,8 @@
         </tr>
       </ng-template>
     </p-table>
+
+    <!-- UN SOLO MENÚ GLOBAL PARA TODA LA TABLA -->
+    <p-menu #globalMenu [model]="activeMenuModel" [popup]="true" appendTo="body"></p-menu>
   </div>
 </div>

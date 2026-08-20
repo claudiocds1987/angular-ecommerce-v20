@@ -41,6 +41,7 @@ export class GridPrimeComponent {
   action = output<{ action: GridAction; row: any }>();
   export = output<void>();
   rowDblClick = output<any>();
+  activeMenuModel: MenuItem[] = [];
 
   // Computed properties
   isServerMode = computed(() => this.mode() === 'server');
@@ -49,17 +50,23 @@ export class GridPrimeComponent {
   // Internal state for menus
   selectedRow: any;
 
-  getMenuItems(row: any): MenuItem[] {
-    return this.actions()
-      .filter((action) => !action.visible || action.visible(row))
+  onMenuClick(event: MouseEvent, rowData: any, menu: any) {
+    event.stopPropagation();
+
+    // Generamos los items para la fila actual
+    this.activeMenuModel = this.actions()
+      .filter((action) => !action.visible || action.visible(rowData))
       .map((action) => ({
         label: action.label,
         icon: action.icon,
         command: () => {
-          this.action.emit({ action, row });
-          action.action(row);
+          this.action.emit({ action, row: rowData });
+          action.action(rowData);
         },
       }));
+
+    // Oculta/cierra cualquier menú que estuviera abierto previamente y abre este
+    menu.toggle(event);
   }
 
   handleLazyLoad(event: TableLazyLoadEvent) {

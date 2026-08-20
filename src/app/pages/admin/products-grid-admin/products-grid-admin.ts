@@ -138,7 +138,7 @@ export class ProductsGridAdmin implements OnInit {
         categoryId: product.categoryName || 'N/A',
         brandId: product.brandName || 'N/A',
         isActive: product.isActive ? 'Activo' : 'Inactivo',
-        elipsisActions: [
+        /* elipsisActions: [
           {
             label: 'Editar',
             icon: 'edit',
@@ -157,7 +157,7 @@ export class ProductsGridAdmin implements OnInit {
             action: (id: number) => this._confirmActivateProduct(id),
             condition: (product: ProductAdminGrid) => !product.isActive, // Solo muestra "Alta" si el producto está inactivo
           },
-        ],
+        ], */
       } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
     });
   });
@@ -676,6 +676,7 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _editProduct(id: number): void {
+    console.log('Editando producto con ID:', id);
     this._router.navigate(['admin/product/edit', id]);
   }
 
