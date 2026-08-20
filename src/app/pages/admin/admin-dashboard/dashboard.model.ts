@@ -11,7 +11,7 @@ export interface KpiSummary {
 
 export interface ChartDataSets {
   labels: string[];
-  datasets: Array<{
+  datasets: {
     label?: string;
     data: number[];
     backgroundColor?: string | string[];
@@ -23,7 +23,7 @@ export interface ChartDataSets {
     pointBorderColor?: string;
     pointRadius?: number;
     borderRadius?: number;
-  }>;
+  }[];
 }
 
 export interface RecentOrderDto {

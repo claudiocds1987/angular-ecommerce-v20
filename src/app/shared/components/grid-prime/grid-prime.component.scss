@@ -25,6 +25,43 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+
+  p-table {
+    th {
+      font-weight: 500;
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image:
+        repeating-radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 200px),
+        linear-gradient(to bottom, #2563eb, #06b6d4) !important;
+      background-size:
+        10px 10px,
+        auto !important;
+      background-blend-mode: overlay !important;
+      color: #ffffff !important;
+
+      p-sortIcon,
+      .p-sort-column-icon,
+      svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+      }
+    }
+  }
+}
+
+// Se requiere ::ng-deep para que el icono del sort quede en color blanco porque PrimeNG
+// encapsula fuertemente el componente p-sortIcon y sus estados interactivos (hover/SVG interno).
+// Los selectores locales no logran atravesar la barrera de encapsulamiento
+// de la librería al interactuar con el mouse, por lo que es necesario forzar
+// el color blanco de forma global acotado a la clase contenedora.
+
+::ng-deep .grid-prime-table p-table th,
+::ng-deep .grid-prime-table p-table th:hover,
+::ng-deep .grid-prime-table p-table .p-sortable-column:hover p-sortIcon *,
+::ng-deep .grid-prime-table p-table p-sortIcon * {
+  color: #ffffff !important;
+  fill: #ffffff !important;
 }
 
 .grid-img-cell {
