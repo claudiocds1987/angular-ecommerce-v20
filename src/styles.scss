@@ -231,3 +231,21 @@ body {
     padding: 0 !important;
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Estilo global limpio para hacer más fino el scroll de las tablas de PrimeNG
+// ─────────────────────────────────────────────────────────────────────────────
+.p-datatable-table-container {
+  scrollbar-width: thin; // Firefox
+}
+
+// Opcional para navegadores basados en Chromium (Chrome, Edge, Brave)
+.p-datatable-table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.p-datatable-table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
