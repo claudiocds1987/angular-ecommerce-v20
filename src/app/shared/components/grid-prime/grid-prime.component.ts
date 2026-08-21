@@ -8,18 +8,40 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MenuItem } from 'primeng/api';
 
-import { GridColumn, GridAction, GridLazyLoadEvent } from './grid-prime.model';
+import { GridColumn, GridLazyLoadEvent, GridElipsis, GridExtraAction } from './grid-prime.model';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-grid-prime',
   standalone: true,
-  imports: [TableModule, SkeletonModule, MenuModule, TooltipModule, ButtonModule, TagModule],
+  imports: [
+    TableModule,
+    SkeletonModule,
+    MenuModule,
+    TooltipModule,
+    ButtonModule,
+    TagModule,
+    Button,
+  ],
   templateUrl: './grid-prime.component.html',
   styleUrl: './grid-prime.component.scss',
 })
-export class GridPrimeComponent {
+// Usamos <TData, TAction> porque el tipo concreto se define en el componente padre:
+// - TData: el tipo de los datos que se renderizan en la grilla (ej. GridData).
+// - TAction: el tipo de los datos originales que se usan en las acciones (ej. ProductAdminGrid).
+// De esta forma, el GridPrimeComponent no está atado a un modelo fijo,
+// sino que el padre le pasa los tipos correctos según el contexto.
+// Ejemplo: en ProductsGridAdmin, mappedProductsSig() devuelve GridData[],
+// mientras que elipsisActions() está tipado con ProductAdminGrid[].
+// Gracias a esta separación, el componente puede mostrar datos transformados
+// y ejecutar acciones sobre el modelo real que loe envia el padre en los input (tipado fuerte).
+// Con <TData, TAction> el compilador infiere los tipos desde el padre,
+// manteniendo autocompletado y chequeo de tipos. Si usáramos 'any',
+// perderíamos validación en tiempo de compilación y seguridad en las acciones,
+// ya que el componente no sabría qué propiedades existen en el modelo.
+export class GridPrimeComponent<TData, TAction> {
   // Inputs via signals
-  data = input.required<any[]>();
+  data = input.required<TData[]>();
   columns = input.required<GridColumn[]>();
 
   mode = input<'client' | 'server'>('client');
@@ -31,16 +53,17 @@ export class GridPrimeComponent {
   rowsPerPage = input<number>(10);
   rowsPerPageOptions = input<number[]>([10, 20, 50]);
 
-  actions = input<GridAction[]>([]);
+  elipsisActions = input<GridElipsis<TAction>[]>([]);
+  extraActions = input<GridExtraAction[]>([]);
   emptyMessage = input<string>('No se encontraron resultados');
 
   showExport = input<boolean>(false);
 
   // Outputs
   lazyLoad = output<GridLazyLoadEvent>();
-  action = output<{ action: GridAction; row: any }>();
+  action = output<{ action: GridElipsis<TAction>; row: TAction }>();
   export = output<void>();
-  rowDblClick = output<any>();
+  rowDblClick = output<TData>();
   activeMenuModel: MenuItem[] = [];
 
   // Computed properties
@@ -50,11 +73,10 @@ export class GridPrimeComponent {
   // Internal state for menus
   selectedRow: any;
 
-  onMenuClick(event: MouseEvent, rowData: any, menu: any) {
+  onMenuClick(event: MouseEvent, rowData: TAction, menu: any) {
     event.stopPropagation();
 
-    // Generamos los items para la fila actual
-    this.activeMenuModel = this.actions()
+    this.activeMenuModel = this.elipsisActions()
       .filter((action) => !action.visible || action.visible(rowData))
       .map((action) => ({
         label: action.label,
@@ -65,7 +87,6 @@ export class GridPrimeComponent {
         },
       }));
 
-    // Oculta/cierra cualquier menú que estuviera abierto previamente y abre este
     menu.toggle(event);
   }
 
@@ -85,7 +106,7 @@ export class GridPrimeComponent {
     this.export.emit();
   }
 
-  handleRowDblClick(rowData: any) {
+  handleRowDblClick(rowData: TData) {
     this.rowDblClick.emit(rowData);
   }
 
@@ -94,22 +115,16 @@ export class GridPrimeComponent {
     if (value === null || value === undefined) {
       return '';
     }
-
     return String(value);
   }
 
-  // grid-prime.component.ts
   handleImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     const fallback = 'assets/placeholder.png';
-
-    // Si la imagen que falló YA es el placeholder, no reintentamos:
-    // evita el loop infinito si el placeholder también está roto.
     if (img.src.endsWith(fallback)) {
-      img.onerror = null; // corta cualquier futuro evento error en este <img>
+      img.onerror = null;
       return;
     }
-
     img.src = fallback;
   }
 }

@@ -3,6 +3,8 @@
   [type]="type()"
   [disabled]="disabled()"
   [class]="'primary-button ' + variant()"
+  [matTooltip]="tooltip()"
+  matTooltipPosition="above"
 >
   <div class="flex items-center justify-center gap-2">
     @if (iconUrl()) {
@@ -13,4 +15,7 @@
     }
     <span><ng-content /></span>
   </div>
+  @if (label()) {
+    <span class="sr-only">{{ label() }}</span>
+  }
 </button>

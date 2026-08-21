@@ -15,11 +15,19 @@ export interface GridColumn {
   >;
 }
 
-export interface GridAction<T = any> {
+export interface GridElipsis<T = unknown> {
   label: string;
   icon?: string;
   action: (row: T) => void;
   visible?: (row: T) => boolean;
+}
+
+export interface GridExtraAction {
+  label: string;
+  tooltip?: string;
+  icon?: string;
+  action: () => void;
+  class?: string;
 }
 
 export interface GridLazyLoadEvent {
