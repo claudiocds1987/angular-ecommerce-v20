@@ -4,13 +4,6 @@
     <div class="grid-toolbar">
       @if (extraActions().length > 0) {
         @for (action of extraActions(); track action.label) {
-          <!--  <p-button
-            [label]="action.label"
-            [icon]="action.icon"
-            [styleClass]="action.class || 'p-button-secondary'"
-            (onClick)="action.action()"
-          >
-          </p-button> -->
           <app-button
             [variant]="'secondary'"
             [icon]="action.icon"

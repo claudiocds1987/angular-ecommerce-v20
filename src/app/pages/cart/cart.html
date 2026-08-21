@@ -58,9 +58,11 @@
             >
           </div>
 
-          <app-button [disabled]="cartService.cart().length === 0" (click)="stepper.next()"
-            >Continuar con el Envío</app-button
-          >
+          <app-button
+            [label]="'Continuar con el Envío'"
+            [disabled]="cartService.cart().length === 0"
+            (click)="stepper.next()"
+          ></app-button>
         </div>
       </div>
     </mat-step>
@@ -149,10 +151,12 @@
         <div
           class="-mx-6 mt-8 -mb-6 flex items-center justify-between gap-4 border-t border-slate-100 bg-slate-50 p-6 pt-6"
         >
-          <app-button (click)="stepper.previous()">Volver al Carrito</app-button>
-          <app-button [disabled]="shippingForm.invalid" (click)="stepper.next()"
-            >Revisar Pedido</app-button
-          >
+          <app-button [label]="'Volver al Carrito'" (click)="stepper.previous()"></app-button>
+          <app-button
+            [label]="'Revisar Pedido'"
+            [disabled]="shippingForm.invalid"
+            (click)="stepper.next()"
+          ></app-button>
         </div>
       </div>
     </mat-step>
@@ -273,9 +277,10 @@
               </div>
 
               <app-button
+                [label]="'Comprar'"
                 (click)="onBuy()"
                 [disabled]="shippingForm.invalid || cartService.cart().length === 0"
-                >Comprar
+              >
               </app-button>
             </div>
           </div>

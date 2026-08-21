@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -21,4 +21,6 @@ export class Button {
   // Mantenemos tus propiedades y agregamos la de Angular Material opcional
   iconUrl = input<string | null>(null);
   icon = input<string | undefined>(undefined);
+
+  readonly isIconOnly = computed(() => !this.label());
 }

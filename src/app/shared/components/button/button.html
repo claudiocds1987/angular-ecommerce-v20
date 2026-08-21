@@ -2,7 +2,7 @@
   mat-flat-button
   [type]="type()"
   [disabled]="disabled()"
-  [class]="'primary-button ' + variant()"
+  [class]="'primary-button ' + variant() + (isIconOnly() ? ' icon-only-btn' : '')"
   [matTooltip]="tooltip()"
   matTooltipPosition="above"
 >
@@ -13,9 +13,8 @@
     @if (icon()) {
       <mat-icon>{{ icon() }}</mat-icon>
     }
-    <span><ng-content /></span>
+    @if (label()) {
+      <span>{{ label() }}</span>
+    }
   </div>
-  @if (label()) {
-    <span class="sr-only">{{ label() }}</span>
-  }
 </button>

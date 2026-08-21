@@ -10,9 +10,13 @@
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <button mat-stroked-button type="button" (click)="confirmCancel()">Cancelar</button>
-        <app-button type="submit" [disabled]="!isReadyToSave()" [icon]="'save'"
-          >Guardar producto</app-button
+        <app-button
+          type="submit"
+          [disabled]="!isReadyToSave()"
+          [icon]="'save'"
+          [label]="'Guardar producto'"
         >
+        </app-button>
       </div>
     </div>
 

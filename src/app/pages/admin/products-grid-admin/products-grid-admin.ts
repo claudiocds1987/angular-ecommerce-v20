@@ -183,9 +183,10 @@ export class ProductsGridAdmin implements OnInit {
       action: () => this.downloadCSVTemplate(),
     },
     {
-      label: 'opcion 2',
-      icon: 'file_download',
-      action: () => this.downloadCSVTemplate(),
+      label: '',
+      tooltip: 'Exportar a Excel',
+      icon: 'insert_drive_file',
+      action: () => this.onExportToExcel(),
     },
   ]);
 

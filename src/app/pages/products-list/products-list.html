@@ -146,7 +146,7 @@
       productStore.items().length > 0
     ) {
       <nav class="mt-8 flex justify-center">
-        <app-button (click)="loadMore()">Ver más resultados</app-button>
+        <app-button (click)="loadMore()" [label]="'Ver más resultados'"></app-button>
       </nav>
     }
   </section>
