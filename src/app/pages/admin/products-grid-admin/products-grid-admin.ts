@@ -23,8 +23,10 @@ import { GridData } from '@shared/components/grid/models/grid-configuration.mode
 import { GridPrimeComponent } from '@shared/components/grid-prime/grid-prime.component';
 import {
   GridColumn,
-  GridAction,
+  //GridAction,
   GridLazyLoadEvent,
+  GridElipsis,
+  GridExtraAction,
 } from '@shared/components/grid-prime/grid-prime.model';
 
 import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
@@ -137,28 +139,8 @@ export class ProductsGridAdmin implements OnInit {
         stock: product.stock,
         categoryId: product.categoryName || 'N/A',
         brandId: product.brandName || 'N/A',
-        isActive: product.isActive ? 'Activo' : 'Inactivo',
-        /* elipsisActions: [
-          {
-            label: 'Editar',
-            icon: 'edit',
-            // Cambiamos el parámetro a number para que no proteste el ElipsisAction
-            action: (id: number) => this._editProduct(id),
-          },
-          {
-            label: 'Baja',
-            icon: 'delete',
-            action: (id: number) => this._confirmDeleteProduct(id),
-            condition: (product: ProductAdminGrid) => product.isActive, // Solo muestra "Baja" si el producto está activo
-          },
-          {
-            label: 'Alta',
-            icon: 'check_circle',
-            action: (id: number) => this._confirmActivateProduct(id),
-            condition: (product: ProductAdminGrid) => !product.isActive, // Solo muestra "Alta" si el producto está inactivo
-          },
-        ], */
-      } as GridData; // Forzamos el cast a GridData para evitar problemas de firma de índice
+        isActive: product.isActive,
+      } as GridData;
     });
   });
 
@@ -187,29 +169,43 @@ export class ProductsGridAdmin implements OnInit {
       sortable: true,
       width: '100px',
       badgeMappings: {
-        Activo: { label: 'Activo', severity: 'success' },
-        Inactivo: { label: 'Inactivo', severity: 'danger' },
+        true: { label: 'Activo', severity: 'success' },
+        false: { label: 'Inactivo', severity: 'danger' },
       },
     },
   ]);
 
-  gridActions = signal<GridAction[]>([
+  gridExtraActions = signal<GridExtraAction[]>([
+    {
+      label: '.csv',
+      tooltip: 'Descargar plantilla de importación de productos',
+      icon: 'file_download',
+      action: () => this.downloadCSVTemplate(),
+    },
+    {
+      label: 'opcion 2',
+      icon: 'file_download',
+      action: () => this.downloadCSVTemplate(),
+    },
+  ]);
+
+  elipsisActions = signal<GridElipsis<ProductAdminGrid>[]>([
     {
       label: 'Editar',
       icon: 'pi pi-pencil',
-      action: (row) => this._editProduct(row.id),
+      action: (row: ProductAdminGrid) => this._editProduct(Number(row.id)),
     },
     {
       label: 'Baja',
       icon: 'pi pi-trash',
-      action: (row) => this._confirmDeleteProduct(row.id),
-      visible: (row) => row.isActive,
+      action: (row: ProductAdminGrid) => this._confirmDeleteProduct(Number(row.id)),
+      visible: (row: ProductAdminGrid) => row['isActive'],
     },
     {
       label: 'Alta',
       icon: 'pi pi-check-circle',
-      action: (row) => this._confirmActivateProduct(row.id),
-      visible: (row) => !row.isActive,
+      action: (row: ProductAdminGrid) => this._confirmActivateProduct(Number(row.id)),
+      visible: (row: ProductAdminGrid) => !row['isActive'],
     },
   ]);
 
@@ -569,6 +565,10 @@ export class ProductsGridAdmin implements OnInit {
         Estado: p.isActive ? 'Activo' : 'Inactivo',
       };
     });
+  }
+
+  private _massiveCharge(): void {
+    console.log('Method not implemented.');
   }
 
   handleImportSuccess(response: ImportResultResponse) {

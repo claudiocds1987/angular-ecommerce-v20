@@ -1,15 +1,36 @@
 <div class="grid-prime-container">
   <!-- Toolbar for Actions like Export -->
-  @if (showExport()) {
+  @if (showExport() || extraActions().length > 0) {
     <div class="grid-toolbar">
-      <p-button
-        severity="success"
-        (onClick)="handleExport()"
-        pTooltip="Exportar a Excel"
-        tooltipPosition="top"
-      >
-        <i class="pi pi-file-excel !text-sm"></i>
-      </p-button>
+      @if (extraActions().length > 0) {
+        @for (action of extraActions(); track action.label) {
+          <!--  <p-button
+            [label]="action.label"
+            [icon]="action.icon"
+            [styleClass]="action.class || 'p-button-secondary'"
+            (onClick)="action.action()"
+          >
+          </p-button> -->
+          <app-button
+            [variant]="'secondary'"
+            [icon]="action.icon"
+            [tooltip]="action.tooltip"
+            (click)="action.action()"
+          >
+            {{ action.label }}
+          </app-button>
+        }
+      }
+      @if (showExport()) {
+        <p-button
+          severity="success"
+          (onClick)="handleExport()"
+          pTooltip="Exportar a Excel"
+          tooltipPosition="top"
+        >
+          <i class="pi pi-file-excel !text-sm"></i>
+        </p-button>
+      }
     </div>
   }
 
@@ -51,7 +72,7 @@
             </th>
           }
           <!-- Extra header for actions if they exist -->
-          @if (actions().length > 0) {
+          @if (elipsisActions().length > 0) {
             <th class="w-16 text-center"></th>
           }
         </tr>
@@ -109,7 +130,7 @@
           }
 
           <!-- Actions Column (Ellipsis) -->
-          @if (actions().length > 0 && !loading()) {
+          @if (elipsisActions().length > 0 && !loading()) {
             <td class="w-16 text-center">
               <p-button
                 icon="pi pi-ellipsis-v"
@@ -120,7 +141,7 @@
               >
               </p-button>
             </td>
-          } @else if (actions().length > 0 && loading()) {
+          } @else if (elipsisActions().length > 0 && loading()) {
             <td class="w-16 text-center">
               <p-skeleton width="2rem" height="2rem" shape="circle"></p-skeleton>
             </td>
@@ -132,7 +153,7 @@
       <ng-template pTemplate="emptymessage" let-columns>
         <tr>
           <td
-            [attr.colspan]="columns.length + (actions().length > 0 ? 1 : 0)"
+            [attr.colspan]="columns.length + (elipsisActions().length > 0 ? 1 : 0)"
             class="p-4 text-center"
           >
             {{ emptyMessage() }}
