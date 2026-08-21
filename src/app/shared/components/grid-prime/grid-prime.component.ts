@@ -57,7 +57,7 @@ export class GridPrimeComponent<TData, TAction> {
   extraActions = input<GridExtraAction[]>([]);
   emptyMessage = input<string>('No se encontraron resultados');
 
-  showExport = input<boolean>(false);
+  //showExport = input<boolean>(false);
 
   // Outputs
   lazyLoad = output<GridLazyLoadEvent>();
@@ -91,6 +91,7 @@ export class GridPrimeComponent<TData, TAction> {
   }
 
   handleLazyLoad(event: TableLazyLoadEvent) {
+    console.log('event: ', event);
     if (this.isServerMode()) {
       this.lazyLoad.emit({
         first: event.first || 0,
@@ -100,10 +101,6 @@ export class GridPrimeComponent<TData, TAction> {
         filters: event.filters,
       });
     }
-  }
-
-  handleExport() {
-    this.export.emit();
   }
 
   handleRowDblClick(rowData: TData) {

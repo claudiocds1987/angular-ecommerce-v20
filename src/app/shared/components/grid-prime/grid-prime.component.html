@@ -1,28 +1,16 @@
 <div class="grid-prime-container">
   <!-- Toolbar for Actions like Export -->
-  @if (showExport() || extraActions().length > 0) {
+  @if (extraActions().length > 0) {
     <div class="grid-toolbar">
-      @if (extraActions().length > 0) {
-        @for (action of extraActions(); track action.label) {
-          <app-button
-            [variant]="'secondary'"
-            [icon]="action.icon"
-            [tooltip]="action.tooltip"
-            (click)="action.action()"
-          >
-            {{ action.label }}
-          </app-button>
-        }
-      }
-      @if (showExport()) {
-        <p-button
-          severity="success"
-          (onClick)="handleExport()"
-          pTooltip="Exportar a Excel"
-          tooltipPosition="top"
+      @for (action of extraActions(); track action.label) {
+        <app-button
+          [variant]="'secondary'"
+          [icon]="action.icon"
+          [tooltip]="action.tooltip"
+          (click)="action.action()"
         >
-          <i class="pi pi-file-excel !text-sm"></i>
-        </p-button>
+          {{ action.label }}
+        </app-button>
       }
     </div>
   }

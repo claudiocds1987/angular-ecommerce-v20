@@ -53,14 +53,6 @@
             <app-chips [chips]="chipsSig()" (chipRemoved)="onRemoveChip($event)"> </app-chips>
           </div>
           <div class="flex shrink-0">
-            <app-button
-              [label]="'Ejemplo .csv'"
-              [variant]="'secondary'"
-              [icon]="'file_download'"
-              (click)="downloadCSVTemplate()"
-              class="mr-2"
-            >
-            </app-button>
             <app-excel-upload
               [text]="'Carga Masiva'"
               [endpointUrl]="apiURL"
@@ -81,9 +73,7 @@
           [rowsPerPage]="25"
           [elipsisActions]="elipsisActions()"
           [extraActions]="gridExtraActions()"
-          [showExport]="true"
           (lazyLoad)="onGridPrimeLazyLoad($event)"
-          (export)="onExportToExcel()"
           (rowDblClick)="onGridRowDblClick($event)"
         >
         </app-grid-prime>

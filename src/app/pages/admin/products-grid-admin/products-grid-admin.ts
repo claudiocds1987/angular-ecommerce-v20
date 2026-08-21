@@ -236,6 +236,8 @@ export class ProductsGridAdmin implements OnInit {
     };
 
     this.onGridPageChange(pageEvent);
+
+    this.applyFilter();
   }
 
   constructor() {
@@ -505,7 +507,7 @@ export class ProductsGridAdmin implements OnInit {
       search: quickSearch,
       // Ordenamiento
       sortBy: sortConfig?.active || 'id',
-      order: sortConfig?.direction || 'desc',
+      order: sortConfig?.direction || 'asc',
       // FILTROS DEL PANEL
       id: panelFilters.id,
       title: panelFilters.title,
@@ -566,10 +568,6 @@ export class ProductsGridAdmin implements OnInit {
         Estado: p.isActive ? 'Activo' : 'Inactivo',
       };
     });
-  }
-
-  private _massiveCharge(): void {
-    console.log('Method not implemented.');
   }
 
   handleImportSuccess(response: ImportResultResponse) {
