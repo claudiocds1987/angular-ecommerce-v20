@@ -237,7 +237,7 @@ export class ProductsGridAdmin implements OnInit {
 
     this.onGridPageChange(pageEvent);
 
-    this.applyFilter();
+    //this.applyFilter();
   }
 
   constructor() {
