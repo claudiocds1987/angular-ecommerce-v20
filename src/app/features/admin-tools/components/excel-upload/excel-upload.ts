@@ -15,7 +15,7 @@ import { Button } from '@shared/components/button/button';
 })
 export class ExcelUpload {
   endpointUrl = input.required<string>();
-  @Input() text = 'Importar Excel'; // Texto del botón, con valor por defecto
+  @Input() label = 'Importar Excel'; // Texto del botón, con valor por defecto
   @Output() uploadSuccess = new EventEmitter<ImportResultResponse>();
   @Output() uploadError = new EventEmitter<string[]>(); // Emitiremos el array de mensajes directamente
 

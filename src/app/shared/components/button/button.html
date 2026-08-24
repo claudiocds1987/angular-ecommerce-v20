@@ -11,7 +11,7 @@
       <img [src]="iconUrl()" class="animate-fade-in h-5 w-5 invert" alt="icon" />
     }
     @if (icon()) {
-      <mat-icon>{{ icon() }}</mat-icon>
+      <mat-icon [style.color]="iconColor()">{{ icon() }}</mat-icon>
     }
     @if (label()) {
       <span>{{ label() }}</span>

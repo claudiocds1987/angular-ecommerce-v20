@@ -70,9 +70,6 @@ export class GridPrimeComponent<TData, TAction> {
   isServerMode = computed(() => this.mode() === 'server');
   isVirtualScroll = computed(() => this.paginationType() === 'infinite-scroll');
 
-  // Internal state for menus
-  selectedRow: any;
-
   onMenuClick(event: MouseEvent, rowData: TAction, menu: any) {
     event.stopPropagation();
 

@@ -16,11 +16,11 @@ export class Button {
   type = input<'button' | 'submit'>('button'); // ¡Importante para que procese el formulario reactivo!
   disabled = input<boolean>(false);
   variant = input<ButtonVariant>('primary'); // por default
-  label = input<string>(''); // por default
+  label = input<string>('');
   tooltip = input<string | undefined>(undefined);
-  // Mantenemos tus propiedades y agregamos la de Angular Material opcional
   iconUrl = input<string | null>(null);
   icon = input<string | undefined>(undefined);
+  iconColor = input<string | undefined>(undefined);
 
   readonly isIconOnly = computed(() => !this.label());
 }

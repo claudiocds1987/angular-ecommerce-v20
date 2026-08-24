@@ -6,10 +6,11 @@
         <app-button
           [variant]="'secondary'"
           [icon]="action.icon"
+          [iconColor]="action.iconColor"
+          [label]="action.label"
           [tooltip]="action.tooltip"
           (click)="action.action()"
         >
-          {{ action.label }}
         </app-button>
       }
     </div>

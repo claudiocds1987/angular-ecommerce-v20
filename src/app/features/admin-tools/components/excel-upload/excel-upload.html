@@ -11,6 +11,7 @@
     type="button"
     (click)="fileInput.click()"
     [icon]="'file_upload'"
+    [label]="label"
     [disabled]="loading()"
   >
     <div
@@ -18,6 +19,6 @@
     ></div>
 
     <i class="fa-solid fa-file-excel text-lg transition-transform group-hover:scale-110"></i>
-    <span>{{ loading() ? 'Cargando...' : text }}</span>
+    <span>{{ loading() ? 'Cargando...' : label }}</span>
   </app-button>
 </div>

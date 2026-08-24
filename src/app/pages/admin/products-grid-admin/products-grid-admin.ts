@@ -177,8 +177,14 @@ export class ProductsGridAdmin implements OnInit {
 
   gridExtraActions = signal<GridExtraAction[]>([
     {
-      label: '.csv',
-      tooltip: 'Descargar plantilla de importación de productos',
+      label: '',
+      tooltip: 'Agregar producto',
+      icon: 'add_circle',
+      action: () => this._onCreateProduct(),
+    },
+    {
+      label: '',
+      tooltip: 'Descargar plantilla .csv de importación de productos',
       icon: 'file_download',
       action: () => this.downloadCSVTemplate(),
     },
@@ -186,6 +192,7 @@ export class ProductsGridAdmin implements OnInit {
       label: '',
       tooltip: 'Exportar a Excel',
       icon: 'insert_drive_file',
+      iconColor: '#22c55e',
       action: () => this.onExportToExcel(),
     },
   ]);

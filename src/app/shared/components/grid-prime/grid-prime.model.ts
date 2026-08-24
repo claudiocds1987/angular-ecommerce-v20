@@ -26,6 +26,7 @@ export interface GridExtraAction {
   label: string;
   tooltip?: string;
   icon?: string;
+  iconColor?: string;
   action: () => void;
   class?: string;
 }
