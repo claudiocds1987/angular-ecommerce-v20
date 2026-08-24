@@ -1,194 +1,222 @@
-<div class="mb-8 w-full px-4 pt-4 md:px-8 md:pt-8">
-  <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
-</div>
-<div
-  [formGroup]="form"
-  class="mx-auto max-w-5xl rounded-2xl border border-slate-200 bg-white p-8 shadow-xl"
->
-  <div class="mb-8 flex items-center gap-3">
-    <mat-icon class="text-indigo-600">settings_suggest</mat-icon>
-    <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">
-      Configurar Atributos Extra por Categoría
-    </h2>
-  </div>
+<!-- Contenedor maestro de la vista tipo Layout de Administración -->
+<div class="flex min-h-screen w-full bg-slate-50">
+  <!-- Sidebar pegado a la izquierda ocupando todo el alto -->
+  <aside class="sticky top-0 z-20 h-screen flex-shrink-0">
+    <app-admin-sidebar></app-admin-sidebar>
+  </aside>
 
-  <div class="mb-10 rounded-2xl border border-indigo-50 bg-indigo-50/30 p-6">
-    <div class="flex flex-col gap-2">
-      <label for="categoryId" class="text-sm font-bold tracking-wide text-indigo-900 uppercase"
-        >Seleccionar Categoría</label
-      >
-      <mat-form-field appearance="outline" class="w-full md:w-96">
-        <mat-label>Categoría</mat-label>
-        <mat-select
-          id="categoryId"
-          formControlName="categoryId"
-          (selectionChange)="onCategoryChange(+$event.value)"
-        >
-          @for (cat of categoriesSig(); track cat.id) {
-            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-          }
-        </mat-select>
-        <mat-icon matPrefix class="mr-2 text-slate-400">category</mat-icon>
-      </mat-form-field>
+  <!-- Columna Derecha Dinámica -->
+  <main class="flex min-w-0 flex-1 flex-col overflow-y-auto p-6 md:p-8">
+    <!-- 1. Breadcrumb alineado a la izquierda (ocupa todo el ancho del main) -->
+    <div class="mb-6 w-full">
+      <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
     </div>
-  </div>
 
-  <mat-divider class="mb-10"></mat-divider>
+    <!-- 2. Contenedor centrado exclusivo para el formulario (con max-w-5xl / 1024px) -->
+    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+      <!-- Formulario Principal -->
+      <div
+        [formGroup]="form"
+        class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-xl md:p-8"
+      >
+        <div class="mb-8 flex items-center gap-3">
+          <mat-icon class="text-indigo-600">settings_suggest</mat-icon>
+          <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">
+            Configurar Atributos Extra por Categoría
+          </h2>
+        </div>
 
-  @if (form.get('categoryId')?.value) {
-    <div formArrayName="attributes" class="space-y-8">
-      <div class="mt-8 flex items-center justify-between">
-        <h3
-          class="flex items-center gap-2 text-xs font-black tracking-widest text-slate-500 uppercase"
-        >
-          <mat-icon class="scale-75">list_alt</mat-icon>
-          Atributos Definidos
-        </h3>
-        <span
-          class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700"
-        >
-          {{ extraAttributesArray.length }}
-          {{ extraAttributesArray.length === 1 ? 'Atributo' : 'Atributos' }}
-        </span>
-      </div>
-
-      @for (attr of extraAttributesSig(); track attr) {
-        <div
-          [formGroupName]="$index"
-          class="group relative rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:border-indigo-300 hover:shadow-lg"
-        >
-          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Nombre Técnico</mat-label>
-              <input matInput formControlName="name" placeholder="ej. color_primario" />
-              <mat-error>
-                <app-form-field-error [control]="attr.get('name')" />
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Etiqueta (UI)</mat-label>
-              <input matInput formControlName="label" placeholder="ej. Color" />
-              <mat-error>
-                <app-form-field-error [control]="attr.get('label')" />
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Tipo de Dato</mat-label>
-              <mat-select formControlName="dataType">
-                <mat-option value="text">Texto</mat-option>
-                <mat-option value="number">Número</mat-option>
-                <mat-option value="boolean">Boolean</mat-option>
-                <mat-option value="date">Fecha</mat-option>
+        <div class="mb-10 rounded-2xl border border-indigo-50 bg-indigo-50/30 p-6">
+          <div class="flex flex-col gap-2">
+            <label
+              for="categoryId"
+              class="text-sm font-bold tracking-wide text-indigo-900 uppercase"
+              >Seleccionar Categoría</label
+            >
+            <mat-form-field appearance="outline" class="w-full md:w-96">
+              <mat-label>Categoría</mat-label>
+              <mat-select
+                id="categoryId"
+                formControlName="categoryId"
+                (selectionChange)="onCategoryChange(+$event.value)"
+              >
+                @for (cat of categoriesSig(); track cat.id) {
+                  <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                }
               </mat-select>
-              <mat-error>
-                <app-form-field-error [control]="attr.get('dataType')" />
-              </mat-error>
+              <mat-icon matPrefix class="mr-2 text-slate-400">category</mat-icon>
             </mat-form-field>
           </div>
+        </div>
 
-          <div class="mt-6 border-t border-slate-50 pt-6">
-            <span class="mb-4 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-              Configuración de Validaciones
-            </span>
+        <mat-divider class="mb-10"></mat-divider>
 
-            <div formGroupName="validations" class="flex flex-col gap-6">
-              <div class="flex items-center">
-                <mat-slide-toggle formControlName="required" color="primary">
-                  <span class="text-xs font-bold text-slate-600">Requerido</span>
-                </mat-slide-toggle>
+        @if (form.get('categoryId')?.value) {
+          <div formArrayName="attributes" class="space-y-8">
+            <div class="mt-8 flex items-center justify-between">
+              <h3
+                class="flex items-center gap-2 text-xs font-black tracking-widest text-slate-500 uppercase"
+              >
+                <mat-icon class="scale-75">list_alt</mat-icon>
+                Atributos Definidos
+              </h3>
+              <span
+                class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700"
+              >
+                {{ extraAttributesArray.length }}
+                {{ extraAttributesArray.length === 1 ? 'Atributo' : 'Atributos' }}
+              </span>
+            </div>
+
+            @for (attr of extraAttributesSig(); track attr) {
+              <div
+                [formGroupName]="$index"
+                class="group relative rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:border-indigo-300 hover:shadow-lg"
+              >
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Nombre Técnico</mat-label>
+                    <input matInput formControlName="name" placeholder="ej. color_primario" />
+                    <mat-error>
+                      <app-form-field-error [control]="attr.get('name')" />
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Etiqueta (UI)</mat-label>
+                    <input matInput formControlName="label" placeholder="ej. Color" />
+                    <mat-error>
+                      <app-form-field-error [control]="attr.get('label')" />
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Tipo de Dato</mat-label>
+                    <mat-select formControlName="dataType">
+                      <mat-option value="text">Texto</mat-option>
+                      <mat-option value="number">Número</mat-option>
+                      <mat-option value="boolean">Boolean</mat-option>
+                      <mat-option value="date">Fecha</mat-option>
+                    </mat-select>
+                    <mat-error>
+                      <app-form-field-error [control]="attr.get('dataType')" />
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="mt-6 border-t border-slate-50 pt-6">
+                  <span
+                    class="mb-4 block text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+                  >
+                    Configuración de Validaciones
+                  </span>
+
+                  <div formGroupName="validations" class="flex flex-col gap-6">
+                    <div class="flex items-center">
+                      <mat-slide-toggle formControlName="required" color="primary">
+                        <span class="text-xs font-bold text-slate-600">Requerido</span>
+                      </mat-slide-toggle>
+                    </div>
+
+                    <div
+                      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:items-center lg:gap-6"
+                    >
+                      @if (attr.get('dataType')?.value === 'text') {
+                        <mat-form-field appearance="outline" class="w-full lg:w-28">
+                          <mat-label>Min</mat-label>
+                          <input matInput type="number" formControlName="minLength" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="w-full lg:w-28">
+                          <mat-label>Max</mat-label>
+                          <input matInput type="number" formControlName="maxLength" />
+                        </mat-form-field>
+
+                        <mat-form-field
+                          appearance="outline"
+                          class="w-full lg:min-w-[200px] lg:flex-1"
+                        >
+                          <mat-label>RegEx Pattern</mat-label>
+                          <input matInput type="text" formControlName="pattern" />
+                          <span matPrefix class="px-1 text-slate-400">/</span>
+                        </mat-form-field>
+                      }
+
+                      @if (attr.get('dataType')?.value === 'number') {
+                        <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
+                          <mat-label>Mínimo</mat-label>
+                          <input matInput type="number" formControlName="min" />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
+                          <mat-label>Máximo</mat-label>
+                          <input matInput type="number" formControlName="max" />
+                        </mat-form-field>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
+                  @if (attr.get('id')?.value !== 0) {
+                    <div class="flex items-center gap-2 text-emerald-600">
+                      <mat-icon>check_circle</mat-icon>
+                      <span class="text-xs font-bold uppercase">Guardado</span>
+                    </div>
+                  } @else {
+                    <div></div>
+                  }
+                  <button
+                    mat-stroked-button
+                    color="warn"
+                    type="button"
+                    (click)="removeAttribute($index)"
+                    class="!rounded-lg !border-red-100 hover:!bg-red-50"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                    ELIMINAR
+                  </button>
+                </div>
               </div>
-
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:items-center lg:gap-6">
-                @if (attr.get('dataType')?.value === 'text') {
-                  <mat-form-field appearance="outline" class="w-full lg:w-28">
-                    <mat-label>Min</mat-label>
-                    <input matInput type="number" formControlName="minLength" />
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="w-full lg:w-28">
-                    <mat-label>Max</mat-label>
-                    <input matInput type="number" formControlName="maxLength" />
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="w-full lg:min-w-[200px] lg:flex-1">
-                    <mat-label>RegEx Pattern</mat-label>
-                    <input matInput type="text" formControlName="pattern" />
-                    <span matPrefix class="px-1 text-slate-400">/</span>
-                  </mat-form-field>
-                }
-
-                @if (attr.get('dataType')?.value === 'number') {
-                  <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
-                    <mat-label>Mínimo</mat-label>
-                    <input matInput type="number" formControlName="min" />
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="w-full sm:w-1/2 lg:w-32">
-                    <mat-label>Máximo</mat-label>
-                    <input matInput type="number" formControlName="max" />
-                  </mat-form-field>
-                }
+            } @empty {
+              <div
+                class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 py-16"
+              >
+                <mat-icon class="mb-2 scale-150 text-slate-300">post_add</mat-icon>
+                <p class="font-medium text-slate-400">
+                  No hay atributos definidos para esta categoría.
+                </p>
               </div>
+            }
+
+            <button
+              mat-button
+              type="button"
+              (click)="addEmptyAttribute()"
+              class="!h-14 w-full !rounded-2xl !border-2 !border-dashed !border-slate-300 !text-slate-500 transition-all hover:!border-indigo-400 hover:!bg-indigo-50 hover:!text-indigo-600"
+            >
+              <mat-icon>add</mat-icon>
+              <span class="font-bold">Agregar Nuevo Atributo</span>
+            </button>
+
+            <div
+              class="mt-12 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-8"
+            >
+              <app-button
+                [label]="'Cancelar'"
+                [variant]="'secondary'"
+                (click)="confirmCancel()"
+              ></app-button>
+              <app-button
+                [label]="'Guardar Configuración'"
+                [icon]="'save'"
+                [disabled]="!isReadyToSave()"
+                (click)="confirmSave()"
+              >
+              </app-button>
             </div>
           </div>
-
-          <div class="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
-            @if (attr.get('id')?.value !== 0) {
-              <div class="flex items-center gap-2 text-emerald-600">
-                <mat-icon>check_circle</mat-icon>
-                <span class="text-xs font-bold uppercase">Guardado</span>
-              </div>
-            } @else {
-              <div></div>
-            }
-            <button
-              mat-stroked-button
-              color="warn"
-              type="button"
-              (click)="removeAttribute($index)"
-              class="!rounded-lg !border-red-100 hover:!bg-red-50"
-            >
-              <mat-icon>delete_outline</mat-icon>
-              ELIMINAR
-            </button>
-          </div>
-        </div>
-      } @empty {
-        <div
-          class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 py-16"
-        >
-          <mat-icon class="mb-2 scale-150 text-slate-300">post_add</mat-icon>
-          <p class="font-medium text-slate-400">No hay atributos definidos para esta categoría.</p>
-        </div>
-      }
-
-      <button
-        mat-button
-        type="button"
-        (click)="addEmptyAttribute()"
-        class="!h-14 w-full !rounded-2xl !border-2 !border-dashed !border-slate-300 !text-slate-500 transition-all hover:!border-indigo-400 hover:!bg-indigo-50 hover:!text-indigo-600"
-      >
-        <mat-icon>add</mat-icon>
-        <span class="font-bold">Agregar Nuevo Atributo</span>
-      </button>
-
-      <div
-        class="mt-12 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-8"
-      >
-        <app-button
-          [label]="'Cancelar'"
-          [variant]="'secondary'"
-          (click)="confirmCancel()"
-        ></app-button>
-        <app-button
-          [label]="'Guardar Configuración'"
-          [icon]="'save'"
-          [disabled]="!isReadyToSave()"
-          (click)="confirmSave()"
-        >
-        </app-button>
+        }
       </div>
     </div>
-  }
+  </main>
 </div>

@@ -36,6 +36,7 @@ import { Button } from '@shared/components/button/button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 import { Observable } from 'rxjs';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
+import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 
 @Component({
   selector: 'app-product-extra-attribute-definition',
@@ -54,6 +55,7 @@ import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
     FormFieldError,
     Button,
     Breadcrumb,
+    AdminSidebar,
   ],
   templateUrl: './product-extra-attribute-definition.html',
   styleUrl: './product-extra-attribute-definition.scss',

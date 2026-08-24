@@ -30,11 +30,11 @@
       </p>
       <ul class="space-y-1">
         <li>
-          <button
-            type="button"
-            (click)="goToDashboard()"
+          <a
+            routerLink="/admin"
+            routerLinkActive="bg-blue-600"
+            [routerLinkActiveOptions]="{ exact: true }"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
-            [class.bg-blue-600]="isActive('/admin')"
             pTooltip="Dashboard"
             tooltipPosition="right"
             [tooltipDisabled]="!isSidebarCollapsed()"
@@ -43,14 +43,13 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Dashboard</span>
             }
-          </button>
+          </a>
         </li>
         <li>
-          <button
-            type="button"
-            (click)="goToProducts()"
+          <a
+            routerLink="/admin/products-grid-admin"
+            routerLinkActive="bg-blue-600"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
-            [class.bg-blue-600]="isActive('/admin/products-grid-admin')"
             pTooltip="Productos"
             tooltipPosition="right"
             [tooltipDisabled]="!isSidebarCollapsed()"
@@ -59,14 +58,13 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Productos</span>
             }
-          </button>
+          </a>
         </li>
         <li>
-          <button
-            type="button"
-            (click)="goToExtraAttributes()"
+          <a
+            routerLink="/admin/product-extra-attribute-definition"
+            routerLinkActive="bg-blue-600"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
-            [class.bg-blue-600]="isActive('/admin/product-extra-attribute-definition')"
             pTooltip="Atributos Extra"
             tooltipPosition="right"
             [tooltipDisabled]="!isSidebarCollapsed()"
@@ -75,11 +73,12 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Atributos Extra</span>
             }
-          </button>
+          </a>
         </li>
         <li>
-          <button
-            type="button"
+          <a
+            routerLink="/admin/clients"
+            routerLinkActive="bg-blue-600"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
             pTooltip="Clientes"
             tooltipPosition="right"
@@ -89,7 +88,7 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Clientes</span>
             }
-          </button>
+          </a>
         </li>
       </ul>
     </div>
@@ -102,8 +101,9 @@
       </p>
       <ul class="space-y-1">
         <li>
-          <button
-            type="button"
+          <a
+            routerLink="/admin/sales-reports"
+            routerLinkActive="bg-blue-600"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
             pTooltip="Reportes de Ventas"
             tooltipPosition="right"
@@ -113,27 +113,12 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Reportes de Ventas</span>
             }
-          </button>
+          </a>
         </li>
         <li>
-          <button
-            type="button"
-            (click)="goToExtraAttributes()"
-            class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
-            [class.bg-blue-600]="isActive('/admin/product-extra-attribute-definition')"
-            pTooltip="Atributos Extra"
-            tooltipPosition="right"
-            [tooltipDisabled]="!isSidebarCollapsed()"
-          >
-            <i class="pi pi-tags sidebar-icon text-sm"></i>
-            @if (!isSidebarCollapsed()) {
-              <span class="sidebar-item-text">Atributos Extra</span>
-            }
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
+          <a
+            routerLink="/admin/settings"
+            routerLinkActive="bg-blue-600"
             class="sidebar-item flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white transition-colors hover:bg-blue-500 hover:text-white"
             pTooltip="Configuración"
             tooltipPosition="right"
@@ -143,7 +128,7 @@
             @if (!isSidebarCollapsed()) {
               <span class="sidebar-item-text">Configuración</span>
             }
-          </button>
+          </a>
         </li>
       </ul>
     </div>
