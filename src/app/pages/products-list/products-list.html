@@ -26,7 +26,8 @@
 </button>
 
 @if (carouselProducts().length > 0) {
-  <div class="px-4 pt-4">
+  <!-- Contenedor con ancho 100% y Altura fluida según la pantalla, usando rem o breakpoints limpios -->
+  <div class="h-[26rem] w-full px-4 pt-4 md:h-[30rem]">
     <app-carousel [products]="carouselProducts()" />
   </div>
 }

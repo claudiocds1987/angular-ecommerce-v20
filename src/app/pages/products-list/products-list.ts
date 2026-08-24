@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  OnInit,
+} from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import { Title, Meta } from '@angular/platform-browser';
 import { Product } from '@features/products/models/product.model';
 import { ProductCard } from './product-card/product-card';
@@ -50,43 +57,60 @@ export class ProductsList implements OnInit {
 
   ngOnInit(): void {
     this._titleService.setTitle('Catálogo de Productos | E-Commerce');
-    this._metaService.updateTag({ name: 'description', content: 'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.' });
-    this._metaService.updateTag({ property: 'og:title', content: 'Catálogo de Productos | E-Commerce' });
-    this._metaService.updateTag({ property: 'og:description', content: 'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.' });
+    this._metaService.updateTag({
+      name: 'description',
+      content:
+        'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.',
+    });
+    this._metaService.updateTag({
+      property: 'og:title',
+      content: 'Catálogo de Productos | E-Commerce',
+    });
+    this._metaService.updateTag({
+      property: 'og:description',
+      content:
+        'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.',
+    });
   }
 
   private _loadCarouselProducts() {
-    // Solicita los primeros 100 productos para extraer la muestra del carrusel
-    this._productsService.getProductsPaginated(1, 100).subscribe((res) => {
-      const uniqueCategories = new Set<string>();
-      const selectedProducts: Product[] = [];
+    this._productsService
+      .getProductsPaginated(1, 100)
+      .pipe(
+        map((res) => {
+          const items = res?.items || res || [];
+          // Filtrando productos isActive = true
+          const activeProducts = items.filter((product: Product) => product.isActive === true);
 
-      if (res && res.items) {
-        // 1. Intento principal: Buscar variedad (un producto por categoría)
-        for (const product of res.items) {
-          // Usamos 'category' (string) que es lo que viene del ProductDto
-          if (product.category && !uniqueCategories.has(product.category)) {
-            uniqueCategories.add(product.category);
-            selectedProducts.push(product);
-            // Se carga un máximo de 8 productos en el carousel
-            if (selectedProducts.length === 8) break;
-          }
-        }
-        // 2. Respaldo (Fallback): Si hay pocos tipos de categorías en los primeros 100 productos
-        // y no logramos juntar al menos 4 para mostrar el carrusel, rellenamos con lo que haya.
-        if (selectedProducts.length < 4) {
-          for (const product of res.items) {
-            // Si el producto no fue agregado ya, lo metemos para rellenar
-            if (!selectedProducts.some((p) => p.id === product.id)) {
+          console.log('Productos activos:', activeProducts.length);
+
+          const uniqueCategories = new Set<string>();
+          const selectedProducts: Product[] = [];
+
+          // Buscar variedad por categoría
+          for (const product of activeProducts) {
+            if (product.category && !uniqueCategories.has(product.category)) {
+              uniqueCategories.add(product.category);
               selectedProducts.push(product);
+              if (selectedProducts.length === 8) break;
             }
-            if (selectedProducts.length === 8) break;
           }
-        }
-      }
-      // Actualiza el signal con los productos encontrados
-      this.carouselProducts.set(selectedProducts);
-    });
+
+          // Respaldo (Fallback): Rellenar si faltan productos
+          if (selectedProducts.length < 4) {
+            for (const product of activeProducts) {
+              if (!selectedProducts.some((p) => p.id === product.id)) {
+                selectedProducts.push(product);
+              }
+              if (selectedProducts.length === 8) break;
+            }
+          }
+          return selectedProducts;
+        }),
+      )
+      .subscribe((selectedProducts) => {
+        this.carouselProducts.set(selectedProducts);
+      });
   }
 
   private _loadProducts() {
