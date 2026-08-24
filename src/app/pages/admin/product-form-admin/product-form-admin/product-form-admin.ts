@@ -386,7 +386,6 @@ export class ProductFormAdmin implements CanComponentDeactivate {
   }
 
   private _handleSuccess(product: Product): void {
-    console.log('Producto guardado exitosamente:', product);
     this._toastService.show(`Producto ${product.title} guardado con éxito`, 'success');
   }
 

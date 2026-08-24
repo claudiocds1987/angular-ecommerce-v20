@@ -9,7 +9,6 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = () => {
 
   // Si el usuario ya inició sesión, ejecutamos la estrategia de redirección por rol
   if (user) {
-    console.log('usuario logeado: ', user);
     if (user.role === 'admin') {
       router.navigate(['/admin'], { replaceUrl: true });
       return false; // Cancelamos la navegación actual hacia el login porque ya redirigimos

@@ -91,8 +91,7 @@ export const ProductAdminStore = signalStore(
                   loading: false,
                 });
               }),
-              catchError((err) => {
-                console.error('Error cargando productos:', err);
+              catchError(() => {
                 patchState(state, { loading: false });
                 return EMPTY;
               }),
@@ -117,7 +116,6 @@ export const ProductAdminStore = signalStore(
                   totalItems: state.totalItems() - 1,
                   loading: false,
                 });
-                console.log('Producto desactivado con éxito');
               }),
               catchError(() => {
                 patchState(state, { loading: false });

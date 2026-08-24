@@ -81,12 +81,8 @@ export class ProductsList implements OnInit {
           const items = res?.items || res || [];
           // Filtrando productos isActive = true
           const activeProducts = items.filter((product: Product) => product.isActive === true);
-
-          console.log('Productos activos:', activeProducts.length);
-
           const uniqueCategories = new Set<string>();
           const selectedProducts: Product[] = [];
-
           // Buscar variedad por categoría
           for (const product of activeProducts) {
             if (product.category && !uniqueCategories.has(product.category)) {
@@ -95,7 +91,6 @@ export class ProductsList implements OnInit {
               if (selectedProducts.length === 8) break;
             }
           }
-
           // Respaldo (Fallback): Rellenar si faltan productos
           if (selectedProducts.length < 4) {
             for (const product of activeProducts) {

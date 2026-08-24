@@ -91,7 +91,6 @@ export class GridPrimeComponent<TData, TAction> {
   }
 
   handleLazyLoad(event: TableLazyLoadEvent) {
-    console.log('event: ', event);
     if (this.isServerMode()) {
       this.lazyLoad.emit({
         first: event.first || 0,

@@ -601,13 +601,10 @@ export class ProductsGridAdmin implements OnInit {
   private _loadData(quickQuery?: string) {
     this.productAdminStore.loadProducts({
       query: quickQuery ?? this.productAdminStore.filterQuery(), // valor del input superior
-      filters: this.gridFilterFormSig().value, // valores del panel lateral
+      filters: this.gridFilterFormSig().value, // valores de los filtros de gird-filter component
       pageIndex: 0, // primera página
       pageSize: 25, // tamaño por defecto
     });
-
-    console.log('query: ', quickQuery ?? this.productAdminStore.filterQuery());
-    console.log('filters grid: ', this.gridFilterFormSig().value);
 
     this.pageIndexSig.set(0);
     this.pageSizeSig.set(25);
@@ -677,7 +674,6 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   private _editProduct(id: number): void {
-    console.log('Editando producto con ID:', id);
     this._router.navigate(['admin/product/edit', id]);
   }
 
