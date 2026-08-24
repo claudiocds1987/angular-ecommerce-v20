@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 button.primary-button {
-  @apply h-12 w-full rounded-xl font-bold tracking-wide transition-all duration-200;
+  @apply h-12 w-full rounded-xl tracking-wide transition-all duration-200;
 
   &.mat-mdc-button-disabled,
   &.mat-mdc-button-disabled:disabled,
