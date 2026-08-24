@@ -236,8 +236,6 @@ export class ProductsGridAdmin implements OnInit {
     };
 
     this.onGridPageChange(pageEvent);
-
-    //this.applyFilter();
   }
 
   constructor() {
@@ -289,10 +287,11 @@ export class ProductsGridAdmin implements OnInit {
   }
 
   onGridPageChange(event: PageEvent): void {
-    // Llamamos al store con pageIndex y pageSize
+    // Llamamos al store con pageIndex y pageSize y filtros del componente grid-filter
     this.productAdminStore.loadProducts({
       pageIndex: event.pageIndex,
       pageSize: event.pageSize,
+      filters: this.gridFilterFormSig().value,
     });
 
     // Guardamos los últimos valores de paginación en signals.
@@ -606,6 +605,9 @@ export class ProductsGridAdmin implements OnInit {
       pageIndex: 0, // primera página
       pageSize: 25, // tamaño por defecto
     });
+
+    console.log('query: ', quickQuery ?? this.productAdminStore.filterQuery());
+    console.log('filters grid: ', this.gridFilterFormSig().value);
 
     this.pageIndexSig.set(0);
     this.pageSizeSig.set(25);
