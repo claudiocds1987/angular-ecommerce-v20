@@ -8,7 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MenuItem } from 'primeng/api';
 
-import { GridColumn, GridLazyLoadEvent, GridElipsis, GridExtraAction } from './grid-prime.model';
+import { GridColumn, GridQueryParams, GridElipsis, GridExtraAction } from './grid-prime.model';
 import { Button } from '@shared/components/button/button';
 
 @Component({
@@ -60,7 +60,7 @@ export class GridPrimeComponent<TData, TAction> {
   //showExport = input<boolean>(false);
 
   // Outputs
-  lazyLoad = output<GridLazyLoadEvent>();
+  queryParamsChange = output<GridQueryParams>();
   action = output<{ action: GridElipsis<TAction>; row: TAction }>();
   export = output<void>();
   rowDblClick = output<TData>();
@@ -87,9 +87,14 @@ export class GridPrimeComponent<TData, TAction> {
     menu.toggle(event);
   }
 
-  handleLazyLoad(event: TableLazyLoadEvent) {
+  // Procesa el evento de carga perezosa (lazy load) proveniente de PrimeNG
+  // y emite los parámetros normalizados de consulta para el servidor.
+  // @param event - Evento nativo de PrimeNG que contiene la información de
+  // paginación (first, rows), ordenamiento (sortField, sortOrder) y filtros aplicados.
+
+  onGridQueryParams(event: TableLazyLoadEvent) {
     if (this.isServerMode()) {
-      this.lazyLoad.emit({
+      this.queryParamsChange.emit({
         first: event.first || 0,
         rows: event.rows || this.rowsPerPage(),
         sortField: event.sortField as string,

@@ -31,7 +31,7 @@ export interface GridExtraAction {
   class?: string;
 }
 
-export interface GridLazyLoadEvent {
+export interface GridQueryParams {
   first: number;
   rows: number;
   sortField?: string;

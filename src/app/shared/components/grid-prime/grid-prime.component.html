@@ -22,7 +22,7 @@
       [columns]="columns()"
       [lazy]="isServerMode()"
       [lazyLoadOnInit]="isServerMode()"
-      (onLazyLoad)="handleLazyLoad($event)"
+      (onLazyLoad)="onGridQueryParams($event)"
       [paginator]="!isVirtualScroll()"
       [rows]="rowsPerPage()"
       [rowsPerPageOptions]="rowsPerPageOptions()"

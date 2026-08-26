@@ -72,7 +72,7 @@
           [rowsPerPage]="25"
           [elipsisActions]="elipsisActions()"
           [extraActions]="gridExtraActions()"
-          (lazyLoad)="onGridPrimeLazyLoad($event)"
+          (queryParamsChange)="onGridQueryParams($event)"
           (rowDblClick)="onGridRowDblClick($event)"
         >
         </app-grid-prime>

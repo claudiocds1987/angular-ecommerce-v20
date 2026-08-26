@@ -24,7 +24,7 @@ import { GridPrimeComponent } from '@shared/components/grid-prime/grid-prime.com
 import {
   GridColumn,
   //GridAction,
-  GridLazyLoadEvent,
+  GridQueryParams,
   GridElipsis,
   GridExtraAction,
 } from '@shared/components/grid-prime/grid-prime.model';
@@ -217,10 +217,10 @@ export class ProductsGridAdmin implements OnInit {
     },
   ]);
 
-  // onGridPrimeLazyLoad: Handler del evento (lazyLoad) emitido por <app-grid-prime>.
+  // onGridQueryParams: Handler del evento (lazyLoad) emitido por <app-grid-prime>.
   // Se dispara cuando el paginador o el orden cambian, y calcula
   // pageIndex + pageSize antes de llamar al store.
-  onGridPrimeLazyLoad(event: GridLazyLoadEvent): void {
+  onGridQueryParams(event: GridQueryParams): void {
     if (event.sortField) {
       const sortEvent: Sort = {
         active: event.sortField,
