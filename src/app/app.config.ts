@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   ApplicationConfig,
@@ -7,6 +7,7 @@ import {
   inject,
   provideAppInitializer, // <--- Nueva función para inicialización
 } from '@angular/core';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 import { provideRouter, withHashLocation } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -50,6 +51,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

@@ -76,6 +76,18 @@ export class ProductService {
     size: number,
     filters: CustomerProductFilter,
   ): Observable<ProductPaginated> {
+    const filterKeyStr = `filtered-${page}-${size}-${JSON.stringify(filters || {})}`;
+    const STATE_KEY = makeStateKey<ProductPaginated>(filterKeyStr);
+
+    const storedData = this._transferState.get(STATE_KEY, null);
+    if (storedData) {
+      this._transferState.remove(STATE_KEY);
+      return of({
+        ...storedData,
+        items: (storedData.items || []).map((p) => this._mapToProduct(p)),
+      });
+    }
+
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (filters.search) params = params.set('search', filters.search);
@@ -87,10 +99,15 @@ export class ProductService {
     if (filters.order) params = params.set('order', filters.order);
 
     return this._http.get<ProductPaginated>(`${this._apiURL}`, { params }).pipe(
+      tap((res) => {
+        if (isPlatformServer(this._platformId)) {
+          this._transferState.set(STATE_KEY, res);
+        }
+      }),
       map((res) => ({
         ...res,
         // Mapeamos cada producto dentro del array 'items' para calcular el finalPrice
-        items: res.items.map((p) => this._mapToProduct(p)),
+        items: (res.items || []).map((p) => this._mapToProduct(p)),
       })),
     );
   }
