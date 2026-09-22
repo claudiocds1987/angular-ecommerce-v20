@@ -1,4 +1,4 @@
-﻿import {
+import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -33,7 +33,7 @@ import { ProductFilterParams } from '@features/products/models/product-filter-pa
 import { GridFilterConfig } from '@shared/components/grid/models/grid-filter-configuration.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Chip, ChipsComponent } from '../../../shared/components/chips/chips.component';
-import { ProductCategory } from '@features/products/models/product-category.model';
+import { ProductCategory } from '@features/categories/models/product-category.model';
 import { GridFilterComponent } from '@shared/components/grid/grid-filter/grid-filter.component';
 import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
@@ -41,9 +41,9 @@ import { SpinnerService } from '@shared/services/spinner-service';
 import { ProductService } from '@features/products/services/product-service';
 import { first, map } from 'rxjs';
 import { ExportService } from '@features/admin-tools/services/export-service';
-import { CategoryStore } from '@features/products/state/category.store';
-import { BrandStore } from '@features/products/state/brand.store';
-import { ProductBrand } from '@features/products/models/product-brand.model';
+import { CategoryStore } from '@features/categories/state/category.store';
+import { BrandStore } from '@features/brands/state/brand.store';
+import { ProductBrand } from '@features/brands/models/product-brand.model';
 import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
 import { AdminProductFilter } from '@features/products/models/admin-product-filter.model';
 import { Router } from '@angular/router';

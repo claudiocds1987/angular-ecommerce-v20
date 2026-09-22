@@ -1,4 +1,4 @@
-﻿import {
+import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
@@ -18,7 +18,7 @@ import { ProductExtraAttributeService } from '@features/products/services/produc
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { CommonModule } from '@angular/common';
-import { CategoryStore } from '@features/products/state/category.store';
+import { CategoryStore } from '@features/categories/state/category.store';
 
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
 import { MatFormFieldModule } from '@angular/material/form-field';

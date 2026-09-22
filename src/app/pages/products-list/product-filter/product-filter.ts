@@ -1,8 +1,8 @@
-﻿import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
-import { BrandStore } from '@features/products/state/brand.store';
-import { CategoryStore } from '@features/products/state/category.store';
+import { BrandStore } from '@features/brands/state/brand.store';
+import { CategoryStore } from '@features/categories/state/category.store';
 import { ProductStore } from '@features/products/state/product.store';
 
 @Component({
