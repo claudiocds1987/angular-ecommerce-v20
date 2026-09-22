@@ -18,8 +18,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductStore } from '@features/products/state/product.store';
-import { BrandStore } from '@features/products/state/brand.store';
-import { CategoryStore } from '@features/products/state/category.store';
+import { BrandStore } from '@features/brands/state/brand.store';
+import { CategoryStore } from '@features/categories/state/category.store';
 import { Button } from '@shared/components/button/button';
 
 @Component({

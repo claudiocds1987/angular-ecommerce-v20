@@ -1,6 +1,6 @@
-﻿import { inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { ProductBrand } from '@features/products/models/product-brand.model';
+import { ProductBrand } from '@features/brands/models/product-brand.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 

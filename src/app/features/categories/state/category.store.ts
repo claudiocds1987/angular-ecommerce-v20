@@ -1,9 +1,9 @@
-﻿import { inject, computed } from '@angular/core';
+import { inject, computed } from '@angular/core';
 import { patchState, signalStore, withMethods, withState, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
-import { ProductCategory } from '@features/products/models/product-category.model';
-import { CategoryService } from '@features/products/services/category-service';
+import { ProductCategory } from '@features/categories/models/product-category.model';
+import { CategoryService } from '@features/categories/services/category-service';
 
 export const CategoryStore = signalStore(
   { providedIn: 'root' },

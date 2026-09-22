@@ -1,9 +1,9 @@
-﻿import { inject, computed } from '@angular/core';
+import { inject, computed } from '@angular/core';
 import { patchState, signalStore, withMethods, withState, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
-import { ProductBrand } from '@features/products/models/product-brand.model';
-import { BrandService } from '@features/products/services/brand-service';
+import { ProductBrand } from '@features/brands/models/product-brand.model';
+import { BrandService } from '@features/brands/services/brand-service';
 
 export const BrandStore = signalStore(
   { providedIn: 'root' },

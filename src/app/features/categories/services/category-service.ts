@@ -1,7 +1,7 @@
-﻿import { inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
-import { ProductCategory } from '@features/products/models/product-category.model';
+import { ProductCategory } from '@features/categories/models/product-category.model';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({

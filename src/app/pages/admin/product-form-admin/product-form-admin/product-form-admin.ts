@@ -1,4 +1,4 @@
-﻿import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,8 +22,8 @@ import {
 } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { CategoryStore } from '@features/products/state/category.store';
-import { BrandStore } from '@features/products/state/brand.store';
+import { CategoryStore } from '@features/categories/state/category.store';
+import { BrandStore } from '@features/brands/state/brand.store';
 import { ProductService } from '@features/products/services/product-service';
 import { ExtraAttribute, Product } from '@features/products/models/product.model';
 import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
