@@ -11,7 +11,6 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
 import { ExcelUpload } from '@features/admin-tools/components/excel-upload/excel-upload';
 import { ImportResultResponse } from '@features/admin-tools/models/import-result-response.model';
 import { ExcelService } from '@features/admin-tools/services/excel-service';
@@ -64,7 +63,6 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
   selector: 'app-products-grid-admin',
   standalone: true,
   imports: [
-    CommonModule,
     ExcelUpload,
     GridFilterComponent,
     ChipsComponent,

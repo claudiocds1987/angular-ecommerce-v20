@@ -1,4 +1,12 @@
-import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
 import { BrandStore } from '@features/brands/state/brand.store';
@@ -9,6 +17,7 @@ import { ProductStore } from '@features/products/state/product.store';
   selector: 'app-product-filter',
   imports: [ReactiveFormsModule],
   templateUrl: './product-filter.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-filter.scss',
 })
 export class ProductFilter implements OnInit {

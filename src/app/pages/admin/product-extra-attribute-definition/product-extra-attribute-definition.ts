@@ -17,7 +17,7 @@ import {
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
 import { SpinnerService } from '@shared/services/spinner-service';
-import { CommonModule } from '@angular/common';
+
 import { CategoryStore } from '@features/categories/state/category.store';
 
 import { duplicateNameValidator } from '../../../shared/validators/custom-form-validators';
@@ -42,7 +42,6 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
   selector: 'app-product-extra-attribute-definition',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,

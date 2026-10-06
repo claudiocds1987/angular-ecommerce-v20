@@ -6,7 +6,8 @@ import { of } from 'rxjs';
 
 import { Cart } from './cart';
 import { CartService } from '@features/checkout/services/cart-service';
-import { MercadoPagoService } from '@features/checkout/services/mercado-pago';
+import { OrderService } from '@features/checkout/services/order-service';
+import { ConfirmDialogService } from '@shared/components/confirm-dialog/confirm-dialog.service';
 import { AuthStore } from '@features/auth/state/auth.store';
 
 describe('Cart', () => {
@@ -17,15 +18,19 @@ describe('Cart', () => {
   beforeEach(async () => {
     mockCartService = {
       cart: signal([]),
-      totalPrice: signal(0)
+      totalPrice: signal(0),
     };
 
     const mockAuthStore = {
-      user: signal(null)
+      user: signal(null),
     };
 
-    const mockMpService = {
-      createPreference: () => of({ id: 'pref1' })
+    const mockOrderService = {
+      createOrder: () => of({ initPoint: 'http://test' }),
+    };
+
+    const mockConfirmDialogService = {
+      open: () => of(true),
     };
 
     await TestBed.configureTestingModule({
@@ -36,8 +41,9 @@ describe('Cart', () => {
         provideNoopAnimations(),
         { provide: CartService, useValue: mockCartService },
         { provide: AuthStore, useValue: mockAuthStore },
-        { provide: MercadoPagoService, useValue: mockMpService }
-      ]
+        { provide: OrderService, useValue: mockOrderService },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialogService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Cart);

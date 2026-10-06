@@ -1,12 +1,21 @@
-import { Component, input, output, computed, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  computed,
+  ViewChild,
+  ElementRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 
-import { TableModule, TableLazyLoadEvent } from 'primeng/table';
+import { CommonModule } from '@angular/common';
+import { TableModule, TableLazyLoadEvent, SortIcon } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, SharedModule } from 'primeng/api';
 
 import { GridColumn, GridQueryParams, GridElipsis, GridExtraAction } from './grid-prime.model';
 import { Button } from '@shared/components/button/button';
@@ -15,7 +24,10 @@ import { Button } from '@shared/components/button/button';
   selector: 'app-grid-prime',
   standalone: true,
   imports: [
+    CommonModule,
+    SharedModule,
     TableModule,
+    SortIcon,
     SkeletonModule,
     MenuModule,
     TooltipModule,
@@ -24,6 +36,7 @@ import { Button } from '@shared/components/button/button';
     Button,
   ],
   templateUrl: './grid-prime.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './grid-prime.component.scss',
 })
 // Usamos <TData, TAction> porque el tipo concreto se define en el componente padre:

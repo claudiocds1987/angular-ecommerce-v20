@@ -1,4 +1,11 @@
-﻿import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
+﻿import {
+  Component,
+  effect,
+  inject,
+  signal,
+  WritableSignal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ToastConfig, ToastService } from '@shared/services/toast-service';
 import { CommonModule } from '@angular/common';
 
@@ -6,6 +13,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-toast',
   imports: [CommonModule],
   templateUrl: './toast.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './toast.scss',
 })
 export class Toast {

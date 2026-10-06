@@ -1,5 +1,13 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, ElementRef, ViewChild, effect, signal, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  effect,
+  signal,
+  inject,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -18,6 +26,7 @@ interface Message {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ia-chat.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './ia-chat.scss',
 })
 export class IaChat {

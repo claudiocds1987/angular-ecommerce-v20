@@ -1,5 +1,5 @@
 // src/app/features/checkout/components/cart/cart.ts
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -38,6 +38,7 @@ import { Button } from '@shared/components/button/button';
     Breadcrumb,
   ],
   templateUrl: './cart.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './cart.scss',
 })
 export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {

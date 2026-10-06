@@ -1,5 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, input, Output, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  input,
+  Output,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ExcelService } from '@features/admin-tools/services/excel-service';
 import { ImportResultResponse } from '@features/admin-tools/models/import-result-response.model';
 import { SpinnerService } from '@shared/services/spinner-service';
@@ -9,8 +17,9 @@ import { Button } from '@shared/components/button/button';
 @Component({
   selector: 'app-excel-upload',
   standalone: true,
-  imports: [CommonModule, Button],
+  imports: [Button],
   templateUrl: './excel-upload.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './excel-upload.scss',
 })
 export class ExcelUpload {
