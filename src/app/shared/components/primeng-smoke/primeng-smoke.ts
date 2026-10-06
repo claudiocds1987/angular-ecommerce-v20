@@ -17,7 +17,7 @@ import { Button } from 'primeng/button';
       <p-datepicker [(ngModel)]="selectedDate" placeholder="Seleccionar fecha" [showIcon]="true" />
     </section>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     .primeng-smoke {
       display: flex;
