@@ -8,13 +8,14 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 
+import { CommonModule } from '@angular/common';
 import { TableModule, TableLazyLoadEvent, SortIcon } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, SharedModule } from 'primeng/api';
 
 import { GridColumn, GridQueryParams, GridElipsis, GridExtraAction } from './grid-prime.model';
 import { Button } from '@shared/components/button/button';
@@ -23,6 +24,8 @@ import { Button } from '@shared/components/button/button';
   selector: 'app-grid-prime',
   standalone: true,
   imports: [
+    CommonModule,
+    SharedModule,
     TableModule,
     SortIcon,
     SkeletonModule,

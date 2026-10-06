@@ -38,7 +38,7 @@
       styleClass="p-datatable-sm p-datatable-gridlines grid-prime-datatable"
     >
       <!-- Headers -->
-      <ng-template pTemplate="header" let-columns>
+      <ng-template #header pTemplate="header" let-columns>
         <tr>
           @for (col of columns; track col.field) {
             <th
@@ -61,7 +61,7 @@
       </ng-template>
 
       <!-- Body Rows -->
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <ng-template #body pTemplate="body" let-rowData let-columns="columns">
         <tr (dblclick)="handleRowDblClick(rowData)" class="cursor-pointer">
           @for (col of columns; track col.field) {
             <td
@@ -132,7 +132,7 @@
       </ng-template>
 
       <!-- Empty Message -->
-      <ng-template pTemplate="emptymessage" let-columns>
+      <ng-template #emptymessage pTemplate="emptymessage" let-columns>
         <tr>
           <td
             [attr.colspan]="columns.length + (elipsisActions().length > 0 ? 1 : 0)"
