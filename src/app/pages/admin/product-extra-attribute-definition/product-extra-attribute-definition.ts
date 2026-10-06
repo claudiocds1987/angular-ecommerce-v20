@@ -57,8 +57,8 @@ import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
     AdminSidebar,
   ],
   templateUrl: './product-extra-attribute-definition.html',
-  styleUrl: './product-extra-attribute-definition.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './product-extra-attribute-definition.scss',
 })
 export class ProductExtraAttributeDefinition implements OnInit, CanComponentDeactivate {
   breadcrumbItems = signal<BreadcrumbItem[]>([

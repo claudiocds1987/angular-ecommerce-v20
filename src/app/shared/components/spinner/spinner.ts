@@ -5,7 +5,7 @@ import { SpinnerService } from '@shared/services/spinner-service';
   selector: 'app-spinner',
   imports: [],
   templateUrl: './spinner.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './spinner.scss',
 })
 export class Spinner {

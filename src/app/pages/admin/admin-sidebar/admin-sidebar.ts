@@ -8,7 +8,7 @@ import { AdminDashboardService } from '../admin-dashboard/admin-dashboard-servic
   standalone: true,
   imports: [TooltipModule, RouterLink, RouterLinkActive],
   templateUrl: './admin-sidebar.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './admin-sidebar.scss',
 })
 export class AdminSidebar {

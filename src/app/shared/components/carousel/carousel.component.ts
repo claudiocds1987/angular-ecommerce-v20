@@ -20,7 +20,7 @@ import { ProductDetail } from '@pages/product-detail/product-detail';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './carousel.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [],
 })
 export class CarouselComponent implements OnInit, OnDestroy {

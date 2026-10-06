@@ -36,7 +36,7 @@ import { Button } from '@shared/components/button/button';
     Button,
   ],
   templateUrl: './grid-prime.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './grid-prime.component.scss',
 })
 // Usamos <TData, TAction> porque el tipo concreto se define en el componente padre:

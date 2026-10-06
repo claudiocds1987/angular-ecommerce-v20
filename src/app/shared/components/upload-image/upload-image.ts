@@ -30,7 +30,7 @@ export interface IImageResource {
     },
   ],
   templateUrl: './upload-image.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './upload-image.scss',
 })
 export class UploadImageComponent implements ControlValueAccessor {

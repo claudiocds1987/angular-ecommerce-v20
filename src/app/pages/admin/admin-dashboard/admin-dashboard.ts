@@ -35,7 +35,7 @@ import { ChartData } from '@shared/models/chart-data.model';
     //UsersListComponent,
   ],
   templateUrl: './admin-dashboard.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './admin-dashboard.scss',
 })
 export class AdminDashboard implements OnInit {

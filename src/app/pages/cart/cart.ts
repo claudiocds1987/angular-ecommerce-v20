@@ -38,7 +38,7 @@ import { Button } from '@shared/components/button/button';
     Breadcrumb,
   ],
   templateUrl: './cart.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './cart.scss',
 })
 export class Cart implements OnInit, OnDestroy, CanComponentDeactivate {

@@ -19,7 +19,7 @@ import { Button } from '@shared/components/button/button';
   standalone: true,
   imports: [Button],
   templateUrl: './excel-upload.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './excel-upload.scss',
 })
 export class ExcelUpload {

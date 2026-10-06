@@ -9,7 +9,7 @@ export interface BreadcrumbItem {
 @Component({
   selector: 'app-breadcrumb',
   imports: [RouterLink],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './breadcrumb.html',
 })
 export class Breadcrumb {
