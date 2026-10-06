@@ -1,14 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AdminDashboardService } from '../admin-dashboard/admin-dashboard-service';
 
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule, TooltipModule, RouterLink, RouterLinkActive],
+  imports: [TooltipModule, RouterLink, RouterLinkActive],
   templateUrl: './admin-sidebar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-sidebar.scss',
 })
 export class AdminSidebar {

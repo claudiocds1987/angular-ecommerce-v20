@@ -30,7 +30,7 @@
           }
           <img
             [src]="safeThumbnail()"
-            [alt]="product()?.title"
+            [alt]="$safeNavigationMigration(product()?.title)"
             class="h-full w-full object-contain p-8"
           />
         </div>
@@ -102,13 +102,13 @@
           <div class="relative z-10">
             @if (product()?.discountPercentage! > 0) {
               <p class="mb-1 text-sm font-medium text-gray-400 line-through">
-                {{ product()?.price | currency }}
+                {{ $safeNavigationMigration(product()?.price) | currency }}
               </p>
               <div class="flex flex-wrap items-baseline gap-3">
                 <p
                   class="text-3xl font-black tracking-tighter text-blue-600 sm:text-4xl md:text-5xl"
                 >
-                  {{ product()?.finalPrice | currency }}
+                  {{ $safeNavigationMigration(product()?.finalPrice) | currency }}
                 </p>
                 <span class="text-sm font-bold whitespace-nowrap text-green-600">Envío Gratis</span>
               </div>
@@ -117,7 +117,7 @@
                 <p
                   class="text-3xl font-black tracking-tighter text-blue-600 sm:text-4xl md:text-5xl"
                 >
-                  {{ product()?.price | currency }}
+                  {{ $safeNavigationMigration(product()?.price) | currency }}
                 </p>
                 <span class="text-sm font-bold whitespace-nowrap text-green-600">Envío Gratis</span>
               </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OrderService } from '@features/checkout/services/order-service';
@@ -9,6 +9,7 @@ import { CartService } from '@features/checkout/services/cart-service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './payment-result.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-result.scss',
 })
 export class PaymentResult implements OnInit {

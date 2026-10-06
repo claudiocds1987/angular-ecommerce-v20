@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-product-card-skeleton',
   imports: [],
   templateUrl: './product-card-skeleton.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-card-skeleton.scss',
 })
 export class ProductCardSkeleton {}

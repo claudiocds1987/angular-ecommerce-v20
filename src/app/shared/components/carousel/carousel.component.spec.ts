@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CarouselComponent } from './carousel.component';
 import { Product } from '@features/products/models/product.model';
 import { ComponentRef } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 
@@ -12,17 +12,52 @@ describe('CarouselComponent', () => {
   let componentRef: ComponentRef<CarouselComponent>;
 
   const mockProducts: Product[] = [
-    { id: 1, title: 'Product 1', price: 100, stock: 10, images: ['img1.jpg'], category: 'cat1' } as unknown as Product,
-    { id: 2, title: 'Product 2', price: 200, stock: 10, images: ['img2.jpg'], category: 'cat1' } as unknown as Product,
-    { id: 3, title: 'Product 3', price: 300, stock: 10, images: ['img3.jpg'], category: 'cat1' } as unknown as Product,
-    { id: 4, title: 'Product 4', price: 400, stock: 10, images: ['img4.jpg'], category: 'cat1' } as unknown as Product,
-    { id: 5, title: 'Product 5', price: 500, stock: 10, images: ['img5.jpg'], category: 'cat1' } as unknown as Product,
+    {
+      id: 1,
+      title: 'Product 1',
+      price: 100,
+      stock: 10,
+      images: ['img1.jpg'],
+      category: 'cat1',
+    } as unknown as Product,
+    {
+      id: 2,
+      title: 'Product 2',
+      price: 200,
+      stock: 10,
+      images: ['img2.jpg'],
+      category: 'cat1',
+    } as unknown as Product,
+    {
+      id: 3,
+      title: 'Product 3',
+      price: 300,
+      stock: 10,
+      images: ['img3.jpg'],
+      category: 'cat1',
+    } as unknown as Product,
+    {
+      id: 4,
+      title: 'Product 4',
+      price: 400,
+      stock: 10,
+      images: ['img4.jpg'],
+      category: 'cat1',
+    } as unknown as Product,
+    {
+      id: 5,
+      title: 'Product 5',
+      price: 500,
+      stock: 10,
+      images: ['img5.jpg'],
+      category: 'cat1',
+    } as unknown as Product,
   ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CarouselComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CarouselComponent);

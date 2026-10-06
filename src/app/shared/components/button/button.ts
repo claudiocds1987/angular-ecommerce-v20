@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -10,6 +10,7 @@ export type ButtonVariant = 'primary' | 'secondary';
   standalone: true,
   imports: [MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './button.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './button.scss',
 })
 export class Button {

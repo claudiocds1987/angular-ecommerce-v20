@@ -1,10 +1,11 @@
-﻿import { Component, inject } from '@angular/core';
+﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { SpinnerService } from '@shared/services/spinner-service';
 
 @Component({
   selector: 'app-spinner',
   imports: [],
   templateUrl: './spinner.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './spinner.scss',
 })
 export class Spinner {

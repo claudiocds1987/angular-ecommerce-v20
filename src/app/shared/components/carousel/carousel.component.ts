@@ -8,6 +8,7 @@ import {
   OnDestroy,
   inject,
   PLATFORM_ID,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Product } from '@features/products/models/product.model';
@@ -19,6 +20,7 @@ import { ProductDetail } from '@pages/product-detail/product-detail';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [],
 })
 export class CarouselComponent implements OnInit, OnDestroy {

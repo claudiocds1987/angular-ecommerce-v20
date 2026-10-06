@@ -205,7 +205,10 @@
                 <div class="product-form-admin__fields">
                   @for (
                     extraAttribute of extraAttributesArray.controls;
-                    track trackByAttributeName($index, extraAttribute.get('name')?.value)
+                    track trackByAttributeName(
+                      $index,
+                      $safeNavigationMigration(extraAttribute.get('name')?.value)
+                    )
                   ) {
                     <div [formGroupName]="$index" class="product-form-admin__extra-attribute-row">
                       @if (extraAttribute.get('dataType')?.value === 'boolean') {
@@ -230,7 +233,10 @@
                               extraAttribute.get('dataType')?.value === 'number' ? 'number' : 'text'
                             "
                             formControlName="value"
-                            [placeholder]="'Ingrese ' + extraAttribute.get('label')?.value"
+                            [placeholder]="
+                              'Ingrese ' +
+                              $safeNavigationMigration(extraAttribute.get('label')?.value)
+                            "
                           />
                           <mat-error>
                             <app-form-field-error [control]="extraAttribute.get('value')" />

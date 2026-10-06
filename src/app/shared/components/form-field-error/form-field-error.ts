@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl } from '@angular/forms';
 import { map, merge, of, startWith, switchMap } from 'rxjs';
@@ -9,6 +9,7 @@ import { map, merge, of, startWith, switchMap } from 'rxjs';
   standalone: true,
   imports: [],
   templateUrl: './form-field-error.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './form-field-error.scss',
 })
 export class FormFieldError {

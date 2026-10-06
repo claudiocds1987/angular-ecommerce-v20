@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CartService } from './cart-service';
 import { Product } from '@features/products/models/product.model';
 import { Injector, provideZonelessChangeDetection } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('CartService', () => {
@@ -28,7 +28,7 @@ describe('CartService', () => {
       providers: [
         CartService,
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
       ],
     });

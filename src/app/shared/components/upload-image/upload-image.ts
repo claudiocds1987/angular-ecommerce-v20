@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Component, Input, forwardRef, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  forwardRef,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { NgxImageCompressService } from 'ngx-image-compress';
-import { CommonModule } from '@angular/common';
 
 //Interfaz Genérica: Permite que el componente sea usado para Productos, Usuarios o cualquier entidad que maneje una URL de imagen.
 export interface IImageResource {
@@ -15,7 +21,7 @@ export interface IImageResource {
 @Component({
   selector: 'app-upload-image',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -24,6 +30,7 @@ export interface IImageResource {
     },
   ],
   templateUrl: './upload-image.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './upload-image.scss',
 })
 export class UploadImageComponent implements ControlValueAccessor {

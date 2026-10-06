@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePicker } from 'primeng/datepicker';
 import { Button } from 'primeng/button';
@@ -17,6 +17,7 @@ import { Button } from 'primeng/button';
       <p-datepicker [(ngModel)]="selectedDate" placeholder="Seleccionar fecha" [showIcon]="true" />
     </section>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: `
     .primeng-smoke {
       display: flex;
