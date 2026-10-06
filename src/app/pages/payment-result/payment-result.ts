@@ -9,7 +9,7 @@ import { CartService } from '@features/checkout/services/cart-service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './payment-result.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './payment-result.scss',
 })
 export class PaymentResult implements OnInit {

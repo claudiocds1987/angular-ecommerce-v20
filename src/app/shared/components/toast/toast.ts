@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   effect,
   inject,
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-toast',
   imports: [CommonModule],
   templateUrl: './toast.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './toast.scss',
 })
 export class Toast {

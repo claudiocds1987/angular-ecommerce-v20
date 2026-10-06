@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
   ElementRef,
@@ -26,7 +26,7 @@ interface Message {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ia-chat.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './ia-chat.scss',
 })
 export class IaChat {

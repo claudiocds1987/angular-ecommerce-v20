@@ -10,7 +10,7 @@ export type ButtonVariant = 'primary' | 'secondary';
   standalone: true,
   imports: [MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './button.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './button.scss',
 })
 export class Button {

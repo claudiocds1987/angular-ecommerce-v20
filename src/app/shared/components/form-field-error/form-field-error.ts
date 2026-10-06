@@ -9,7 +9,7 @@ import { map, merge, of, startWith, switchMap } from 'rxjs';
   standalone: true,
   imports: [],
   templateUrl: './form-field-error.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './form-field-error.scss',
 })
 export class FormFieldError {

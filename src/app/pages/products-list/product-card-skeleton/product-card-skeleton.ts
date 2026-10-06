@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-product-card-skeleton',
   imports: [],
   templateUrl: './product-card-skeleton.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './product-card-skeleton.scss',
 })
 export class ProductCardSkeleton {}

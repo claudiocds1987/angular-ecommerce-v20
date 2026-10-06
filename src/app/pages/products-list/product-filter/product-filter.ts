@@ -17,7 +17,7 @@ import { ProductStore } from '@features/products/state/product.store';
   selector: 'app-product-filter',
   imports: [ReactiveFormsModule],
   templateUrl: './product-filter.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './product-filter.scss',
 })
 export class ProductFilter implements OnInit {
