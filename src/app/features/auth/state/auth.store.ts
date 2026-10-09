@@ -71,7 +71,6 @@ export const AuthStore = signalStore(
                   }
                 }),
                 catchError((err: HttpErrorResponse) => {
-                  console.error('Error de login:', err);
                   const errorMessage = err.error?.message || 'Usuario o contraseña incorrectos';
                   patchState(state, { error: errorMessage, loading: false });
                   return of(null);

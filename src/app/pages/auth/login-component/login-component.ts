@@ -1,33 +1,27 @@
-﻿import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+﻿import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { form, FormField, required } from '@angular/forms/signals';
+import { FormsModule } from '@angular/forms';
 import { AuthStore } from '@features/auth/state/auth.store';
 
-// Importaciones requeridas de Angular Material
+// Importaciones de Material y componentes compartidos
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormFieldError } from '../../../shared/components/form-field-error/form-field-error';
 import { Button } from '@shared/components/button/button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+
 @Component({
   selector: 'app-login-component',
   imports: [
-    ReactiveFormsModule,
     FormsModule,
+    FormField,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    FormFieldError,
     Button,
     Breadcrumb,
   ],
@@ -39,36 +33,61 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
 export class LoginComponent {
   breadcrumbItems = signal<BreadcrumbItem[]>([{ label: 'Inicio', url: '/' }, { label: 'Login' }]);
 
-  private _fb = inject(FormBuilder);
   authStore = inject(AuthStore);
-
-  loginForm: FormGroup;
   hidePassword = signal(true);
 
-  constructor() {
-    this.loginForm = this._fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-    });
+  // 1. Model Signal con el estado inicial de los campos
+  loginModel = signal({
+    username: '',
+    password: '',
+  });
 
-    // SOLUCIÓN AL RE-INTENTO: Si el usuario vuelve a escribir, borramos el error del backend automáticamente
-    this.loginForm.valueChanges.subscribe(() => {
-      if (this.authStore.error()) {
-        this.authStore.clearError();
-      }
+  // 2. Formulario enlazado al schema
+  loginForm = form(this.loginModel, (schemaPath) => {
+    required(schemaPath.username, { message: 'El usuario es requerido' });
+    required(schemaPath.password, { message: 'La contraseña es requerida' });
+  });
+
+  constructor() {
+    this._clearAuthError();
+    effect(() => {
+      this.loginModel();
     });
+  }
+
+  // Al escribir en los input borra el mensaje de error de login que devuelve el backend si es que existe
+  onFieldChange() {
+    this._clearAuthError();
+  }
+
+  private _clearAuthError() {
+    if (this.authStore.error()) {
+      this.authStore.clearError();
+    }
   }
 
   isReadyToLogin(): boolean {
-    return this.loginForm.valid && this.loginForm.dirty;
+    return this._isFormValid() && this._isFormDirty();
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (!this._isFormValid()) {
+      this.loginForm.username().markAsTouched();
+      this.loginForm.password().markAsTouched();
       return;
     }
-    const { username, password } = this.loginForm.value;
-    this.authStore.login({ username: username, password: password });
+
+    const { username, password } = this.loginModel();
+    this.authStore.login({ username, password });
+  }
+
+  private _isFormValid(): boolean {
+    return (
+      this.loginForm.username().invalid() === false && this.loginForm.password().invalid() === false
+    );
+  }
+
+  private _isFormDirty(): boolean {
+    return this.loginForm.username().dirty() || this.loginForm.password().dirty();
   }
 }
