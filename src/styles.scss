@@ -249,3 +249,11 @@ body {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OCULTAR MARCA DE AGUA DE LIBRERIA PRIMEUI
+// ─────────────────────────────────────────────────────────────────────────────
+body > [class*='prime'],
+body > div[style*='fixed'][style*='bottom'] {
+  display: none !important;
+}
