@@ -1,6 +1,7 @@
 <div class="w-full px-4 pt-4 md:px-8 md:pt-8">
   <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
 </div>
+
 <div class="flex items-center justify-center p-4">
   <div class="w-full max-w-md rounded-3xl border border-gray-100 bg-white p-8 shadow-lg md:p-10">
     <div class="mb-8 flex flex-col items-center">
@@ -13,24 +14,35 @@
       <p class="mt-1 text-sm text-slate-400">Ingresa tus credenciales para acceder</p>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-card flex flex-col gap-2">
+    <form (ngSubmit)="onSubmit()" class="form-card flex flex-col gap-2">
+      <!-- Username Field -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Username</mat-label>
-        <input matInput formControlName="username" type="text" placeholder="Tu usuario" />
+        <input
+          matInput
+          [formField]="loginForm.username"
+          type="text"
+          placeholder="Tu usuario"
+          (input)="onFieldChange()"
+        />
         <mat-icon matPrefix class="mr-2 text-slate-400">person</mat-icon>
 
-        <mat-error>
-          <app-form-field-error [control]="loginForm.get('username')" />
-        </mat-error>
+        @if (loginForm.username().touched() && loginForm.username().errors().length) {
+          <mat-error class="block">
+            {{ loginForm.username().errors()[0].message }}
+          </mat-error>
+        }
       </mat-form-field>
 
+      <!-- Password Field -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Password</mat-label>
         <input
           matInput
-          formControlName="password"
+          [formField]="loginForm.password"
           [type]="hidePassword() ? 'password' : 'text'"
           placeholder="Tu contraseña"
+          (input)="onFieldChange()"
         />
         <mat-icon matPrefix class="mr-2 text-slate-400">lock_open</mat-icon>
 
@@ -44,11 +56,14 @@
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
-        <mat-error>
-          <app-form-field-error [control]="loginForm.get('password')" />
-        </mat-error>
+        @if (loginForm.password().touched() && loginForm.password().errors().length) {
+          <mat-error class="block">
+            {{ loginForm.password().errors()[0].message }}
+          </mat-error>
+        }
       </mat-form-field>
 
+      <!-- Error del Backend -->
       @if (authStore.error()) {
         <div
           class="mb-2 flex items-center gap-2.5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs font-semibold text-red-600"
@@ -58,6 +73,7 @@
         </div>
       }
 
+      <!-- Botón de envío -->
       <app-button
         type="submit"
         icon="login"
