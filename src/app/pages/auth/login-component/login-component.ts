@@ -49,6 +49,7 @@ export class LoginComponent {
   });
 
   constructor() {
+    // Si hay error de login, y el usuario sale de la interfaz y vuelve a entrar, se limpia el error para que no quede persistente
     this._clearAuthError();
     effect(() => {
       this.loginModel();

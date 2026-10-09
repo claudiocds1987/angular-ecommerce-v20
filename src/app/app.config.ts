@@ -68,8 +68,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withHashLocation()),
     provideHttpClient(withXhr(), withInterceptors([authInterceptor])),
 
-    // "provideAppInitializer" para volver a cargar los datos del usuario que se perdieron al refrescar la página (F5).
-    // Evita que el sistema nos eche al login al perderse el estado temporal.
+    // "provideAppInitializer" para volver a cargar los datos del usuario que se perdieron al refrescar la página (F5) o al cerrar la ventana.
+    // Evita que el sistema nos eche al login al perderse el estado temporal y el usuario tenga que volver a iniciar sesión.
     provideAppInitializer(() => {
       const authStore = inject(AuthStore);
       return authStore.initializeAuth();

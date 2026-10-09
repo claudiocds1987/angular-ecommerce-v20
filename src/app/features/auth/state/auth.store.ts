@@ -34,6 +34,13 @@ export const AuthStore = signalStore(
           patchState(state, { error: null });
         },
 
+        // initializeAuth: Método para inicializar el estado de autenticación al cargar la aplicación.
+        // Se invoca automáticamente desde provideAppInitializer() en app.config.ts.
+        // Caso de uso: cuando el usuario refresca la página (F5) o cierra y vuelve a abrir la ventana.
+        // Recupera el token guardado en localStorage y consulta /me en el backend.
+        // Si el token es válido, restaura los datos de login/sesión en el store.
+        // Si el token es inválido o vencido, lo elimina y deja el estado en "no autenticado".
+
         initializeAuth: async () => {
           if (!isPlatformBrowser(platformId)) return;
 
