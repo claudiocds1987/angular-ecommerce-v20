@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Button } from '@shared/components/button/button';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
+import { FormFieldError } from '@shared/components/form-field-error/form-field-error';
 
 @Component({
   selector: 'app-login-component',
@@ -24,6 +25,7 @@ import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadc
     MatProgressSpinnerModule,
     Button,
     Breadcrumb,
+    FormFieldError,
   ],
   standalone: true,
   templateUrl: './login-component.html',

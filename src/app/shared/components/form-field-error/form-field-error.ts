@@ -1,57 +1,136 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl } from '@angular/forms';
-import { map, merge, of, startWith, switchMap } from 'rxjs';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnDestroy,
+  input,
+  signal,
+  effect,
+  computed,
+} from '@angular/core';
+import type { AbstractControl, ValidationErrors } from '@angular/forms';
+import { FieldState } from '@angular/forms/signals';
+import { Subscription } from 'rxjs';
+
+type FieldStateType = FieldState<string, string>; // ajusta genéricos si tu FieldState usa otros tipos
+type PossibleControl = AbstractControl | FieldStateType | null;
 
 @Component({
   selector: 'app-form-field-error',
   standalone: true,
-  imports: [],
   templateUrl: './form-field-error.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './form-field-error.scss',
 })
-export class FormFieldError {
-  control = input.required<AbstractControl | null>();
-  /** Vuelve a suscribirse cuando cambia el control; value + status cubren errores con mismo status. */
-  private readonly controlUpdates = toSignal(
-    toObservable(this.control).pipe(
-      switchMap((ctrl) => {
-        if (!ctrl) return of(0);
-        return merge(ctrl.statusChanges, ctrl.valueChanges).pipe(
-          startWith(null),
-          map(() => Date.now()),
-        );
-      }),
-    ),
-    { initialValue: 0 },
-  );
+export class FormFieldError implements OnDestroy {
+  // Input que acepta un AbstractControl (Reactive Forms) o un FieldState (Signals Form)
+  control = input.required<PossibleControl>();
 
-  private readonly errorMap: Record<string, (args: any) => string> = {
+  // Señal que usamos para forzar re-evaluación cuando el control emite cambios
+  // Nombre terminado en "Sig" como pediste: representa un "signal" que actúa como trigger.
+  private readonly _validationSig = signal<number>(0);
+
+  // Suscripción que agrupa las suscripciones a statusChanges/valueChanges del AbstractControl
+  private _controlSubscription: Subscription | null = null;
+
+  // Mapa de claves de error a funciones que devuelven el mensaje legible
+  // NOTA: En **Signal Forms**: Los errores pueden ser los que se definieron en el schema,
+  // Si en el esquema se definió un mensaje, se mostrará ese mensaje. Caso contrario, se mostrará el mensaje genérico
+  // "Campo no válido." definido en el computed errorMessage.
+  // Para el caso de **Reactive Forms**: se muestran los mensajes de a continuación.
+
+  private readonly errorMap: Record<string, (args: unknown) => string> = {
     required: () => 'Este campo es obligatorio.',
-    duplicated: () => 'Este nombre ya existe.',
+    duplicated: () => 'Esta información está duplicada.',
     email: () => 'El correo electrónico no tiene un formato válido.',
-    minlength: (err: any) => `Mínimo ${err.requiredLength} caracteres.`,
-    maxlength: (err: any) => `Máximo ${err.requiredLength} caracteres.`,
-    min: (err: any) => `El valor debe ser mayor o igual a ${err.min}.`,
-    max: (err: any) => `El valor debe ser menor o igual a ${err.max}.`,
+    minlength: (err: unknown) =>
+      `Mínimo ${(err as { requiredLength?: number }).requiredLength} caracteres.`,
+    maxlength: (err: unknown) =>
+      `Máximo ${(err as { requiredLength?: number }).requiredLength} caracteres.`,
+    min: (err: unknown) => `El valor debe ser mayor o igual a ${(err as { min?: number }).min}.`,
+    max: (err: unknown) => `El valor debe ser menor o igual a ${(err as { max?: number }).max}.`,
     pattern: () => 'El formato introducido no es válido.',
   };
 
-  errorMessage = computed(() => {
-    this.controlUpdates();
+  constructor() {
+    // Registramos un effect que observa this.control() y crea/renueva la suscripción al AbstractControl.
+    effect(() => {
+      // Leemos el control actual (puede ser AbstractControl o FieldState)
+      const ctrl = this.control();
+
+      // Si ya había una suscripción previa, la cancelamos para evitar duplicados/fugas
+      if (this._controlSubscription) {
+        this._controlSubscription.unsubscribe();
+        this._controlSubscription = null;
+      }
+
+      // Si no hay control o no tiene statusChanges (no es AbstractControl), salimos
+      if (!ctrl || (ctrl as AbstractControl).statusChanges === undefined) {
+        return;
+      }
+      // Cast seguro a AbstractControl porque comprobamos statusChanges
+      const abstractControl = ctrl as AbstractControl;
+      // Creamos una Subscription para agrupar las suscripciones internas
+      const sub = new Subscription();
+      // Si existe statusChanges, nos suscribimos y actualizamos _validationSig cuando emite
+      if (abstractControl.statusChanges) {
+        sub.add(
+          abstractControl.statusChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
+        );
+      }
+      // Si existe valueChanges, también nos suscribimos para re-evaluar en cambios de valor
+      if (abstractControl.valueChanges) {
+        sub.add(
+          abstractControl.valueChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
+        );
+      }
+      // Guardamos la suscripción agrupada para poder cancelarla más tarde
+      this._controlSubscription = sub;
+    });
+  }
+
+  // Computed que devuelve el mensaje de error (o null si no hay)
+  errorMessage = computed<string | null>(() => {
+    // Leemos la señal para que esta computed se re-evalúe cuando el control emita
+    this._validationSig();
+    // Obtenemos el control actual
     const ctrl = this.control();
-
-    if (ctrl && ctrl.invalid) {
-      const errors = ctrl.errors;
-      if (!errors) return null;
-
-      const firstKey = Object.keys(errors)[0];
-      const getMessage = this.errorMap[firstKey];
-      return getMessage ? getMessage(errors[firstKey]) : 'Campo no válido.';
+    if (!ctrl) return null; // si no hay control, no hay mensaje
+    // --- Caso FieldState (signals form) ---
+    // Detectamos FieldState por la presencia del método invalid()
+    if (typeof (ctrl as FieldStateType).invalid === 'function') {
+      const fs = ctrl as FieldStateType;
+      // Llamamos a invalid() (API de FieldState) para saber si está inválido
+      const invalid = (fs as unknown as { invalid: () => boolean }).invalid();
+      if (!invalid) return null; // si no está inválido, no mostramos nada
+      // Obtenemos errors() (API de FieldState) y comprobamos que sea un array
+      const errorsRaw = (fs as unknown as { errors?: () => unknown[] }).errors?.();
+      if (!Array.isArray(errorsRaw) || errorsRaw.length === 0) return null;
+      // Tomamos el primer error y, si tiene message, lo devolvemos
+      const first = errorsRaw[0] as { message?: string } | unknown;
+      if (first && typeof (first as { message?: unknown }).message === 'string') {
+        return (first as { message: string }).message;
+      }
+      // Fallback genérico si no hay objeto message en el schema del formulario
+      return 'Campo no válido.';
     }
-
+    // --- Caso AbstractControl (Reactive Forms) ---
+    const abstractControl = ctrl as AbstractControl;
+    // Si el AbstractControl está inválido, leemos abstractControl.errors
+    if (abstractControl.invalid) {
+      const errors: ValidationErrors | null = abstractControl.errors ?? null;
+      if (!errors) return null;
+      // Tomamos la primera clave de error y buscamos un mapper en errorMap
+      const firstKey = Object.keys(errors)[0];
+      const mapper = this.errorMap[firstKey];
+      // Si hay mapper, lo usamos con el payload del error; si no, fallback genérico
+      return mapper ? mapper(errors[firstKey]) : 'Campo no válido.';
+    }
+    // Si no hay error en ninguno de los dos casos, devolvemos null
     return null;
   });
+
+  // Limpiamos la suscripción al destruir el componente para evitar fugas de memoria
+  ngOnDestroy(): void {
+    this._controlSubscription?.unsubscribe();
+    this._controlSubscription = null;
+  }
 }
