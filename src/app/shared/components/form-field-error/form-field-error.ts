@@ -32,9 +32,14 @@ export class FormFieldError implements OnDestroy {
   private _controlSubscription: Subscription | null = null;
 
   // Mapa de claves de error a funciones que devuelven el mensaje legible
+  // NOTA: En **Signal Forms**: Los errores pueden ser los que se definieron en el schema,
+  // Si en el esquema se definió un mensaje, se mostrará ese mensaje. Caso contrario, se mostrará el mensaje genérico
+  // "Campo no válido." definido en el computed errorMessage.
+  // Para el caso de **Reactive Forms**: se muestran los mensajes de a continuación.
+
   private readonly errorMap: Record<string, (args: unknown) => string> = {
     required: () => 'Este campo es obligatorio.',
-    duplicated: () => 'Este nombre ya existe.',
+    duplicated: () => 'Esta información está duplicada.',
     email: () => 'El correo electrónico no tiene un formato válido.',
     minlength: (err: unknown) =>
       `Mínimo ${(err as { requiredLength?: number }).requiredLength} caracteres.`,
@@ -104,12 +109,12 @@ export class FormFieldError implements OnDestroy {
       if (first && typeof (first as { message?: unknown }).message === 'string') {
         return (first as { message: string }).message;
       }
-      // Fallback genérico si no hay message
+      // Fallback genérico si no hay objeto message en el schema del formulario
       return 'Campo no válido.';
     }
     // --- Caso AbstractControl (Reactive Forms) ---
     const abstractControl = ctrl as AbstractControl;
-    // Si el AbstractControl está inválido, leemos ac.errors
+    // Si el AbstractControl está inválido, leemos abstractControl.errors
     if (abstractControl.invalid) {
       const errors: ValidationErrors | null = abstractControl.errors ?? null;
       if (!errors) return null;
