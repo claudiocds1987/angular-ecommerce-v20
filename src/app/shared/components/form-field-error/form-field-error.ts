@@ -47,7 +47,6 @@ export class FormFieldError implements OnDestroy {
 
   constructor() {
     // Registramos un effect que observa this.control() y crea/renueva la suscripción al AbstractControl.
-    // No asignamos el effect a una propiedad para evitar la advertencia "is declared but its value is never read".
     effect(() => {
       // Leemos el control actual (puede ser AbstractControl o FieldState)
       const ctrl = this.control();
@@ -63,16 +62,20 @@ export class FormFieldError implements OnDestroy {
         return;
       }
       // Cast seguro a AbstractControl porque comprobamos statusChanges
-      const ac = ctrl as AbstractControl;
+      const abstractControl = ctrl as AbstractControl;
       // Creamos una Subscription para agrupar las suscripciones internas
       const sub = new Subscription();
       // Si existe statusChanges, nos suscribimos y actualizamos _validationSig cuando emite
-      if (ac.statusChanges) {
-        sub.add(ac.statusChanges.subscribe(() => this._validationSig.update((n) => n + 1)));
+      if (abstractControl.statusChanges) {
+        sub.add(
+          abstractControl.statusChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
+        );
       }
       // Si existe valueChanges, también nos suscribimos para re-evaluar en cambios de valor
-      if (ac.valueChanges) {
-        sub.add(ac.valueChanges.subscribe(() => this._validationSig.update((n) => n + 1)));
+      if (abstractControl.valueChanges) {
+        sub.add(
+          abstractControl.valueChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
+        );
       }
       // Guardamos la suscripción agrupada para poder cancelarla más tarde
       this._controlSubscription = sub;
@@ -105,10 +108,10 @@ export class FormFieldError implements OnDestroy {
       return 'Campo no válido.';
     }
     // --- Caso AbstractControl (Reactive Forms) ---
-    const ac = ctrl as AbstractControl;
+    const abstractControl = ctrl as AbstractControl;
     // Si el AbstractControl está inválido, leemos ac.errors
-    if (ac.invalid) {
-      const errors: ValidationErrors | null = ac.errors ?? null;
+    if (abstractControl.invalid) {
+      const errors: ValidationErrors | null = abstractControl.errors ?? null;
       if (!errors) return null;
       // Tomamos la primera clave de error y buscamos un mapper en errorMap
       const firstKey = Object.keys(errors)[0];
