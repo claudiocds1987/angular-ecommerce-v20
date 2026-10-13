@@ -70,13 +70,13 @@ export class FormFieldError implements OnDestroy {
       const abstractControl = ctrl as AbstractControl;
       // Creamos una Subscription para agrupar las suscripciones internas
       const sub = new Subscription();
-      // Si existe statusChanges, nos suscribimos y actualizamos _validationSig cuando emite
+      // Si existe statusChanges, nos suscribimos y actualizamos _validationSig cuando emite y disparar el computed errorMessage
       if (abstractControl.statusChanges) {
         sub.add(
           abstractControl.statusChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
         );
       }
-      // Si existe valueChanges, también nos suscribimos para re-evaluar en cambios de valor
+      // Si existe valueChanges, también nos suscribimos para re-evaluar en cambios de valor y disparar el computed errorMessage
       if (abstractControl.valueChanges) {
         sub.add(
           abstractControl.valueChanges.subscribe(() => this._validationSig.update((n) => n + 1)),
