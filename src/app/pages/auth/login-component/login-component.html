@@ -26,12 +26,9 @@
           (input)="onFieldChange()"
         />
         <mat-icon matPrefix class="mr-2 text-slate-400">person</mat-icon>
-
-        @if (loginForm.username().touched() && loginForm.username().errors().length) {
-          <mat-error class="block">
-            {{ loginForm.username().errors()[0].message }}
-          </mat-error>
-        }
+        <mat-error>
+          <app-form-field-error [control]="loginForm.username()" />
+        </mat-error>
       </mat-form-field>
 
       <!-- Password Field -->
@@ -56,11 +53,9 @@
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
-        @if (loginForm.password().touched() && loginForm.password().errors().length) {
-          <mat-error class="block">
-            {{ loginForm.password().errors()[0].message }}
-          </mat-error>
-        }
+        <mat-error>
+          <app-form-field-error [control]="loginForm.password()" />
+        </mat-error>
       </mat-form-field>
 
       <!-- Error del Backend -->
