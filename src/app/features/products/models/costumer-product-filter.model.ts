@@ -7,4 +7,5 @@ export interface CustomerProductFilter {
   brandId: string;
   sortBy: string;
   order: string;
+  minRating?: number | null;
 }

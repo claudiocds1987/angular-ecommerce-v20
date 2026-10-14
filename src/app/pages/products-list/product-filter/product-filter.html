@@ -1,200 +1,52 @@
 <div
-  class="bg-waves-reverse sticky max-h-[calc(100vh-48px)] overflow-y-auto rounded-2xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+  class="filter-scrollbar flex h-full max-h-full flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl border border-gray-100 bg-white p-5 text-gray-800 shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
 >
-  <div class="mb-8 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="rounded-lg bg-indigo-50 p-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-          />
-        </svg>
-      </div>
-      <h3 class="text-xl font-extrabold tracking-tight text-white">Filtros</h3>
-    </div>
-
-    <button
-      type="button"
-      (click)="toggleSidebar.emit(true)"
-      class="rounded-xl border border-transparent p-2 text-white transition-all duration-200 hover:border-gray-200 hover:bg-gray-50 hover:text-gray-600"
-    >
+  <!-- Header: Icon, Filters Title, Reset & Collapse Panel Actions -->
+  <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+    <div class="flex items-center gap-2.5">
+      <!-- Sliders / Equalizer Icon -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
+        class="h-5 w-5 text-gray-500"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-        />
+        <line x1="4" y1="21" x2="4" y2="14" stroke-linecap="round" />
+        <line x1="4" y1="10" x2="4" y2="3" stroke-linecap="round" />
+        <line x1="12" y1="21" x2="12" y2="12" stroke-linecap="round" />
+        <line x1="12" y1="17" x2="12" y2="3" stroke-linecap="round" />
+        <line x1="20" y1="21" x2="20" y2="16" stroke-linecap="round" />
+        <line x1="20" y1="12" x2="20" y2="3" stroke-linecap="round" />
+        <line x1="1" y1="14" x2="7" y2="14" stroke-linecap="round" />
+        <line x1="9" y1="8" x2="15" y2="8" stroke-linecap="round" />
+        <line x1="17" y1="16" x2="23" y2="16" stroke-linecap="round" />
       </svg>
-    </button>
-  </div>
+      <h2 class="text-base font-bold tracking-tight text-gray-800">Filters</h2>
+    </div>
 
-  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="flex flex-col gap-7">
-    <label class="group flex flex-col gap-2.5">
-      <span class="ml-1 text-[11px] font-bold tracking-[0.1em] text-white uppercase"
-        >Palabra clave</span
-      >
-      <div class="relative">
-        <input
-          type="text"
-          formControlName="search"
-          class="w-full rounded-2xl border border-gray-200 bg-white py-3 pr-4 pl-11 text-gray-700 shadow-sm transition-all duration-200 outline-none placeholder:text-gray-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-          placeholder="Ej: Smart TV..."
-        />
-        <span
-          class="absolute top-1/2 left-4 -translate-y-1/2 text-white transition-colors group-focus-within:text-indigo-500"
+    <div class="flex items-center gap-2">
+      <!-- Reset Button -->
+      @if (hasActiveFilters()) {
+        <button
+          type="button"
+          (click)="clearFilters()"
+          class="text-xs font-semibold text-indigo-600 transition-colors hover:text-indigo-800 hover:underline"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </span>
-      </div>
-    </label>
+          Reset
+        </button>
+      }
 
-    <fieldset class="m-0 flex flex-col gap-2.5 border-none p-0">
-      <legend class="mb-1 ml-1 text-[11px] font-bold tracking-[0.1em] text-white uppercase">
-        Presupuesto
-      </legend>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="relative">
-          <span class="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-white">$</span>
-          <input
-            type="number"
-            formControlName="minPrice"
-            placeholder="Mín"
-            class="w-full rounded-2xl border border-gray-200 bg-white py-3 pr-3 pl-8 text-gray-700 shadow-sm transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-          />
-        </div>
-        <div class="relative">
-          <span class="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-white">$</span>
-          <input
-            type="number"
-            formControlName="maxPrice"
-            placeholder="Máx"
-            class="w-full rounded-2xl border border-gray-200 bg-white py-3 pr-3 pl-8 text-gray-700 shadow-sm transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-          />
-        </div>
-      </div>
-    </fieldset>
-
-    <label class="flex flex-col gap-2.5">
-      <span class="ml-1 text-[11px] font-bold tracking-[0.1em] text-white uppercase"
-        >Categoría</span
-      >
-      <div class="relative">
-        <select
-          formControlName="categoryId"
-          class="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-        >
-          <option value="">Todas las categorías</option>
-          @for (category of categories.items(); track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-          }
-        </select>
-        <span class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-gray-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </span>
-      </div>
-    </label>
-
-    <label class="flex flex-col gap-2.5">
-      <span class="ml-1 text-[11px] font-bold tracking-[0.1em] text-white uppercase"
-        >Ordenar por</span
-      >
-      <div class="relative">
-        <select
-          formControlName="sortBy"
-          class="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-        >
-          <option value="title">Nombre (A - Z)</option>
-          <option value="price">Menor precio</option>
-          <option value="rating">Más populares</option>
-        </select>
-        <span class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-gray-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-            />
-          </svg>
-        </span>
-      </div>
-    </label>
-
-    <div class="flex flex-col gap-3 border-t border-gray-100/10 pt-6">
-      <!-- Botón: Aplicar Filtros (Actualizado con bg-cyan, shadow-cyan e icono Check) -->
-      <button
-        type="submit"
-        class="flex w-full items-center justify-center gap-3 rounded-2xl bg-cyan-500 py-4 font-bold text-white shadow-lg shadow-cyan-500/20 transition-all duration-200 hover:bg-cyan-600 active:scale-[0.98]"
-      >
-        <!-- Icono Check -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-        Aplicar Filtros
-      </button>
-
-      <!-- Botón: Limpiar selección (Actualizado con hover translúcido e icono Papelera) -->
+      <!-- Collapse Sidebar Button (visible on all screens) -->
       <button
         type="button"
-        (click)="clearFilters()"
-        class="flex w-full items-center justify-center gap-2.5 rounded-xl py-3 text-center text-sm font-medium text-white/90 transition-all hover:bg-white/10 hover:text-white"
+        (click)="toggleSidebar.emit(true)"
+        class="flex items-center justify-center rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        title="Colapsar panel de filtros"
+        aria-label="Colapsar panel de filtros"
       >
-        <!-- Icono Papelera -->
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4"
@@ -206,11 +58,305 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
           />
         </svg>
-        Limpiar selección
       </button>
     </div>
+  </div>
+
+  <form [formGroup]="filterForm" class="flex flex-col gap-4">
+    <!-- 1. Price Range Section (Collapsible) -->
+    <section class="flex flex-col">
+      <button
+        type="button"
+        (click)="togglePriceSection()"
+        class="group flex w-full items-center justify-between py-1 text-left"
+        [attr.aria-expanded]="isPriceExpanded()"
+      >
+        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+          Price Range
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+          [class.rotate-180]="isPriceExpanded()"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (isPriceExpanded()) {
+        <div class="animate-in fade-in pt-1.5 duration-200">
+          <div class="px-1">
+            <mat-slider min="0" max="2000" step="25" class="price-slider">
+              <input
+                matSliderStartThumb
+                formControlName="minPrice"
+                (valueChange)="onPriceChange()"
+                aria-label="Precio mínimo"
+              />
+              <input
+                matSliderEndThumb
+                formControlName="maxPrice"
+                (valueChange)="onPriceChange()"
+                aria-label="Precio máximo"
+              />
+            </mat-slider>
+          </div>
+          <div class="mt-1 text-[13px] font-semibold tracking-tight text-gray-800">
+            ${{ filterForm.get('minPrice')?.value ?? 0 }} - ${{ filterForm.get('maxPrice')?.value ?? 2000 }}
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- 2. Category Section (Collapsible) -->
+    <section class="flex flex-col">
+      <button
+        type="button"
+        (click)="toggleCategorySection()"
+        class="group flex w-full items-center justify-between py-1 text-left"
+        [attr.aria-expanded]="isCategoryExpanded()"
+      >
+        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+          Category
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+          [class.rotate-180]="isCategoryExpanded()"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (isCategoryExpanded()) {
+        <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 duration-200">
+          <div class="flex flex-col gap-2">
+            @for (item of visibleCategories(); track item.id) {
+              <button
+                type="button"
+                (click)="toggleCategory(item.id)"
+                class="group flex w-full items-center justify-between py-0.5 text-left transition-colors"
+              >
+                <span
+                  [class]="
+                    isCategorySelected(item.id)
+                      ? 'text-xs font-semibold text-indigo-600'
+                      : 'text-xs font-normal text-gray-600 transition-colors group-hover:text-indigo-600'
+                  "
+                >
+                  {{ item.name }}
+                </span>
+                <span class="text-xs font-medium tabular-nums text-gray-400">
+                  {{ item.count }}
+                </span>
+              </button>
+            }
+          </div>
+
+          <!-- See more / less toggle -->
+          @if (displayCategories().length > 7) {
+            <button
+              type="button"
+              (click)="toggleCategoriesExpand()"
+              class="mt-0.5 block text-left text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-800 hover:underline"
+            >
+              {{ showAllCategories() ? 'See less' : 'See more' }}
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- 3. Brands Section (Collapsible) -->
+    <section class="flex flex-col">
+      <button
+        type="button"
+        (click)="toggleBrandsSection()"
+        class="group flex w-full items-center justify-between py-1 text-left"
+        [attr.aria-expanded]="isBrandsExpanded()"
+      >
+        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+          Brands
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+          [class.rotate-180]="isBrandsExpanded()"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (isBrandsExpanded()) {
+        <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 duration-200">
+          <div class="flex flex-col gap-2">
+            @for (item of visibleBrands(); track item.id) {
+              <label class="group flex cursor-pointer select-none items-center justify-between py-0.5">
+                <div class="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    class="sr-only"
+                    [checked]="isBrandSelected(item.id)"
+                    (change)="toggleBrand(item.id)"
+                  />
+                  <div
+                    [class]="
+                      isBrandSelected(item.id)
+                        ? 'flex h-4 w-4 items-center justify-center rounded border border-indigo-600 bg-indigo-600 text-white shadow-sm transition-all'
+                        : 'flex h-4 w-4 items-center justify-center rounded border border-gray-300 bg-white transition-all group-hover:border-indigo-400'
+                    "
+                  >
+                    @if (isBrandSelected(item.id)) {
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-3 w-3 text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    }
+                  </div>
+                  <span
+                    [class]="
+                      isBrandSelected(item.id)
+                        ? 'text-xs font-semibold text-gray-900'
+                        : 'text-xs text-gray-600 transition-colors group-hover:text-gray-900'
+                    "
+                  >
+                    {{ item.name }}
+                  </span>
+                </div>
+                <span class="text-xs font-medium tabular-nums text-gray-400">
+                  {{ item.count }}
+                </span>
+              </label>
+            }
+          </div>
+
+          <!-- See more / less toggle -->
+          @if (displayBrands().length > 6) {
+            <button
+              type="button"
+              (click)="toggleBrandsExpand()"
+              class="mt-0.5 block text-left text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-800 hover:underline"
+            >
+              {{ showAllBrands() ? 'See less' : 'See more' }}
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- 4. Ratings Section (Collapsible) -->
+    <section class="flex flex-col pb-6">
+      <button
+        type="button"
+        (click)="toggleRatingsSection()"
+        class="group flex w-full items-center justify-between py-1 text-left"
+        [attr.aria-expanded]="isRatingsExpanded()"
+      >
+        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+          Ratings
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+          [class.rotate-180]="isRatingsExpanded()"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (isRatingsExpanded()) {
+        <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 pb-2 duration-200">
+          @for (option of ratingOptions; track option.stars) {
+            <label class="group flex cursor-pointer select-none items-center justify-between py-0.5">
+              <div class="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  class="sr-only"
+                  [checked]="isRatingSelected(option.stars)"
+                  (change)="toggleRating(option.stars)"
+                />
+                <div
+                  [class]="
+                    isRatingSelected(option.stars)
+                      ? 'flex h-4 w-4 items-center justify-center rounded border border-indigo-600 bg-indigo-600 text-white shadow-sm transition-all'
+                      : 'flex h-4 w-4 items-center justify-center rounded border border-gray-300 bg-white transition-all group-hover:border-indigo-400'
+                  "
+                >
+                  @if (isRatingSelected(option.stars)) {
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-3 w-3 text-white"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  }
+                </div>
+
+                <!-- Rating Stars -->
+                <div class="flex items-center gap-0.5">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-3.5 w-3.5"
+                      [class]="
+                        star <= option.stars
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'fill-gray-300 text-gray-300'
+                      "
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                  }
+                  @if (option.label) {
+                    <span class="ml-1.5 text-xs font-normal text-gray-400">{{ option.label }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Count -->
+              <span class="text-xs font-medium tabular-nums text-gray-400">
+                {{ option.count }}
+              </span>
+            </label>
+          }
+        </div>
+      }
+    </section>
   </form>
 </div>
