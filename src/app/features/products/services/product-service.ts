@@ -97,6 +97,7 @@ export class ProductService {
     if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
     if (filters.order) params = params.set('order', filters.order);
+    if (filters.minRating) params = params.set('minRating', filters.minRating.toString());
 
     return this._http.get<ProductPaginated>(`${this._apiURL}`, { params }).pipe(
       tap((res) => {
