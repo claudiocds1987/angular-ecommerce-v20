@@ -44,11 +44,11 @@
     [class.opacity-100]="showFilter()"
   >
     <div
-      class="h-full w-80 rounded-r-2xl lg:h-full lg:rounded-2xl"
+      class="h-full w-80 overflow-x-hidden rounded-r-2xl lg:h-full lg:rounded-2xl"
       [class.hidden]="!showFilter()"
     >
       <app-product-filter
-        class="block h-full"
+        class="block h-full overflow-x-hidden"
         [isFilterVisible]="showFilter()"
         (toggleSidebar)="showFilter.set(false)"
         (emitFilterChange)="handleFilter($event)"
