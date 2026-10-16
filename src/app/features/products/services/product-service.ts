@@ -46,7 +46,7 @@ export class ProductService {
       // Map stored data back to the format using _mapToProduct
       return of({
         ...storedData,
-        items: storedData.items.map(p => this._mapToProduct(p))
+        items: storedData.items.map((p) => this._mapToProduct(p)),
       });
     }
 
@@ -70,7 +70,7 @@ export class ProductService {
     );
   }
 
-  // 3. Obtener filtrados (también debe devolver ProductPaginated)
+  // 3. Obtener filtrados (también paginados)
   getFilteredProducts(
     page: number,
     size: number,
@@ -178,7 +178,7 @@ export class ProductService {
           this._transferState.set(STATE_KEY, p);
         }
       }),
-      map((p) => this._mapToProduct(p))
+      map((p) => this._mapToProduct(p)),
     );
   }
 
