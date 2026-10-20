@@ -56,6 +56,8 @@ export class ProductFilter implements OnInit {
   private _productService = inject(ProductService);
   private _fb = inject(FormBuilder);
 
+  private _maxPrice = 7000000; // Precio máximo para el slider, se puede ajustar según sea necesario
+
   readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
   // Toggle "See more" in lists
   showAllCategories = signal(false);
@@ -97,7 +99,7 @@ export class ProductFilter implements OnInit {
     const val = this.filterForm.value;
     return (
       (val.minPrice !== null && val.minPrice > 0) ||
-      (val.maxPrice !== null && val.maxPrice < 7000000) ||
+      (val.maxPrice !== null && val.maxPrice < this._maxPrice) ||
       !!val.categoryId ||
       !!val.brandId ||
       val.minRating !== null
@@ -170,7 +172,7 @@ export class ProductFilter implements OnInit {
     this.filterForm.reset({
       search: '',
       minPrice: 0,
-      maxPrice: 7000000,
+      maxPrice: this._maxPrice,
       categoryId: '',
       brandId: '',
       minRating: null,
@@ -192,7 +194,7 @@ export class ProductFilter implements OnInit {
     this.filterForm = this._fb.group({
       search: [''],
       minPrice: [0],
-      maxPrice: [7000000],
+      maxPrice: [this._maxPrice],
       categoryId: [''],
       brandId: [''],
       minRating: [null],

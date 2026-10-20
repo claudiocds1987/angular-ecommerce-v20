@@ -91,7 +91,7 @@
       @if (isPriceExpanded()) {
         <div class="animate-in fade-in pt-1.5 duration-200">
           <div class="px-1">
-            <mat-slider min="0" max="2000" step="25" class="price-slider">
+            <mat-slider min="0" max="7000000" step="25" class="price-slider">
               <input
                 matSliderStartThumb
                 formControlName="minPrice"
@@ -108,7 +108,7 @@
           </div>
           <div class="mt-1 text-[13px] font-semibold tracking-tight text-gray-800">
             ${{ filterForm.get('minPrice')?.value ?? 0 }} - ${{
-              filterForm.get('maxPrice')?.value ?? 2000
+              filterForm.get('maxPrice')?.value ?? 7000000
             }}
           </div>
         </div>
