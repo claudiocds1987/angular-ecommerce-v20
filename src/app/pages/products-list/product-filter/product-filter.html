@@ -55,11 +55,7 @@
           stroke="currentColor"
           stroke-width="2"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
         </svg>
       </button>
     </div>
@@ -74,7 +70,9 @@
         class="group flex w-full items-center justify-between py-1 text-left"
         [attr.aria-expanded]="isPriceExpanded()"
       >
-        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+        <span
+          class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600"
+        >
           Price Range
         </span>
         <svg
@@ -109,7 +107,9 @@
             </mat-slider>
           </div>
           <div class="mt-1 text-[13px] font-semibold tracking-tight text-gray-800">
-            ${{ filterForm.get('minPrice')?.value ?? 0 }} - ${{ filterForm.get('maxPrice')?.value ?? 2000 }}
+            ${{ filterForm.get('minPrice')?.value ?? 0 }} - ${{
+              filterForm.get('maxPrice')?.value ?? 2000
+            }}
           </div>
         </div>
       }
@@ -123,7 +123,9 @@
         class="group flex w-full items-center justify-between py-1 text-left"
         [attr.aria-expanded]="isCategoryExpanded()"
       >
-        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+        <span
+          class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600"
+        >
           Category
         </span>
         <svg
@@ -142,7 +144,7 @@
       @if (isCategoryExpanded()) {
         <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 duration-200">
           <div class="flex flex-col gap-2">
-            @for (item of visibleCategories(); track item.id) {
+            @for (item of this.categoryStore.items(); track item.id) {
               <button
                 type="button"
                 (click)="toggleCategory(item.id)"
@@ -157,15 +159,15 @@
                 >
                   {{ item.name }}
                 </span>
-                <span class="text-xs font-medium tabular-nums text-gray-400">
-                  {{ item.count }}
+                <span class="text-xs font-medium text-gray-400 tabular-nums">
+                  {{ (quantityProductsByCategory().find((q) => q.categoryId === item.id)?.totalProducts) ?? 0 }}
                 </span>
               </button>
             }
           </div>
 
           <!-- See more / less toggle -->
-          @if (displayCategories().length > 7) {
+          @if (categoryStore.items().length > 7) {
             <button
               type="button"
               (click)="toggleCategoriesExpand()"
@@ -186,7 +188,9 @@
         class="group flex w-full items-center justify-between py-1 text-left"
         [attr.aria-expanded]="isBrandsExpanded()"
       >
-        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+        <span
+          class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600"
+        >
           Brands
         </span>
         <svg
@@ -205,8 +209,10 @@
       @if (isBrandsExpanded()) {
         <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 duration-200">
           <div class="flex flex-col gap-2">
-            @for (item of visibleBrands(); track item.id) {
-              <label class="group flex cursor-pointer select-none items-center justify-between py-0.5">
+            @for (item of this.brandStore.items(); track item.id) {
+              <label
+                class="group flex cursor-pointer items-center justify-between py-0.5 select-none"
+              >
                 <div class="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -246,15 +252,15 @@
                     {{ item.name }}
                   </span>
                 </div>
-                <span class="text-xs font-medium tabular-nums text-gray-400">
+                <!-- <span class="text-xs font-medium text-gray-400 tabular-nums">
                   {{ item.count }}
-                </span>
+                </span> -->
               </label>
             }
           </div>
 
           <!-- See more / less toggle -->
-          @if (displayBrands().length > 6) {
+          @if (brandStore.items().length > 6) {
             <button
               type="button"
               (click)="toggleBrandsExpand()"
@@ -275,7 +281,9 @@
         class="group flex w-full items-center justify-between py-1 text-left"
         [attr.aria-expanded]="isRatingsExpanded()"
       >
-        <span class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600">
+        <span
+          class="text-[14px] font-bold tracking-tight text-gray-800 transition-colors group-hover:text-indigo-600"
+        >
           Ratings
         </span>
         <svg
@@ -294,7 +302,9 @@
       @if (isRatingsExpanded()) {
         <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 pb-2 duration-200">
           @for (option of ratingOptions; track option.stars) {
-            <label class="group flex cursor-pointer select-none items-center justify-between py-0.5">
+            <label
+              class="group flex cursor-pointer items-center justify-between py-0.5 select-none"
+            >
               <div class="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -350,7 +360,7 @@
               </div>
 
               <!-- Count -->
-              <span class="text-xs font-medium tabular-nums text-gray-400">
+              <span class="text-xs font-medium text-gray-400 tabular-nums">
                 {{ option.count }}
               </span>
             </label>
