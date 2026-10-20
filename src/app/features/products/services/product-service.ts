@@ -10,6 +10,7 @@ import { ProductPaginated } from '@features/products/models/product-paginated.mo
 import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
 import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
 import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
+import { totalProductsByCategory } from '../models/total-products-by-category.model';
 
 @Injectable({
   providedIn: 'root',
@@ -87,7 +88,6 @@ export class ProductService {
         items: (storedData.items || []).map((p) => this._mapToProduct(p)),
       });
     }
-
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (filters.search) params = params.set('search', filters.search);
@@ -98,6 +98,7 @@ export class ProductService {
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
     if (filters.order) params = params.set('order', filters.order);
     if (filters.minRating) params = params.set('minRating', filters.minRating.toString());
+    params = params.set('isActive', 'true'); // Solo productos activos
 
     return this._http.get<ProductPaginated>(`${this._apiURL}`, { params }).pipe(
       tap((res) => {
@@ -203,5 +204,10 @@ export class ProductService {
         data: Product;
       }>(`${this._apiURL}/${id}/status?isActive=${isActive}`, {})
       .pipe(map((response) => response.data));
+  }
+
+  // Método para obtener la cantidad de productos por categoría
+  getQuantityProductsByCategory(): Observable<totalProductsByCategory[]> {
+    return this._http.get<totalProductsByCategory[]>(`${this._apiURL}/total-by-category`);
   }
 }

@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs';
 import { Title, Meta } from '@angular/platform-browser';
 import { Product } from '@features/products/models/product.model';
 import { ProductCard } from './product-card/product-card';
@@ -52,7 +52,7 @@ export class ProductsList implements OnInit {
 
   constructor() {
     this._loadProducts();
-    this._loadCarouselProducts();
+    //this._loadCarouselProducts();
   }
 
   ngOnInit(): void {
@@ -73,7 +73,7 @@ export class ProductsList implements OnInit {
     });
   }
 
-  private _loadCarouselProducts() {
+  /*   private _loadCarouselProducts() {
     this._productsService
       .getProductsPaginated(1, 100)
       .pipe(
@@ -106,7 +106,7 @@ export class ProductsList implements OnInit {
       .subscribe((selectedProducts) => {
         this.carouselProducts.set(selectedProducts);
       });
-  }
+  } */
 
   private _loadProducts() {
     toObservable(this._queryState)

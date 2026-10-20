@@ -15,6 +15,8 @@ import { CustomerProductFilter } from '@features/products/models/costumer-produc
 import { BrandStore } from '@features/brands/state/brand.store';
 import { CategoryStore } from '@features/categories/state/category.store';
 import { ProductStore } from '@features/products/state/product.store';
+import { ProductService } from '@features/products/services/product-service';
+import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
 
 export interface FilterItem {
   id: string | number;
@@ -43,11 +45,18 @@ export class ProductFilter implements OnInit {
 
   filterForm!: FormGroup;
 
+  // -----------------------------------------------------------------
+  // ACA SE PODRIA HACER QUE MUESTRE TODAS LAS CATEGORIAS Y MARCAS, PERO SOLO CUANDO HAYA PRODUCTOS EN ELLAS,
+  // USANDO EL NUEVO ENPOINT QUE TRAE LA CANTIDAD DE PRODUCTOS POR CATEGORIA
+  // ----------------------------------------------------------------
+
   readonly productStore = inject(ProductStore);
-  readonly brands = inject(BrandStore);
-  readonly categories = inject(CategoryStore);
+  readonly brandStore = inject(BrandStore);
+  readonly categoryStore = inject(CategoryStore);
+  private _productService = inject(ProductService);
   private _fb = inject(FormBuilder);
 
+  readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
   // Toggle "See more" in lists
   showAllCategories = signal(false);
   showAllBrands = signal(false);
@@ -74,26 +83,6 @@ export class ProductFilter implements OnInit {
     this.isRatingsExpanded.update((v) => !v);
   }
 
-  // Default mock list matching the mockup image
-  private readonly _defaultCategories: FilterItem[] = [
-    { id: '1', name: 'Accessories', count: 25 },
-    { id: '2', name: 'Appliances', count: 54 },
-    { id: '3', name: 'Bags', count: 78 },
-    { id: '4', name: 'Electronic', count: 42 },
-    { id: '5', name: 'Entertainment', count: 35 },
-    { id: '6', name: 'Induction', count: 64 },
-    { id: '7', name: 'Mobile Phone', count: 92 },
-  ];
-
-  private readonly _defaultBrands: FilterItem[] = [
-    { id: '1', name: 'Appliances', count: 25 },
-    { id: '2', name: 'Bags', count: 54 },
-    { id: '3', name: 'Electronic', count: 78 },
-    { id: '4', name: 'Entertainment', count: 42 },
-    { id: '5', name: 'Induction', count: 35 },
-    { id: '6', name: 'Laptops', count: 64 },
-  ];
-
   readonly ratingOptions: RatingOption[] = [
     { stars: 5, label: '', count: 25 },
     { stars: 4, label: 'and up', count: 54 },
@@ -102,49 +91,13 @@ export class ProductFilter implements OnInit {
     { stars: 1, label: 'and up', count: 35 },
   ];
 
-  // Dynamic or fallback categories
-  displayCategories = computed<FilterItem[]>(() => {
-    const items = this.categories.items();
-    if (!items || items.length === 0) {
-      return this._defaultCategories;
-    }
-    return items.map((cat, idx) => ({
-      id: cat.id,
-      name: cat.name,
-      count: this._getCountForCategory(cat.id, idx),
-    }));
-  });
-
-  visibleCategories = computed(() => {
-    const cats = this.displayCategories();
-    return this.showAllCategories() ? cats : cats.slice(0, 7);
-  });
-
-  // Dynamic or fallback brands
-  displayBrands = computed<FilterItem[]>(() => {
-    const items = this.brands.items();
-    if (!items || items.length === 0) {
-      return this._defaultBrands;
-    }
-    return items.map((brand, idx) => ({
-      id: brand.id,
-      name: brand.name,
-      count: this._getCountForBrand(brand.id, idx),
-    }));
-  });
-
-  visibleBrands = computed(() => {
-    const brs = this.displayBrands();
-    return this.showAllBrands() ? brs : brs.slice(0, 6);
-  });
-
   // Check if any filter is active
   hasActiveFilters = computed(() => {
     if (!this.filterForm) return false;
     const val = this.filterForm.value;
     return (
       (val.minPrice !== null && val.minPrice > 0) ||
-      (val.maxPrice !== null && val.maxPrice < 2000) ||
+      (val.maxPrice !== null && val.maxPrice < 7000000) ||
       !!val.categoryId ||
       !!val.brandId ||
       val.minRating !== null
@@ -156,25 +109,14 @@ export class ProductFilter implements OnInit {
   }
 
   ngOnInit() {
-    if (this.categories.items().length === 0) {
-      this.categories.loadAll();
+    if (this.categoryStore.items().length === 0) {
+      this.categoryStore.loadAll();
     }
-    if (this.brands.items().length === 0) {
-      this.brands.loadAll();
+    if (this.brandStore.items().length === 0) {
+      this.brandStore.loadAll();
     }
-  }
-
-  private _createForm() {
-    this.filterForm = this._fb.group({
-      search: [''],
-      minPrice: [0],
-      maxPrice: [2000],
-      categoryId: [''],
-      brandId: [''],
-      minRating: [null],
-      sortBy: ['rating'],
-      order: ['asc'],
-    });
+    // Cargando la cantidad de productos por categoría
+    this._getTotalProductsByCategory();
   }
 
   // Price slider change handler
@@ -228,7 +170,7 @@ export class ProductFilter implements OnInit {
     this.filterForm.reset({
       search: '',
       minPrice: 0,
-      maxPrice: 2000,
+      maxPrice: 7000000,
       categoryId: '',
       brandId: '',
       minRating: null,
@@ -246,23 +188,23 @@ export class ProductFilter implements OnInit {
     this.showAllBrands.update((v) => !v);
   }
 
-  private _getCountForCategory(catId: number, index: number): number {
-    const products = this.productStore.items();
-    if (products && products.length > 0) {
-      const count = products.filter((p) => p.categoryId === catId).length;
-      if (count > 0) return count;
-    }
-    const fallbacks = [25, 54, 78, 42, 35, 64, 92];
-    return fallbacks[index % fallbacks.length];
+  private _createForm() {
+    this.filterForm = this._fb.group({
+      search: [''],
+      minPrice: [0],
+      maxPrice: [7000000],
+      categoryId: [''],
+      brandId: [''],
+      minRating: [null],
+      sortBy: ['rating'],
+      order: ['asc'],
+    });
   }
 
-  private _getCountForBrand(brandId: number, index: number): number {
-    const products = this.productStore.items();
-    if (products && products.length > 0) {
-      const count = products.filter((p) => p.brandId === brandId).length;
-      if (count > 0) return count;
-    }
-    const fallbacks = [25, 54, 78, 42, 35, 64];
-    return fallbacks[index % fallbacks.length];
+  private _getTotalProductsByCategory() {
+    this._productService.getQuantityProductsByCategory().subscribe({
+      next: (productsByCategory) => this.quantityProductsByCategory.set(productsByCategory),
+      error: (err) => console.error('Error al cargar conteos por categoría:', err),
+    });
   }
 }
