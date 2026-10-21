@@ -11,6 +11,7 @@ import { CustomerProductFilter } from '@features/products/models/costumer-produc
 import { ProductAdminGrid } from '@features/products/models/product-admin-grid.model';
 import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
 import { totalProductsByCategory } from '../models/total-products-by-category.model';
+import { totalProductsByBrand } from '../models/total-products-by-brand.model';
 
 @Injectable({
   providedIn: 'root',
@@ -207,7 +208,12 @@ export class ProductService {
   }
 
   // Método para obtener la cantidad de productos por categoría
-  getQuantityProductsByCategory(): Observable<totalProductsByCategory[]> {
+  getTotalProductsByCategory(): Observable<totalProductsByCategory[]> {
     return this._http.get<totalProductsByCategory[]>(`${this._apiURL}/total-by-category`);
+  }
+
+  // Método para obtener la cantidad de productos por marca
+  getTotalProductsByBrand(): Observable<totalProductsByBrand[]> {
+    return this._http.get<totalProductsByBrand[]>(`${this._apiURL}/total-by-brand`);
   }
 }

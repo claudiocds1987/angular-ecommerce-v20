@@ -29,7 +29,11 @@ export const CategoryStore = signalStore(
         tap(() => patchState(state, { loading: true })),
         switchMap(() =>
           categoryService.getCategories().pipe(
-            tap((items) => patchState(state, { items, loading: false })),
+            tap((items) => {
+              // ordena items por nombre antes de actualizar el estado
+              const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
+              patchState(state, { items: sortedItems, loading: false });
+            }),
             catchError(() => {
               patchState(state, { loading: false });
               return EMPTY;

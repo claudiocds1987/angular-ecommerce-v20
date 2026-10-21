@@ -18,6 +18,7 @@ import { ProductStore } from '@features/products/state/product.store';
 import { ProductService } from '@features/products/services/product-service';
 import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
 import { ProductCategory } from '@features/categories/models/product-category.model';
+import { totalProductsByBrand } from '@features/products/models/total-products-by-brand.model';
 
 export interface FilterItem {
   id: string | number;
@@ -60,6 +61,7 @@ export class ProductFilter implements OnInit {
   private _maxPrice = 7000000; // Precio máximo para el slider, se puede ajustar según sea necesario
 
   readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
+  readonly quantityProductsByBrand = signal<totalProductsByBrand[]>([]);
   // Toggle "See more" in lists
   showAllCategories = signal(false);
   showAllBrands = signal(false);
@@ -154,8 +156,9 @@ export class ProductFilter implements OnInit {
     if (this.brandStore.items().length === 0) {
       this.brandStore.loadAll();
     }
-    // Cargando la cantidad de productos por categoría
+    // Cargar la cantidad de productos por categoría y marca
     this._getTotalProductsByCategory();
+    this._getTotalProductsByBrand();
   }
 
   // Price slider change handler
@@ -241,9 +244,16 @@ export class ProductFilter implements OnInit {
   }
 
   private _getTotalProductsByCategory() {
-    this._productService.getQuantityProductsByCategory().subscribe({
+    this._productService.getTotalProductsByCategory().subscribe({
       next: (productsByCategory) => this.quantityProductsByCategory.set(productsByCategory),
-      error: (err) => console.error('Error al cargar conteos por categoría:', err),
+      error: (err) => console.error('Error al cargar total de productos por categoría:', err),
+    });
+  }
+
+  private _getTotalProductsByBrand() {
+    this._productService.getTotalProductsByBrand().subscribe({
+      next: (productsByBrand) => this.quantityProductsByBrand.set(productsByBrand),
+      error: (err) => console.error('Error al cargar total de productos por marca:', err),
     });
   }
 }
