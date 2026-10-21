@@ -189,7 +189,7 @@
                   </span>
                 </div>
 
-                <!-- Conteo de productos por categoría -->
+                <!-- Total de productos por categoría -->
                 <span class="text-xs font-medium text-gray-400 tabular-nums">
                   {{ (quantityProductsByCategory().find((q) => q.categoryId === item.id)?.totalProducts) ?? 0 }}
                 </span>
@@ -283,9 +283,10 @@
                     {{ item.name }}
                   </span>
                 </div>
-                <!-- <span class="text-xs font-medium text-gray-400 tabular-nums">
-                  {{ item.count }}
-                </span> -->
+                <!-- Total de productos por marca -->
+                <span class="text-xs font-medium text-gray-400 tabular-nums">
+                  {{ (quantityProductsByBrand().find((q) => q.brandId === item.id)?.totalProducts) ?? 0 }}
+                </span>
               </label>
             }
           </div>
