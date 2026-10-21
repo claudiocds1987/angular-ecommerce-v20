@@ -17,6 +17,7 @@ import { CategoryStore } from '@features/categories/state/category.store';
 import { ProductStore } from '@features/products/state/product.store';
 import { ProductService } from '@features/products/services/product-service';
 import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
+import { ProductCategory } from '@features/categories/models/product-category.model';
 
 export interface FilterItem {
   id: string | number;
@@ -104,6 +105,42 @@ export class ProductFilter implements OnInit {
       !!val.brandId ||
       val.minRating !== null
     );
+  });
+
+  visibleCategories = computed(() => {
+    const items = this.categoryStore.items();
+
+    if (items.length === 0) {
+      return [];
+    }
+    // 1. Si el usuario hizo clic en "Ver mas", devolvemos todas las categorías
+    if (this.showAllCategories()) {
+      return items;
+    }
+    // 2. Si son más de 7 y NO está expandido, mostramos solo las primeras 7
+    if (items.length > 7) {
+      return items.slice(0, 7);
+    }
+
+    return items;
+  });
+
+  visibleBrands = computed(() => {
+    const items = this.brandStore.items();
+
+    if (items.length === 0) {
+      return [];
+    }
+    // 1. Si el usuario hizo clic en "Ver mas", devolvemos todas las marcas
+    if (this.showAllBrands()) {
+      return items;
+    }
+    // 2. Si son más de 7 y NO está expandido, mostramos solo las primeras 7
+    if (items.length > 7) {
+      return items.slice(0, 7);
+    }
+    // 3. Por defecto (si son 7 o menos), devolvemos todas
+    return items;
   });
 
   constructor() {
