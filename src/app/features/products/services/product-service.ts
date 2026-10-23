@@ -89,16 +89,29 @@ export class ProductService {
         items: (storedData.items || []).map((p) => this._mapToProduct(p)),
       });
     }
+
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (filters.search) params = params.set('search', filters.search);
-    if (filters.categoryId) params = params.set('categoryId', filters.categoryId);
-    if (filters.brandId) params = params.set('brandId', filters.brandId);
-    if (filters.minPrice) params = params.set('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) params = params.set('maxPrice', filters.maxPrice.toString());
+
+    // --- MÚLTIPLES CATEGORÍAS ---
+    if (filters.categoryIds && filters.categoryIds.length > 0) {
+      filters.categoryIds.forEach((id) => {
+        params = params.append('categoryIds', id.toString());
+      });
+    }
+    // --- MÚLTIPLES MARCAS ---
+    if (filters.brandIds && filters.brandIds.length > 0) {
+      filters.brandIds.forEach((id) => {
+        params = params.append('brandIds', id.toString());
+      });
+    }
+
+    if (filters.minPrice != null) params = params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice != null) params = params.set('maxPrice', filters.maxPrice.toString());
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
     if (filters.order) params = params.set('order', filters.order);
-    if (filters.minRating) params = params.set('minRating', filters.minRating.toString());
+    if (filters.minRating != null) params = params.set('minRating', filters.minRating.toString());
     params = params.set('isActive', 'true'); // Solo productos activos
 
     return this._http.get<ProductPaginated>(`${this._apiURL}`, { params }).pipe(
