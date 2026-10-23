@@ -122,8 +122,8 @@ export class ProductsList implements OnInit {
               search: '',
               minPrice: null,
               maxPrice: null,
-              categoryId: '',
-              brandId: '',
+              categoryIds: [],
+              brandIds: [],
               sortBy: 'rating',
               order: 'asc',
             } as CustomerProductFilter),
@@ -134,6 +134,7 @@ export class ProductsList implements OnInit {
   }
 
   handleFilter(filters: CustomerProductFilter) {
+    console.log('Aplicando filtros:', filters);
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 
