@@ -134,7 +134,6 @@ export class ProductsList implements OnInit {
   }
 
   handleFilter(filters: CustomerProductFilter) {
-    console.log('Aplicando filtros:', filters);
     this.currentFilters.set(filters);
     this.currentPage.set(1);
 

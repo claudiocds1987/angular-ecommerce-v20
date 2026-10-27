@@ -19,6 +19,8 @@ import { ProductService } from '@features/products/services/product-service';
 import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
 import { ProductCategory } from '@features/categories/models/product-category.model';
 import { totalProductsByBrand } from '@features/products/models/total-products-by-brand.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith } from 'rxjs';
 
 export interface FilterItem {
   id: string | number;
@@ -45,6 +47,9 @@ export class ProductFilter implements OnInit {
   @Output() toggleSidebar = new EventEmitter<boolean>();
   @Output() emitFilterChange = new EventEmitter<CustomerProductFilter>();
   filterForm!: FormGroup;
+  // Convertimos valueChanges del formulario a un Signal combinándolo con el valor inicial,
+  // permitiendo que el computed `hasActiveFilters` reaccione automáticamente.
+  formValues!: FormGroup['value'] | null;
   readonly productStore = inject(ProductStore);
   readonly brandStore = inject(BrandStore);
   readonly categoryStore = inject(CategoryStore);
@@ -53,14 +58,17 @@ export class ProductFilter implements OnInit {
   private _maxPrice = 7000000;
   readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
   readonly quantityProductsByBrand = signal<totalProductsByBrand[]>([]);
+
   // Toggle "Ver más"
   showAllCategories = signal(false);
   showAllBrands = signal(false);
+
   // Toggle secciones colapsables
   isPriceExpanded = signal(true);
   isCategoryExpanded = signal(true);
   isBrandsExpanded = signal(true);
   isRatingsExpanded = signal(true);
+
   togglePriceSection() {
     this.isPriceExpanded.update((v) => !v);
   }
@@ -73,6 +81,7 @@ export class ProductFilter implements OnInit {
   toggleRatingsSection() {
     this.isRatingsExpanded.update((v) => !v);
   }
+
   readonly ratingOptions: RatingOption[] = [
     { stars: 5, label: '', count: 25 },
     { stars: 4, label: 'and up', count: 54 },
@@ -80,18 +89,21 @@ export class ProductFilter implements OnInit {
     { stars: 2, label: 'and up', count: 42 },
     { stars: 1, label: 'and up', count: 35 },
   ];
-  // Comprueba si hay algún filtro activo
+
+  //  Comprueba si hay algún filtro activo
   hasActiveFilters = computed(() => {
-    if (!this.filterForm) return false;
-    const val = this.filterForm.value;
+    if (!this.formValues) return false;
+    const val = this.formValues(); // Aquí leemos el signal del formulario
+
     return (
-      (val.minPrice !== null && val.minPrice > 0) ||
-      (val.maxPrice !== null && val.maxPrice < this._maxPrice) ||
+      (val.minPrice !== null && val.minPrice > 0 && val.minPrice !== undefined) ||
+      (val.maxPrice !== null && val.maxPrice < this._maxPrice && val.maxPrice !== undefined) ||
       val.categoryIds?.length > 0 ||
       val.brandIds?.length > 0 ||
-      val.minRating !== null
+      (val.minRating !== null && val.minRating !== undefined)
     );
   });
+
   visibleCategories = computed(() => {
     const items = this.categoryStore.items();
     if (items.length === 0) return [];
@@ -99,6 +111,7 @@ export class ProductFilter implements OnInit {
     if (items.length > 7) return items.slice(0, 7);
     return items;
   });
+
   visibleBrands = computed(() => {
     const items = this.brandStore.items();
     if (items.length === 0) return [];
@@ -106,9 +119,20 @@ export class ProductFilter implements OnInit {
     if (items.length > 7) return items.slice(0, 7);
     return items;
   });
+
   constructor() {
     this._createForm();
+
+    // Convertimos valueChanges del formulario a un Signal combinándolo con el valor inicial,
+    // permitiendo que el computed `hasActiveFilters` reaccione automáticamente.
+    this.formValues = toSignal(
+      this.filterForm.valueChanges.pipe(startWith(this.filterForm.value)),
+      {
+        initialValue: this.filterForm.value,
+      },
+    );
   }
+
   ngOnInit() {
     if (this.categoryStore.items().length === 0) {
       this.categoryStore.loadAll();
@@ -119,9 +143,11 @@ export class ProductFilter implements OnInit {
     this._getTotalProductsByCategory();
     this._getTotalProductsByBrand();
   }
+
   onPriceChange() {
     this.applyFilters();
   }
+
   // --- SELECCIÓN MÚLTIPLE DE CATEGORÍAS ---
   toggleCategory(id: string | number) {
     const numId = Number(id);
@@ -134,10 +160,12 @@ export class ProductFilter implements OnInit {
     this.filterForm.patchValue({ categoryIds: updated });
     this.applyFilters();
   }
+
   isCategorySelected(id: string | number): boolean {
     const current: number[] = this.filterForm.get('categoryIds')?.value || [];
     return current.includes(Number(id));
   }
+
   // --- SELECCIÓN MÚLTIPLE DE MARCAS ---
   toggleBrand(id: string | number) {
     const numId = Number(id);
@@ -150,10 +178,12 @@ export class ProductFilter implements OnInit {
     this.filterForm.patchValue({ brandIds: updated });
     this.applyFilters();
   }
+
   isBrandSelected(id: string | number): boolean {
     const current: number[] = this.filterForm.get('brandIds')?.value || [];
     return current.includes(Number(id));
   }
+
   // Selección de Rating
   toggleRating(stars: number) {
     const current = this.filterForm.get('minRating')?.value;
@@ -161,12 +191,15 @@ export class ProductFilter implements OnInit {
     this.filterForm.patchValue({ minRating: newValue });
     this.applyFilters();
   }
+
   isRatingSelected(stars: number): boolean {
     return this.filterForm.get('minRating')?.value === stars;
   }
+
   applyFilters() {
     this.emitFilterChange.emit(this.filterForm.value);
   }
+
   clearFilters() {
     this.filterForm.reset({
       search: '',
@@ -180,12 +213,15 @@ export class ProductFilter implements OnInit {
     });
     this.applyFilters();
   }
+
   toggleCategoriesExpand() {
     this.showAllCategories.update((v) => !v);
   }
+
   toggleBrandsExpand() {
     this.showAllBrands.update((v) => !v);
   }
+
   private _createForm() {
     this.filterForm = this._fb.group({
       search: [''],
@@ -198,12 +234,14 @@ export class ProductFilter implements OnInit {
       order: ['asc'],
     });
   }
+
   private _getTotalProductsByCategory() {
     this._productService.getTotalProductsByCategory().subscribe({
       next: (productsByCategory) => this.quantityProductsByCategory.set(productsByCategory),
       error: (err) => console.error('Error al cargar total de productos por categoría:', err),
     });
   }
+
   private _getTotalProductsByBrand() {
     this._productService.getTotalProductsByBrand().subscribe({
       next: (productsByBrand) => this.quantityProductsByBrand.set(productsByBrand),
