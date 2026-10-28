@@ -35,7 +35,7 @@ export class ProductsList implements OnInit {
   pageSize = 30; // Cantidad de productos por página
 
   currentPage = signal(1); // Empezamos en la página 1
-  showFilter = signal(false);
+  showFilter = signal(true);
   currentFilters = signal<CustomerProductFilter | null>(null);
   carouselProducts = signal<Product[]>([]);
 

@@ -9,7 +9,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';
 import { BrandStore } from '@features/brands/state/brand.store';
@@ -17,10 +17,7 @@ import { CategoryStore } from '@features/categories/state/category.store';
 import { ProductStore } from '@features/products/state/product.store';
 import { ProductService } from '@features/products/services/product-service';
 import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
-import { ProductCategory } from '@features/categories/models/product-category.model';
 import { totalProductsByBrand } from '@features/products/models/total-products-by-brand.model';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
 
 export interface FilterItem {
   id: string | number;
@@ -46,16 +43,25 @@ export class ProductFilter implements OnInit {
   @Input() isFilterVisible = true;
   @Output() toggleSidebar = new EventEmitter<boolean>();
   @Output() emitFilterChange = new EventEmitter<CustomerProductFilter>();
-  filterForm!: FormGroup;
-  // Convertimos valueChanges del formulario a un Signal combinándolo con el valor inicial,
-  // permitiendo que el computed `hasActiveFilters` reaccione automáticamente.
-  formValues!: FormGroup['value'] | null;
+
   readonly productStore = inject(ProductStore);
   readonly brandStore = inject(BrandStore);
   readonly categoryStore = inject(CategoryStore);
   private _productService = inject(ProductService);
-  private _fb = inject(FormBuilder);
   private _maxPrice = 7000000;
+
+  // Estado del filtro centralizado en una Signal pura
+  readonly filters = signal<CustomerProductFilter>({
+    search: '',
+    minPrice: 0,
+    maxPrice: this._maxPrice,
+    categoryIds: [],
+    brandIds: [],
+    minRating: null,
+    sortBy: 'rating',
+    order: 'asc',
+  });
+
   readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
   readonly quantityProductsByBrand = signal<totalProductsByBrand[]>([]);
 
@@ -90,17 +96,17 @@ export class ProductFilter implements OnInit {
     { stars: 1, label: 'and up', count: 35 },
   ];
 
-  //  Comprueba si hay algún filtro activo
+  // Comprueba si hay algún filtro activo de manera completamente reactiva
   hasActiveFilters = computed(() => {
-    if (!this.formValues) return false;
-    const val = this.formValues(); // Aquí leemos el signal del formulario
-
+    const filter = this.filters();
     return (
-      (val.minPrice !== null && val.minPrice > 0 && val.minPrice !== undefined) ||
-      (val.maxPrice !== null && val.maxPrice < this._maxPrice && val.maxPrice !== undefined) ||
-      val.categoryIds?.length > 0 ||
-      val.brandIds?.length > 0 ||
-      (val.minRating !== null && val.minRating !== undefined)
+      (filter.minPrice !== null && filter.minPrice > 0 && filter.minPrice !== undefined) ||
+      (filter.maxPrice !== null &&
+        filter.maxPrice < this._maxPrice &&
+        filter.maxPrice !== undefined) ||
+      (filter.categoryIds?.length ?? 0) > 0 ||
+      (filter.brandIds?.length ?? 0) > 0 ||
+      (filter.minRating !== null && filter.minRating !== undefined)
     );
   });
 
@@ -120,19 +126,6 @@ export class ProductFilter implements OnInit {
     return items;
   });
 
-  constructor() {
-    this._createForm();
-
-    // Convertimos valueChanges del formulario a un Signal combinándolo con el valor inicial,
-    // permitiendo que el computed `hasActiveFilters` reaccione automáticamente.
-    this.formValues = toSignal(
-      this.filterForm.valueChanges.pipe(startWith(this.filterForm.value)),
-      {
-        initialValue: this.filterForm.value,
-      },
-    );
-  }
-
   ngOnInit() {
     if (this.categoryStore.items().length === 0) {
       this.categoryStore.loadAll();
@@ -144,64 +137,68 @@ export class ProductFilter implements OnInit {
     this._getTotalProductsByBrand();
   }
 
-  onPriceChange() {
+  // Actualización de Rango de Precios
+  updatePrice(minPrice: number, maxPrice: number) {
+    this.filters.update((curr) => ({ ...curr, minPrice, maxPrice }));
     this.applyFilters();
   }
 
   // --- SELECCIÓN MÚLTIPLE DE CATEGORÍAS ---
   toggleCategory(id: string | number) {
     const numId = Number(id);
-    const current: number[] = this.filterForm.get('categoryIds')?.value || [];
-    const index = current.indexOf(numId);
-    const updated =
-      index > -1
-        ? current.filter((x) => x !== numId) // Si ya está, se quita
-        : [...current, numId]; // Si no está, se agrega
-    this.filterForm.patchValue({ categoryIds: updated });
+    this.filters.update((curr) => {
+      const currentCategories: number[] = curr.categoryIds || [];
+      const index = currentCategories.indexOf(numId);
+      const updated =
+        index > -1 ? currentCategories.filter((x) => x !== numId) : [...currentCategories, numId];
+      return { ...curr, categoryIds: updated };
+    });
     this.applyFilters();
   }
 
   isCategorySelected(id: string | number): boolean {
-    const current: number[] = this.filterForm.get('categoryIds')?.value || [];
-    return current.includes(Number(id));
+    const currentCategories: number[] = this.filters().categoryIds || [];
+    return currentCategories.includes(Number(id));
   }
 
   // --- SELECCIÓN MÚLTIPLE DE MARCAS ---
   toggleBrand(id: string | number) {
     const numId = Number(id);
-    const current: number[] = this.filterForm.get('brandIds')?.value || [];
-    const index = current.indexOf(numId);
-    const updated =
-      index > -1
-        ? current.filter((x) => x !== numId) // Si ya está, se quita
-        : [...current, numId]; // Si no está, se agrega
-    this.filterForm.patchValue({ brandIds: updated });
+    this.filters.update((curr) => {
+      const currentBrands: number[] = curr.brandIds || [];
+      const index = currentBrands.indexOf(numId);
+      const updated =
+        index > -1 ? currentBrands.filter((x) => x !== numId) : [...currentBrands, numId];
+      return { ...curr, brandIds: updated };
+    });
     this.applyFilters();
   }
 
   isBrandSelected(id: string | number): boolean {
-    const current: number[] = this.filterForm.get('brandIds')?.value || [];
-    return current.includes(Number(id));
+    const currentBrands: number[] = this.filters().brandIds || [];
+    return currentBrands.includes(Number(id));
   }
 
   // Selección de Rating
   toggleRating(stars: number) {
-    const current = this.filterForm.get('minRating')?.value;
-    const newValue = current === stars ? null : stars;
-    this.filterForm.patchValue({ minRating: newValue });
+    this.filters.update((curr) => {
+      const currentRating = curr.minRating;
+      const newValue = currentRating === stars ? null : stars;
+      return { ...curr, minRating: newValue };
+    });
     this.applyFilters();
   }
 
   isRatingSelected(stars: number): boolean {
-    return this.filterForm.get('minRating')?.value === stars;
+    return this.filters().minRating === stars;
   }
 
   applyFilters() {
-    this.emitFilterChange.emit(this.filterForm.value);
+    this.emitFilterChange.emit(this.filters());
   }
 
   clearFilters() {
-    this.filterForm.reset({
+    this.filters.set({
       search: '',
       minPrice: 0,
       maxPrice: this._maxPrice,
@@ -214,25 +211,16 @@ export class ProductFilter implements OnInit {
     this.applyFilters();
   }
 
+  emitToggleSidebar() {
+    this.toggleSidebar.emit(true);
+  }
+
   toggleCategoriesExpand() {
     this.showAllCategories.update((v) => !v);
   }
 
   toggleBrandsExpand() {
     this.showAllBrands.update((v) => !v);
-  }
-
-  private _createForm() {
-    this.filterForm = this._fb.group({
-      search: [''],
-      minPrice: [0],
-      maxPrice: [this._maxPrice],
-      categoryIds: [[] as number[]],
-      brandIds: [[] as number[]],
-      minRating: [null],
-      sortBy: ['rating'],
-      order: ['asc'],
-    });
   }
 
   private _getTotalProductsByCategory() {

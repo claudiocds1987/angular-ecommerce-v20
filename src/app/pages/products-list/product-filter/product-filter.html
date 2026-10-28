@@ -41,7 +41,7 @@
       <!-- Collapse Sidebar Button -->
       <button
         type="button"
-        (click)="toggleSidebar.emit(true)"
+        (click)="emitToggleSidebar()"
         class="flex items-center justify-center rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
         title="Colapsar panel de filtros"
         aria-label="Colapsar panel de filtros"
@@ -60,8 +60,8 @@
     </div>
   </div>
 
-  <form [formGroup]="filterForm" class="flex flex-col gap-4">
-    <!-- 1. Rango de Precio -->
+  <div class="flex flex-col gap-4">
+    <!-- Rango de Precio -->
     <section class="flex flex-col">
       <button
         type="button"
@@ -93,28 +93,26 @@
             <mat-slider min="0" max="7000000" step="25" class="price-slider">
               <input
                 matSliderStartThumb
-                formControlName="minPrice"
-                (valueChange)="onPriceChange()"
+                [value]="filters().minPrice"
+                (valueChange)="updatePrice($event, filters().maxPrice ?? 7000000)"
                 aria-label="Precio mínimo"
               />
               <input
                 matSliderEndThumb
-                formControlName="maxPrice"
-                (valueChange)="onPriceChange()"
+                [value]="filters().maxPrice"
+                (valueChange)="updatePrice(filters().minPrice ?? 0, $event)"
                 aria-label="Precio máximo"
               />
             </mat-slider>
           </div>
           <div class="mt-1 text-[13px] font-semibold tracking-tight text-gray-800">
-            ${{ filterForm.get('minPrice')?.value ?? 0 }} - ${{
-              filterForm.get('maxPrice')?.value ?? 7000000
-            }}
+            ${{ filters().minPrice ?? 0 }} - ${{ filters().maxPrice ?? 7000000 }}
           </div>
         </div>
       }
     </section>
 
-    <!-- 2. Categorías (Múltiples) -->
+    <!-- Categorías (Múltiples) -->
     <section class="flex flex-col">
       <button
         type="button"
@@ -207,7 +205,7 @@
       }
     </section>
 
-    <!-- 3. Marcas (Múltiples) -->
+    <!-- Marcas (Múltiples) -->
     <section class="flex flex-col">
       <button
         type="button"
@@ -300,7 +298,7 @@
       }
     </section>
 
-    <!-- 4. Ratings -->
+    <!-- Ratings -->
     <section class="flex flex-col pb-6">
       <button
         type="button"
@@ -393,5 +391,5 @@
         </div>
       }
     </section>
-  </form>
+  </div>
 </div>
