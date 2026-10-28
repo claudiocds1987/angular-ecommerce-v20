@@ -17,6 +17,7 @@ import { totalProductsByBrand } from '../models/total-products-by-brand.model';
 })
 export class ProductService {
   private _http = inject(HttpClient);
+  // transferState Verifica si el estado ya fue transferido desde el SSR
   private _transferState = inject(TransferState);
   private _platformId = inject(PLATFORM_ID);
   private _apiURL = `${environment.serverUrl}/api/products`;

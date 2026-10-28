@@ -30,7 +30,7 @@
           }
           <img
             [src]="safeThumbnail()"
-            [alt]="$safeNavigationMigration(product()?.title)"
+            [alt]="product()?.title || 'Producto'"
             class="h-full w-full object-contain p-8"
           />
         </div>
@@ -76,7 +76,7 @@
             <div class="flex text-yellow-400">
               @for (star of [1, 2, 3, 4, 5]; track star) {
                 <svg
-                  [class.fill-current]="star <= (reviews().length > 0 ? reviews()[0].rating : 0)"
+                  [class.fill-current]="star <= (reviews().length > 0 ? (reviews().reduce((acc, r) => acc + r.rating, 0) / reviews().length) : 0)"
                   class="h-5 w-5 stroke-current"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -100,13 +100,13 @@
           <div class="relative z-10">
             @if (product()?.discountPercentage! > 0) {
               <p class="mb-1 text-sm font-medium text-gray-400 line-through">
-                {{ $safeNavigationMigration(product()?.price) | currency }}
+                {{ product()?.price | currency }}
               </p>
               <div class="flex flex-wrap items-baseline gap-3">
                 <p
                   class="text-3xl font-black tracking-tighter text-blue-600 sm:text-4xl md:text-5xl"
                 >
-                  {{ $safeNavigationMigration(product()?.finalPrice) | currency }}
+                  {{ product()?.finalPrice | currency }}
                 </p>
                 <span class="text-sm font-bold whitespace-nowrap text-green-600">Envío Gratis</span>
               </div>
@@ -115,7 +115,7 @@
                 <p
                   class="text-3xl font-black tracking-tighter text-blue-600 sm:text-4xl md:text-5xl"
                 >
-                  {{ $safeNavigationMigration(product()?.price) | currency }}
+                  {{ product()?.price | currency }}
                 </p>
                 <span class="text-sm font-bold whitespace-nowrap text-green-600">Envío Gratis</span>
               </div>
@@ -163,7 +163,7 @@
       </section>
     </div>
 
-    @if (product()!.extraAttributes!.length > 0) {
+    @if (product()?.extraAttributes && product()!.extraAttributes!.length > 0) {
       <mat-expansion-panel class="!mt-10 !bg-white" [expanded]="true">
         <mat-expansion-panel-header class="!h-14">
           <mat-panel-title

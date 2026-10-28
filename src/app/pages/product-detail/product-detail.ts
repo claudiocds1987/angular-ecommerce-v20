@@ -1,12 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   OnInit,
+  PLATFORM_ID,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformServer } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ProductService } from '@features/products/services/product-service'; // Importa tu servicio
@@ -73,6 +75,8 @@ export class ProductDetail implements OnInit {
   private _dialogRef = inject(MatDialogRef<ProductDetail>);
   private _cartService = inject(CartService);
   private _toastService = inject(ToastService);
+  private _platformId = inject(PLATFORM_ID);
+  private _document = inject(DOCUMENT);
 
   ngOnInit(): void {
     if (this._data) {
@@ -118,7 +122,7 @@ export class ProductDetail implements OnInit {
     }).subscribe({
       next: ({ product, reviews }) => {
         // El servicio ya devuelve el producto con finalPrice calculado y mapeado
-        this._processProductData(product);
+        this._processProductData(product, reviews);
         this.reviews.set(reviews);
         this.loading.set(false);
       },
@@ -128,7 +132,7 @@ export class ProductDetail implements OnInit {
     });
   }
 
-  private _processProductData(data: Product) {
+  private _processProductData(data: Product, reviews: ProductReview[] = []) {
     this.product.set(data);
 
     // Sanitización usando thumbnail (que es la propiedad oficial de tu nuevo modelo)
@@ -143,10 +147,10 @@ export class ProductDetail implements OnInit {
       this.safeGallery.set(images);
     }
 
-    this._updateSeo(data);
+    this._updateSeo(data, reviews);
   }
 
-  private _updateSeo(p: Product) {
+  private _updateSeo(p: Product, reviews: ProductReview[] = []) {
     // 1. Armamos el título juntando el nombre del producto y su marca
     const title = `${p.title} | ${this.brandName()}`;
 
@@ -164,6 +168,37 @@ export class ProductDetail implements OnInit {
     if (p.thumbnail) {
       // 5. Le pasamos la imagen para que WhatsApp dibuje la tarjeta bonita con la foto del producto
       this._metaService.updateTag({ property: 'og:image', content: p.thumbnail });
+    }
+
+    // 6. Inyección de Schema.org (JSON-LD) para que Google indexe las valoraciones y reseñas en el SSR
+    const reviewsCount = reviews.length;
+    if (isPlatformServer(this._platformId) && reviewsCount > 0) {
+      const averageRating = Number(
+        (reviews.reduce((acc, r) => acc + r.rating, 0) / reviewsCount).toFixed(1),
+      );
+
+      const schema = {
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: p.title,
+        image: p.thumbnail,
+        description: p.description,
+        sku: p.sku || p.id,
+        brand: {
+          '@type': 'Brand',
+          name: this.brandName(),
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: averageRating,
+          reviewCount: reviewsCount,
+        },
+      };
+
+      const script = this._document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(schema);
+      this._document.head.appendChild(script);
     }
   }
 }
