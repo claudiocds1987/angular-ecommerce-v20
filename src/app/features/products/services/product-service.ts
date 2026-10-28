@@ -4,7 +4,6 @@ import { isPlatformServer } from '@angular/common';
 import { map, Observable, of, tap } from 'rxjs';
 import { Product } from '@features/products/models/product.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
-//import { DummyResponsePaginated } from '@features/products/models/dummy-response.model';
 import { environment } from '@env/environment';
 import { ProductPaginated } from '@features/products/models/product-paginated.model';
 import { CustomerProductFilter } from '@features/products/models/costumer-product-filter.model';

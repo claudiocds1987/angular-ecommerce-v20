@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl, Meta, Title } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ProductService } from '@features/products/services/product-service'; // Importa tu servicio
-import { Product } from '@features/products/models/product.model';
+import { Product, ProductReview } from '@features/products/models/product.model';
 import { CartService } from '@features/checkout/services/cart-service';
 import { ToastService } from '@shared/services/toast-service';
 
@@ -21,6 +21,8 @@ import { ProductStore } from '@features/products/state/product.store';
 import { BrandStore } from '@features/brands/state/brand.store';
 import { CategoryStore } from '@features/categories/state/category.store';
 import { Button } from '@shared/components/button/button';
+import { catchError, forkJoin, of } from 'rxjs';
+import { ProductReviewService } from '@features/products/services/product-review-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -45,6 +47,7 @@ export class ProductDetail implements OnInit {
   safeThumbnail = signal<SafeResourceUrl>('');
   safeGallery = signal<SafeResourceUrl[]>([]);
   loading = signal<boolean>(true);
+  reviews = signal<ProductReview[]>([]);
 
   brandName = computed(() => {
     const id = this.product()?.brandId;
@@ -63,6 +66,7 @@ export class ProductDetail implements OnInit {
   // Inyectamos la data (que es un Product completo o solo el ID)
   private _data = inject<Product>(MAT_DIALOG_DATA, { optional: true });
   private _productService = inject(ProductService);
+  private _productReviewService = inject(ProductReviewService);
   private _titleService = inject(Title);
   private _metaService = inject(Meta);
   private _sanitizer = inject(DomSanitizer);
@@ -107,10 +111,15 @@ export class ProductDetail implements OnInit {
 
   private _getProduct(id: number) {
     this.loading.set(true);
-    this._productService.getProductById(id).subscribe({
-      next: (product) => {
+
+    forkJoin({
+      product: this._productService.getProductById(id),
+      reviews: this._productReviewService.getProductReviews(id).pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: ({ product, reviews }) => {
         // El servicio ya devuelve el producto con finalPrice calculado y mapeado
         this._processProductData(product);
+        this.reviews.set(reviews);
         this.loading.set(false);
       },
       error: () => {
