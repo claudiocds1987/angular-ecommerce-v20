@@ -10,10 +10,9 @@ import {
 import {
   provideClientHydration,
   withEventReplay,
-  withNoIncrementalHydration,
 } from '@angular/platform-browser';
 
-import { provideRouter, withHashLocation } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/themes';
@@ -55,7 +54,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
+    provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
@@ -65,7 +64,7 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
-    provideRouter(routes, withHashLocation()),
+    provideRouter(routes),
     provideHttpClient(withXhr(), withInterceptors([authInterceptor])),
 
     // "provideAppInitializer" para volver a cargar los datos del usuario que se perdieron al refrescar la página (F5) o al cerrar la ventana.
