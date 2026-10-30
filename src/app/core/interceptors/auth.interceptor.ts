@@ -1,5 +1,6 @@
-﻿import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthStore } from '@features/auth/state/auth.store';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
@@ -8,8 +9,10 @@ import { environment } from '@env/environment';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
-  // 1. Obtenemos el token del localStorage
-  const token = localStorage.getItem('token');
+  const platformId = inject(PLATFORM_ID);
+
+  // 1. Obtenemos el token del localStorage únicamente en el navegador
+  const token = isPlatformBrowser(platformId) ? localStorage.getItem('token') : null;
 
   // Solo agregamos el token si la URL apunta a nuestro backend
   // Esto evita enviar el token accidentalmente a Mercado Pago u otras APIs externas
