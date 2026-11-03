@@ -51,6 +51,8 @@ export class ProductDetail implements OnInit {
   loading = signal<boolean>(true);
   reviews = signal<ProductReview[]>([]);
 
+  readonly roundedRating = computed(() => Math.round((this.product()?.rating ?? 0) * 2) / 2);
+
   brandName = computed(() => {
     const id = this.product()?.brandId;
     const brandObj = id ? this.brandStore.brandMap()[id] : null;
@@ -111,6 +113,20 @@ export class ProductDetail implements OnInit {
 
   changeImage(img: SafeResourceUrl): void {
     this.safeThumbnail.set(img);
+  }
+
+  getStarType(star: number): 'full' | 'half' | 'empty' {
+    const rating = this.roundedRating();
+
+    if (star <= Math.floor(rating)) {
+      return 'full';
+    }
+
+    if (star - 0.5 === rating) {
+      return 'half';
+    }
+
+    return 'empty';
   }
 
   private _getProduct(id: number) {
