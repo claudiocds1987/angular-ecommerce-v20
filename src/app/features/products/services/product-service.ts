@@ -11,16 +11,27 @@ import { ProductAdminGrid } from '@features/products/models/product-admin-grid.m
 import { ProductFilterParams } from '@features/products/models/product-filter-params.model';
 import { totalProductsByCategory } from '../models/total-products-by-category.model';
 import { totalProductsByBrand } from '../models/total-products-by-brand.model';
+import { totalProductsByRating } from '../models/total-products-by-rating.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   private _http = inject(HttpClient);
-  // transferState Verifica si el estado ya fue transferido desde el SSR
+  // transferState Verifica si el estado ya fue transferido desde el SSR (usar solamente para los "GET")
   private _transferState = inject(TransferState);
   private _platformId = inject(PLATFORM_ID);
   private _apiURL = `${environment.serverUrl}/api/products`;
+
+  // NOTA:
+  // TransferState debe utilizarse únicamente en peticiones GET que participen
+  // en el renderizado inicial (SSR/Prerender). De esta forma se evita que el
+  // navegador repita una llamada que ya fue ejecutada por el servidor.
+  //
+  // No utilizar TransferState en peticiones POST, PUT, PATCH o DELETE, ya que
+  // son operaciones que modifican datos y deben ejecutarse siempre contra el
+  // backend en tiempo real. Estas operaciones no forman parte del renderizado
+  // inicial y no deben almacenarse en TransferState.
 
   /**
    * Función privada para transformar el producto del backend (DummyProduct)
@@ -228,5 +239,23 @@ export class ProductService {
   // Método para obtener la cantidad de productos por marca
   getTotalProductsByBrand(): Observable<totalProductsByBrand[]> {
     return this._http.get<totalProductsByBrand[]>(`${this._apiURL}/total-by-brand`);
+  }
+
+  getTotalProductsByRating(): Observable<totalProductsByRating[]> {
+    const STATE_KEY = makeStateKey<totalProductsByRating[]>(`/total-by-rating`);
+    // transferState Verifica si el estado ya fue transferido desde el SSR
+    const storedData = this._transferState.get(STATE_KEY, null);
+    if (storedData) {
+      this._transferState.remove(STATE_KEY);
+      return of(storedData);
+    }
+    // Si no está en caché, hacer la petición HTTP y guardarla si estamos en el servidor
+    return this._http.get<totalProductsByRating[]>(`${this._apiURL}/total-by-rating`).pipe(
+      tap((totalProductsByRating) => {
+        if (isPlatformServer(this._platformId)) {
+          this._transferState.set(STATE_KEY, totalProductsByRating);
+        }
+      }),
+    );
   }
 }

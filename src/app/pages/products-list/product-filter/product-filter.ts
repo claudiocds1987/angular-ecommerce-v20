@@ -18,18 +18,7 @@ import { ProductStore } from '@features/products/state/product.store';
 import { ProductService } from '@features/products/services/product-service';
 import { totalProductsByCategory } from '@features/products/models/total-products-by-category.model';
 import { totalProductsByBrand } from '@features/products/models/total-products-by-brand.model';
-
-export interface FilterItem {
-  id: string | number;
-  name: string;
-  count: number;
-}
-
-export interface RatingOption {
-  stars: number;
-  label: string;
-  count: number;
-}
+import { totalProductsByRating } from '@features/products/models/total-products-by-rating.model';
 
 @Component({
   selector: 'app-product-filter',
@@ -48,6 +37,7 @@ export class ProductFilter implements OnInit {
   readonly brandStore = inject(BrandStore);
   readonly categoryStore = inject(CategoryStore);
   private _productService = inject(ProductService);
+
   private _maxPrice = 7000000;
 
   // Estado del filtro centralizado en una Signal pura
@@ -64,6 +54,7 @@ export class ProductFilter implements OnInit {
 
   readonly quantityProductsByCategory = signal<totalProductsByCategory[]>([]);
   readonly quantityProductsByBrand = signal<totalProductsByBrand[]>([]);
+  readonly quantityProductsByRating = signal<totalProductsByRating[]>([]);
 
   // Toggle "Ver más"
   showAllCategories = signal(false);
@@ -88,13 +79,13 @@ export class ProductFilter implements OnInit {
     this.isRatingsExpanded.update((v) => !v);
   }
 
-  readonly ratingOptions: RatingOption[] = [
-    { stars: 5, label: '', count: 25 },
-    { stars: 4, label: 'and up', count: 54 },
-    { stars: 3, label: 'and up', count: 78 },
-    { stars: 2, label: 'and up', count: 42 },
-    { stars: 1, label: 'and up', count: 35 },
-  ];
+  readonly ratingOptions = computed(() => {
+    return this.quantityProductsByRating().map((item) => ({
+      stars: item.rating,
+      label: item.rating < 5 ? 'and up' : '',
+      count: item.totalProducts,
+    }));
+  });
 
   // Comprueba si hay algún filtro activo de manera completamente reactiva
   hasActiveFilters = computed(() => {
@@ -135,6 +126,7 @@ export class ProductFilter implements OnInit {
     }
     this._getTotalProductsByCategory();
     this._getTotalProductsByBrand();
+    this._getTotalProductsByRating();
   }
 
   // Actualización de Rango de Precios
@@ -234,6 +226,13 @@ export class ProductFilter implements OnInit {
     this._productService.getTotalProductsByBrand().subscribe({
       next: (productsByBrand) => this.quantityProductsByBrand.set(productsByBrand),
       error: (err) => console.error('Error al cargar total de productos por marca:', err),
+    });
+  }
+
+  private _getTotalProductsByRating() {
+    this._productService.getTotalProductsByRating().subscribe({
+      next: (productsByRating) => this.quantityProductsByRating.set(productsByRating),
+      error: (err) => console.error('Error al cargar total de productos por rating:', err),
     });
   }
 }
