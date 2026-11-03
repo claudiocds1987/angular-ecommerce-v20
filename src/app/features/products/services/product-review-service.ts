@@ -13,10 +13,10 @@ export class ProductReviewService {
   private _http = inject(HttpClient);
   private _transferState = inject(TransferState);
   private _platformId = inject(PLATFORM_ID);
-  private _apiURL = `${environment.serverUrl}/api/reviews/product`;
+  private _apiURL = `${environment.serverUrl}/api/reviews`;
 
   getProductReviews(productId: number): Observable<ProductReview[]> {
-    const STATE_KEY = makeStateKey<ProductReview[]>(`product-reviews-${productId}`);
+    const STATE_KEY = makeStateKey<ProductReview[]>(`/product/product-reviews-${productId}`);
 
     // transferState Verifica si el estado ya fue transferido desde el SSR
     const storedData = this._transferState.get(STATE_KEY, null);
@@ -25,8 +25,8 @@ export class ProductReviewService {
       return of(storedData);
     }
 
-    // 2. Si no está en caché, hacer la petición HTTP y guardarla si estamos en el servidor
-    return this._http.get<ProductReview[]>(`${this._apiURL}/${productId}`).pipe(
+    // Si no está en caché, hacer la petición HTTP y guardarla si estamos en el servidor
+    return this._http.get<ProductReview[]>(`${this._apiURL}/product/${productId}`).pipe(
       tap((reviews) => {
         if (isPlatformServer(this._platformId)) {
           this._transferState.set(STATE_KEY, reviews);

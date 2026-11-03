@@ -326,7 +326,7 @@
 
       @if (isRatingsExpanded()) {
         <div class="animate-in fade-in flex flex-col gap-2 pt-1.5 pb-2 duration-200">
-          @for (option of ratingOptions; track option.stars) {
+          @for (option of ratingOptions(); track option.stars) {
             <label
               class="group flex cursor-pointer items-center justify-between py-0.5 select-none"
             >
