@@ -5,6 +5,7 @@ export interface Product {
   price: number;
   discountPercentage: number;
   rating: number;
+  reviewCount: number;
   stock: number;
   sku: string;
   weight: number;
@@ -47,10 +48,10 @@ export interface ProductTag {
 }
 
 export interface ProductReview {
+  id: number;
   rating: number;
   comment: string;
   userName: string;
-  userEmail: string;
   productId: number;
   date?: Date;
 }
