@@ -80,11 +80,15 @@ export class ProductFilter implements OnInit {
   }
 
   readonly ratingOptions = computed(() => {
-    return this.quantityProductsByRating().map((item) => ({
+    const items = this.quantityProductsByRating();
+
+    const result = items.map((item) => ({
       stars: item.rating,
       label: item.rating < 5 ? 'and up' : '',
       count: item.totalProducts,
     }));
+
+    return result;
   });
 
   // Comprueba si hay algún filtro activo de manera completamente reactiva
