@@ -202,7 +202,7 @@ export class ProductFilter implements OnInit {
       brandIds: [],
       minRating: null,
       sortBy: 'rating',
-      order: 'asc',
+      order: 'desc',
     });
     this.applyFilters();
   }
