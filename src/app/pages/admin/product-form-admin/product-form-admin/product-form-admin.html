@@ -1,9 +1,11 @@
 <div class="w-full px-4 pt-4 md:px-8 md:pt-8">
   <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
 </div>
+
 <div class="product-form-admin min-h-screen bg-slate-50 p-4 md:p-8">
-  <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-8">
-    <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+  <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-6">
+    <!-- Header de Gestión -->
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Gestión del producto</h1>
         <p class="text-sm text-slate-500">Panel de administración avanzada de catálogo.</p>
@@ -20,114 +22,133 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <!-- Columna 1 -->
-      <div class="flex flex-col gap-4">
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
-                <mat-icon class="text-indigo-600">inventory_2</mat-icon>
-                Información Básica
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Título</mat-label>
-              <input matInput type="text" [formField]="productForm.title" />
-              <mat-error>
-                <app-form-field-error [control]="productForm.title()" />
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Descripción</mat-label>
-              <textarea matInput [formField]="productForm.description" rows="4"></textarea>
-              <mat-error>
-                <app-form-field-error [control]="productForm.description()" />
-              </mat-error>
-            </mat-form-field>
-          </div>
-        </mat-expansion-panel>
-
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
-                <mat-icon class="text-pink-600">image</mat-icon>
-                Imagen principal (thumbnail)
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="product-form-admin__fields">
-            <div
-              class="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-5 transition-colors hover:border-pink-300"
-            >
-              <app-upload-image
-                [formField]="productForm.thumbnail"
-                [maxFiles]="1"
-                class="thumbnail-uploader"
-              ></app-upload-image>
+    <!-- Pestañas de Secciones -->
+    <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
+      <mat-tab-group
+        animationDuration="200ms"
+        class="product-tabs"
+        mat-stretch-tabs="false"
+        mat-align-tabs="start"
+      >
+        <!-- 1. Información Básica -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-indigo-600">article</mat-icon>
+              <span class="font-medium text-slate-700">Información Básica</span>
+              @if (basicInfoHasError()) {
+                <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+              }
             </div>
-            <mat-error>
-              <app-form-field-error [control]="productForm.thumbnail()" />
-            </mat-error>
-          </div>
-        </mat-expansion-panel>
+          </ng-template>
 
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+          <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+            <!-- Datos del producto -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-indigo-600">inventory_2</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Detalles Principales</h3>
+              </div>
+              <div class="product-form-admin__fields">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Título</mat-label>
+                  <input matInput type="text" [formField]="productForm.title" />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.title()" />
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Descripción</mat-label>
+                  <textarea matInput [formField]="productForm.description" rows="5"></textarea>
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.description()" />
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Multimedia (Thumbnail + Galería) -->
+            <div class="flex flex-col gap-6">
+              <!-- Thumbnail -->
+              <div
+                class="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
               >
-                <mat-icon class="text-indigo-500">collections</mat-icon>
-                Galería de Imágenes
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="p-5">
-            <app-upload-image [formField]="productForm.images"></app-upload-image>
-          </div>
-        </mat-expansion-panel>
-      </div>
+                <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                  <mat-icon class="text-pink-600">image</mat-icon>
+                  <h3 class="text-sm font-semibold text-slate-800">Imagen principal (thumbnail)</h3>
+                </div>
+                <div class="product-form-admin__fields">
+                  <div
+                    class="rounded-xl border-2 border-dashed border-slate-200 bg-white p-4 transition-colors hover:border-pink-300"
+                  >
+                    <app-upload-image
+                      [formField]="productForm.thumbnail"
+                      [maxFiles]="1"
+                      class="thumbnail-uploader"
+                    ></app-upload-image>
+                  </div>
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.thumbnail()" />
+                  </mat-error>
+                </div>
+              </div>
 
-      <!-- Columna 2 -->
-      <div class="flex flex-col gap-4">
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+              <!-- Galería de imágenes -->
+              <div
+                class="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
               >
-                <mat-icon class="text-emerald-600">straighten</mat-icon>
-                Inventario y Medidas
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+                <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                  <mat-icon class="text-indigo-500">collections</mat-icon>
+                  <h3 class="text-sm font-semibold text-slate-800">Galería de Imágenes</h3>
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4">
+                  <app-upload-image [formField]="productForm.images"></app-upload-image>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
 
-          <div class="product-form-admin__fields">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <!-- 2. Inventario y Medidas -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-emerald-600">straighten</mat-icon>
+              <span class="font-medium text-slate-700">Inventario y Medidas</span>
+              @if (inventoryHasError()) {
+                <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+              }
+            </div>
+          </ng-template>
+
+          <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+            <!-- Inventario y Stock -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-emerald-600">warehouse</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Control de Stock</h3>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Stock disponible</mat-label>
+                  <input matInput type="number" [formField]="productForm.stock" />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.stock()" />
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Mín. de compra</mat-label>
+                  <input matInput type="number" [formField]="productForm.minimumOrderQuantity" />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.minimumOrderQuantity()" />
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
               <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-                <mat-label>Stock</mat-label>
-                <input matInput type="number" [formField]="productForm.stock" />
-                <mat-error>
-                  <app-form-field-error [control]="productForm.stock()" />
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-                <mat-label>Mín. compra</mat-label>
-                <input matInput type="number" [formField]="productForm.minimumOrderQuantity" />
-                <mat-error>
-                  <app-form-field-error [control]="productForm.minimumOrderQuantity()" />
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-                <mat-label>SKU</mat-label>
+                <mat-label>SKU (Código único)</mat-label>
                 <input
                   matInput
                   type="text"
@@ -140,294 +161,419 @@
               </mat-form-field>
             </div>
 
-            <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              Dimensiones (cm)
-            </span>
-            <div class="grid grid-cols-3 gap-4">
-              <mat-form-field
-                appearance="outline"
-                class="w-full text-center"
-                [appSkeleton]="isLoadingSig()"
-              >
-                <mat-label>width</mat-label>
+            <!-- Dimensiones físicas -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-emerald-700">fit_screen</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Dimensiones y Peso</h3>
+              </div>
+
+              <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+                Dimensiones del paquete (cm)
+              </span>
+              <div class="grid grid-cols-3 gap-3">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-full text-center"
+                  [appSkeleton]="isLoadingSig()"
+                >
+                  <mat-label>Ancho</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [formField]="productForm.width"
+                    (keydown)="onNumberKeydown($event)"
+                    placeholder="0.00"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  appearance="outline"
+                  class="w-full text-center"
+                  [appSkeleton]="isLoadingSig()"
+                >
+                  <mat-label>Alto</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [formField]="productForm.height"
+                    (keydown)="onNumberKeydown($event)"
+                    placeholder="0.00"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  appearance="outline"
+                  class="w-full text-center"
+                  [appSkeleton]="isLoadingSig()"
+                >
+                  <mat-label>Profundidad</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [formField]="productForm.depth"
+                    (keydown)="onNumberKeydown($event)"
+                    placeholder="0.00"
+                  />
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                <mat-label>Peso (kg)</mat-label>
                 <input
                   matInput
                   type="number"
-                  [formField]="productForm.width"
-                  (keydown)="onNumberKeydown($event)"
-                  placeholder="0.00"
-                />
-              </mat-form-field>
-              <mat-form-field
-                appearance="outline"
-                class="w-full text-center"
-                [appSkeleton]="isLoadingSig()"
-              >
-                <mat-label>height</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [formField]="productForm.height"
-                  (keydown)="onNumberKeydown($event)"
-                  placeholder="0.00"
-                />
-              </mat-form-field>
-              <mat-form-field
-                appearance="outline"
-                class="w-full text-center"
-                [appSkeleton]="isLoadingSig()"
-              >
-                <mat-label>Prof.</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [formField]="productForm.depth"
+                  [formField]="productForm.weight"
                   (keydown)="onNumberKeydown($event)"
                   placeholder="0.00"
                 />
               </mat-form-field>
             </div>
           </div>
-        </mat-expansion-panel>
+        </mat-tab>
 
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
+        <!-- 3. Entregas y Garantía -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-amber-600">local_shipping</mat-icon>
+              <span class="font-medium text-slate-700">Entregas y Garantía</span>
+            </div>
+          </ng-template>
+
+          <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+            <!-- Políticas de Entrega -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
                 <mat-icon class="text-amber-600">local_shipping</mat-icon>
-                Entregas y Garantía
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+                <h3 class="text-sm font-semibold text-slate-800">Logística de Envío</h3>
+              </div>
+              <div class="product-form-admin__fields">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Información de Envío</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [formField]="productForm.shippingInformation"
+                    placeholder="Ej: Envío en 24-48 horas"
+                  />
+                </mat-form-field>
 
-          <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Garantía</mat-label>
-              <input matInput type="text" [formField]="productForm.warrantyInformation" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Envío</mat-label>
-              <input matInput type="text" [formField]="productForm.shippingInformation" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Devoluciones</mat-label>
-              <input matInput type="text" [formField]="productForm.returnPolicy" />
-            </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Política de Devoluciones</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [formField]="productForm.returnPolicy"
+                    placeholder="Ej: 30 días de devolución gratis"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Garantía y Disponibilidad -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-amber-700">verified</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Garantía y Disponibilidad</h3>
+              </div>
+              <div class="product-form-admin__fields">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Garantía</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [formField]="productForm.warrantyInformation"
+                    placeholder="Ej: 1 año de garantía oficial"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Estado de Disponibilidad</mat-label>
+                  <mat-select [formField]="productForm.availabilityStatus">
+                    <mat-option value="instock">En stock (In stock)</mat-option>
+                    <mat-option value="lowstock">Poco stock (Low stock)</mat-option>
+                    <mat-option value="outofstock">Agotado (Out of stock)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
           </div>
-        </mat-expansion-panel>
+        </mat-tab>
 
-        @if (productForm.extraAttributes.length > 0) {
-          <mat-expansion-panel [expanded]="true" class="!bg-white">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
+        <!-- 4. Especificaciones Técnicas -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-purple-600">tune</mat-icon>
+              <span class="font-medium text-slate-700">Especificaciones Técnicas</span>
+              @if (productForm.extraAttributes.length > 0) {
                 <span
-                  class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
+                  class="ml-1 inline-flex items-center justify-center rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-semibold text-purple-700"
                 >
-                  <mat-icon class="text-purple-600">tune</mat-icon>
-                  Especificaciones Técnicas
+                  {{ productForm.extraAttributes.length }}
                 </span>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="product-form-admin__fields">
-              @for (
-                extraAttribute of productForm.extraAttributes;
-                track trackByAttributeName($index, extraAttribute.name().value())
-              ) {
-                <div class="product-form-admin__extra-attribute-row">
-                  @if (extraAttribute.dataType().value() === 'boolean') {
-                    <div
-                      class="mb-4 flex w-full items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
-                    >
-                      <span class="text-sm font-semibold text-slate-700">
-                        {{ extraAttribute.label().value() }}
-                      </span>
-                      <mat-slide-toggle [formField]="extraAttribute.value" color="primary" />
+              }
+            </div>
+          </ng-template>
+
+          <div class="p-6">
+            @if (productForm.extraAttributes.length > 0) {
+              <div
+                class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
+              >
+                <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                  <mat-icon class="text-purple-600">tune</mat-icon>
+                  <h3 class="text-sm font-semibold text-slate-800">
+                    Atributos Dinámicos por Categoría
+                  </h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  @for (
+                    extraAttribute of productForm.extraAttributes;
+                    track trackByAttributeName($index, extraAttribute.name().value())
+                  ) {
+                    <div class="product-form-admin__extra-attribute-row">
+                      @if (extraAttribute.dataType().value() === 'boolean') {
+                        <div
+                          class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-2xs"
+                        >
+                          <span class="text-sm font-semibold text-slate-700">
+                            {{ extraAttribute.label().value() }}
+                          </span>
+                          <mat-slide-toggle [formField]="extraAttribute.value" color="primary" />
+                        </div>
+                      } @else {
+                        <mat-form-field
+                          appearance="outline"
+                          class="w-full"
+                          [appSkeleton]="isLoadingSig()"
+                        >
+                          <mat-label>{{ extraAttribute.label().value() }}</mat-label>
+                          <input
+                            matInput
+                            [type]="
+                              extraAttribute.dataType().value() === 'number' ? 'number' : 'text'
+                            "
+                            [formField]="extraAttribute.value"
+                            [placeholder]="'Ingrese ' + extraAttribute.label().value()"
+                          />
+                          <mat-error>
+                            <app-form-field-error [control]="extraAttribute.value()" />
+                          </mat-error>
+                        </mat-form-field>
+                      }
                     </div>
-                  } @else {
-                    <mat-form-field
-                      appearance="outline"
-                      class="w-full"
-                      [appSkeleton]="isLoadingSig()"
-                    >
-                      <mat-label>{{ extraAttribute.label().value() }}</mat-label>
-                      <input
-                        matInput
-                        [type]="extraAttribute.dataType().value() === 'number' ? 'number' : 'text'"
-                        [formField]="extraAttribute.value"
-                        [placeholder]="'Ingrese ' + extraAttribute.label().value()"
-                      />
-                      <mat-error>
-                        <app-form-field-error [control]="extraAttribute.value()" />
-                      </mat-error>
-                    </mat-form-field>
                   }
                 </div>
-              }
-            </div>
-          </mat-expansion-panel>
-        }
-      </div>
-
-      <!-- Columna 3 -->
-      <div class="flex flex-col gap-4">
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
-                <mat-icon class="text-emerald-700">payments</mat-icon>
-                Precio
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <div class="product-form-admin__fields">
-            <div class="grid grid-cols-2 gap-4">
-              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-                <mat-label>Base ($)</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [formField]="productForm.price"
-                  (keydown)="onNumberKeydown($event)"
-                />
-                <mat-error>
-                  <app-form-field-error [control]="productForm.price()" />
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-                <mat-label>Desc. (%)</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [formField]="productForm.discountPercentage"
-                  (keydown)="onNumberKeydown($event)"
-                />
-                <mat-error>
-                  <app-form-field-error [control]="productForm.discountPercentage()" />
-                </mat-error>
-              </mat-form-field>
-            </div>
-            <mat-divider></mat-divider>
-            <div class="flex items-center justify-between">
-              <div
-                class="min-h-9 min-w-32 text-3xl font-black tracking-tight"
-                [appSkeleton]="isLoadingSig()"
-              >
-                ${{ finalPriceSig() | number: '1.2-2' }}
               </div>
-              <span class="rounded-md bg-white/15 px-2 py-1 text-[10px] font-semibold uppercase">
-                ARS
-              </span>
-            </div>
+            } @else {
+              <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div
+                  class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50 text-purple-600"
+                >
+                  <mat-icon class="!h-7 !w-7 !text-[28px]">tune</mat-icon>
+                </div>
+                <h4 class="text-base font-semibold text-slate-800">
+                  Sin especificaciones técnicas adicionales
+                </h4>
+                <p class="mt-1 max-w-md text-xs text-slate-400">
+                  Esta categoría no tiene atributos personalizados asignados o aún no has
+                  seleccionado una categoría en la pestaña "Precio y Clasificación".
+                </p>
+              </div>
+            }
           </div>
-        </mat-expansion-panel>
+        </mat-tab>
 
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
-                <mat-icon class="text-slate-600">category</mat-icon>
-                Clasificación
-              </span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Categoría</mat-label>
-              <mat-select [formField]="productForm.categoryId">
-                @for (cat of categoriesSig(); track cat.id) {
-                  <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-                }
-              </mat-select>
-              <mat-error>
-                <app-form-field-error [control]="productForm.categoryId()" />
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Marca</mat-label>
-              <mat-select [formField]="productForm.brandId">
-                @for (brand of brandsSig(); track brand.id) {
-                  <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
-                }
-              </mat-select>
-              <mat-error>
-                <app-form-field-error [control]="productForm.brandId()" />
-              </mat-error>
-            </mat-form-field>
-
-            <div
-              class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
-            >
-              <span class="text-sm font-semibold text-slate-700">Producto activo</span>
-              <mat-slide-toggle [formField]="productForm.isActive" color="primary" />
-            </div>
-          </div>
-        </mat-expansion-panel>
-
-        <mat-expansion-panel [expanded]="true" class="!bg-white">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <span
-                class="flex items-center gap-3 text-base font-semibold tracking-tight text-slate-800"
-              >
-                <mat-icon class="text-indigo-600">label</mat-icon>
-                Etiquetas
-              </span>
-            </mat-panel-title>
-            <mat-panel-description class="!mr-2 hidden text-xs text-slate-500 sm:block">
-              Palabras clave para búsqueda y filtros
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-
-          <div class="product-form-admin__fields">
-            <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
-              <mat-label>Nueva etiqueta</mat-label>
-              <input
-                matInput
-                type="text"
-                #tagInput
-                (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
-                placeholder="Ej: Verano, Gamer..."
-              />
-              <button
-                mat-icon-button
-                matSuffix
-                type="button"
-                (click)="addTag(tagInput)"
-                aria-label="Añadir etiqueta"
-              >
-                <mat-icon>add</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <div
-              class="flex min-h-[48px] flex-wrap gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-3"
-            >
-              @if (productForm.tags.length === 0) {
-                <span class="m-auto text-center text-xs text-slate-400 italic">Sin etiquetas</span>
-              } @else {
-                <mat-chip-set class="w-full">
-                  @for (tag of productModel().tags; track $index) {
-                    <mat-chip removable (removed)="removeTag($index)">
-                      {{ tag }}
-                      <button type="button" matChipRemove [attr.aria-label]="'Quitar ' + tag">
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                    </mat-chip>
-                  }
-                </mat-chip-set>
+        <!-- 5. Precio y Clasificación -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-emerald-700">payments</mat-icon>
+              <span class="font-medium text-slate-700">Precio y Clasificación</span>
+              @if (pricingHasError()) {
+                <span class="h-2 w-2 rounded-full bg-rose-500"></span>
               }
             </div>
+          </ng-template>
+
+          <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+            <!-- Precio -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-emerald-700">payments</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Estructura de Precios</h3>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Precio Base ($)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [formField]="productForm.price"
+                    (keydown)="onNumberKeydown($event)"
+                  />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.price()" />
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Descuento (%)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [formField]="productForm.discountPercentage"
+                    (keydown)="onNumberKeydown($event)"
+                  />
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.discountPercentage()" />
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
+                <span class="text-xs font-medium tracking-wide text-emerald-800 uppercase"
+                  >Precio Final Calculado</span
+                >
+                <div class="mt-1 flex items-baseline justify-between">
+                  <span class="text-3xl font-black text-emerald-900" [appSkeleton]="isLoadingSig()">
+                    ${{ finalPriceSig() | number: '1.2-2' }}
+                  </span>
+                  <span
+                    class="rounded-md bg-emerald-200/60 px-2 py-0.5 text-xs font-bold text-emerald-800"
+                  >
+                    ARS
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clasificación -->
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-slate-600">category</mat-icon>
+                <h3 class="text-sm font-semibold text-slate-800">Clasificación y Estado</h3>
+              </div>
+
+              <div class="product-form-admin__fields">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Categoría</mat-label>
+                  <mat-select [formField]="productForm.categoryId">
+                    @for (cat of categoriesSig(); track cat.id) {
+                      <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.categoryId()" />
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Marca</mat-label>
+                  <mat-select [formField]="productForm.brandId">
+                    @for (brand of brandsSig(); track brand.id) {
+                      <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error>
+                    <app-form-field-error [control]="productForm.brandId()" />
+                  </mat-error>
+                </mat-form-field>
+
+                <div
+                  class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3"
+                >
+                  <div>
+                    <span class="text-sm font-semibold text-slate-700">Producto activo</span>
+                    <p class="text-xs text-slate-400">
+                      Controla si el producto se muestra en la tienda
+                    </p>
+                  </div>
+                  <mat-slide-toggle [formField]="productForm.isActive" color="primary" />
+                </div>
+              </div>
+            </div>
           </div>
-        </mat-expansion-panel>
-      </div>
+        </mat-tab>
+
+        <!-- 6. Etiquetas -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <div class="flex items-center gap-2 py-1">
+              <mat-icon class="!h-5 !w-5 !text-[20px] text-indigo-600">label</mat-icon>
+              <span class="font-medium text-slate-700">Etiquetas</span>
+              @if (productModel().tags.length > 0) {
+                <span
+                  class="ml-1 inline-flex items-center justify-center rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700"
+                >
+                  {{ productModel().tags.length }}
+                </span>
+              }
+            </div>
+          </ng-template>
+
+          <div class="p-6">
+            <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+              <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                <mat-icon class="text-indigo-600">label</mat-icon>
+                <div>
+                  <h3 class="text-sm font-semibold text-slate-800">Gestión de Etiquetas</h3>
+                  <p class="text-xs text-slate-400">
+                    Palabras clave para optimizar la búsqueda y filtros en el catálogo
+                  </p>
+                </div>
+              </div>
+
+              <div class="product-form-admin__fields">
+                <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoadingSig()">
+                  <mat-label>Nueva etiqueta</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    #tagInput
+                    (keydown.enter)="$event.preventDefault(); addTag(tagInput)"
+                    placeholder="Ej: Verano, Gamer, Oferta..."
+                  />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="addTag(tagInput)"
+                    aria-label="Añadir etiqueta"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </mat-form-field>
+
+                <div
+                  class="flex min-h-[56px] flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-white p-4"
+                >
+                  @if (productForm.tags.length === 0) {
+                    <span class="m-auto text-center text-xs text-slate-400 italic">
+                      Sin etiquetas asignadas. Escribe arriba y presiona Enter o el botón (+).
+                    </span>
+                  } @else {
+                    <mat-chip-set class="w-full">
+                      @for (tag of productModel().tags; track $index) {
+                        <mat-chip removable (removed)="removeTag($index)">
+                          {{ tag }}
+                          <button type="button" matChipRemove [attr.aria-label]="'Quitar ' + tag">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip>
+                      }
+                    </mat-chip-set>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   </form>
 </div>
