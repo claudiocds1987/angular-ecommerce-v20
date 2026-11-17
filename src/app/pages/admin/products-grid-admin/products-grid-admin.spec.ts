@@ -8,9 +8,8 @@ describe('ProductsGridAdmin', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProductsGridAdmin]
-    })
-    .compileComponents();
+      imports: [ProductsGridAdmin],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProductsGridAdmin);
     component = fixture.componentInstance;

@@ -72,7 +72,13 @@ export class AdminDashboardService {
         ],
       },
       topProducts: {
-        labels: ['Audífonos Bluetooth', 'Teclado Mecánico', 'Mouse Gamer', 'Monitor 27"', 'Webcam HD'],
+        labels: [
+          'Audífonos Bluetooth',
+          'Teclado Mecánico',
+          'Mouse Gamer',
+          'Monitor 27"',
+          'Webcam HD',
+        ],
         datasets: [
           {
             label: 'Unidades',

@@ -1,9 +1,9 @@
-<div class="bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="flex flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-100">
+    <div class="border border-gray-100 bg-white px-4 py-8 shadow-xl sm:rounded-lg sm:px-10">
       <!-- Icon Wrapper -->
       <div
-        class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 transition-all duration-300 ease-in-out"
+        class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full transition-all duration-300 ease-in-out"
         [ngClass]="{
           'bg-green-100': config.class === 'approved',
           'bg-red-100': config.class === 'rejected',
@@ -46,7 +46,7 @@
           @case ('pending') {
             <!-- Clock Icon -->
             <svg
-              class="h-10 w-10 text-yellow-600 animate-pulse"
+              class="h-10 w-10 animate-pulse text-yellow-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -62,8 +62,8 @@
         }
       </div>
 
-      <div class="sm:mx-auto sm:w-full sm:max-w-md mb-6">
-        <h2 class="text-center text-3xl font-extrabold text-gray-900 tracking-tight">
+      <div class="mb-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="text-center text-3xl font-extrabold tracking-tight text-gray-900">
           {{ config.title }}
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
@@ -74,10 +74,10 @@
       <!-- Payment ID -->
       @if (paymentId) {
         <div class="mt-6 border-t border-gray-100 pt-4">
-          <p class="text-center text-xs text-gray-500 uppercase tracking-wide font-semibold">
+          <p class="text-center text-xs font-semibold tracking-wide text-gray-500 uppercase">
             ID de Operación
           </p>
-          <p class="text-center text-sm font-mono text-gray-900 mt-1 select-all">
+          <p class="mt-1 text-center font-mono text-sm text-gray-900 select-all">
             {{ paymentId }}
           </p>
         </div>
@@ -86,11 +86,11 @@
       <div class="mt-8">
         <button
           routerLink="/"
-          class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out hover:shadow-lg transform hover:-translate-y-0.5"
+          class="group relative flex w-full transform justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
         >
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3">
             <svg
-              class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400 transition-colors duration-200"
+              class="h-5 w-5 text-indigo-500 transition-colors duration-200 group-hover:text-indigo-400"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"

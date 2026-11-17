@@ -7,10 +7,7 @@ import {
   inject,
   provideAppInitializer, // <--- Nueva función para inicialización
 } from '@angular/core';
-import {
-  provideClientHydration,
-  withEventReplay,
-} from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';

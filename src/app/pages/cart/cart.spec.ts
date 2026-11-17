@@ -63,9 +63,7 @@ describe('Cart', () => {
 
   it('should display items when cart has products', async () => {
     // ACT: Add an item to the mock cart signal
-    mockCartService.cart.set([
-      { id: 1, title: 'Test Product', quantity: 2, price: 100 }
-    ]);
+    mockCartService.cart.set([{ id: 1, title: 'Test Product', quantity: 2, price: 100 }]);
     mockCartService.totalPrice.set(200);
 
     // WAIT for the asynchronous update to complete

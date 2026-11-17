@@ -1,6 +1,5 @@
-
- /* Estilos para ng-select similares a mat-select */
-.ng-select .ng-select-container{
+/* Estilos para ng-select similares a mat-select */
+.ng-select .ng-select-container {
   padding: 0 16px; /* Padding horizontal interno */
 }
 
@@ -20,16 +19,18 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
   background-color: #fff;
   width: 100%;
   /* No padding left sobreescrito aquí, pero si quieres más control, ajusta en .ng-value */
 }
 
- .ng-select .ng-select-container .ng-value-container{
+.ng-select .ng-select-container .ng-value-container {
   //padding-left: 16px; /* Espacio interno a la izquierda */
   flex-grow: 1; /* Permite que el contenedor ocupe el espacio disponible */
- }
+}
 /* Hover y foco similar a mat-select */
 .ng-select .ng-control:hover {
   border-color: rgba(0, 0, 0, 0.87);
@@ -49,10 +50,10 @@
   //padding-left: 16px
 }
 
-.ng-select .ng-select-container .ng-value-container .ng-input>input {
- padding-left: 16px !important;
+.ng-select .ng-select-container .ng-value-container .ng-input > input {
+  padding-left: 16px !important;
 }
- 
+
 /* Icono de flecha (puedes usar un icono de Angular Material o SVG) */
 .ng-select .ng-arrow {
   margin-left: auto;
