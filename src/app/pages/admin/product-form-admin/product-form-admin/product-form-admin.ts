@@ -40,6 +40,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
@@ -133,6 +134,7 @@ const INITIAL_PRODUCT_MODEL: ProductFormModel = {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatTabsModule,
     Button,
     Breadcrumb,
     SkeletonDirective,
@@ -141,7 +143,7 @@ const INITIAL_PRODUCT_MODEL: ProductFormModel = {
   styleUrls: ['./product-form-admin.scss', '../../../../shared/styles/skeleton.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductFormAdmin implements CanComponentDeactivate {
+export class ProductFormAdmin {
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Lista de productos', url: '/admin/products-grid-admin' },
     { label: 'Gestión del producto' },
@@ -274,6 +276,33 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
+  readonly basicInfoHasError = computed(() => {
+    return (
+      (this.productForm.title().touched() && this.productForm.title().invalid()) ||
+      (this.productForm.description().touched() && this.productForm.description().invalid()) ||
+      (this.productForm.thumbnail().touched() && this.productForm.thumbnail().invalid())
+    );
+  });
+
+  readonly inventoryHasError = computed(() => {
+    return (
+      (this.productForm.stock().touched() && this.productForm.stock().invalid()) ||
+      (this.productForm.minimumOrderQuantity().touched() &&
+        this.productForm.minimumOrderQuantity().invalid()) ||
+      (this.productForm.sku().touched() && this.productForm.sku().invalid())
+    );
+  });
+
+  readonly pricingHasError = computed(() => {
+    return (
+      (this.productForm.price().touched() && this.productForm.price().invalid()) ||
+      (this.productForm.discountPercentage().touched() &&
+        this.productForm.discountPercentage().invalid()) ||
+      (this.productForm.categoryId().touched() && this.productForm.categoryId().invalid()) ||
+      (this.productForm.brandId().touched() && this.productForm.brandId().invalid())
+    );
+  });
+
   // Aunque marca como no usado si esta usandose, es necesario para el formulario de extra atributos
   // Este effect "loadExtraAttributesEffect" escucha los cambios en el mat-select de categoría.
   // Cuando el usuario elige una categoría distinta, limpia o reconstruye el FormArray de atributos extra con los campos correspondientes.
@@ -325,21 +354,6 @@ export class ProductFormAdmin implements CanComponentDeactivate {
       if (categoriesReady && brandsReady && productReady) {
         untracked(() => this.isLoadingSig.set(false));
       }
-    });
-  }
-
-  //
-  canDeactivate(): Observable<boolean> | boolean {
-    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
-    if (!this.productForm().dirty()) return true;
-
-    // Si hay cambios, mostramos ventana dialogo (que ya devuelve Observable<boolean>)
-    return this._confirmDialogService.open({
-      title: 'Tiene cambios sin guardar',
-      message: '¿Deseas salir?',
-      confirmLabel: 'Salir',
-      cancelLabel: 'Continuar',
-      confirmColor: 'warn',
     });
   }
 
@@ -403,7 +417,7 @@ export class ProductFormAdmin implements CanComponentDeactivate {
 
   confirmCancel(): void {
     if (!this.productForm().dirty()) {
-      void this._router.navigate(['/admin']);
+      void this._router.navigate(['/admin/products-grid-admin']);
       return;
     }
     this._confirmDialogService
@@ -416,7 +430,7 @@ export class ProductFormAdmin implements CanComponentDeactivate {
         confirmColor: 'warn',
       })
       .subscribe((confirmed) => {
-        if (confirmed) void this._router.navigate(['/admin']);
+        if (confirmed) void this._router.navigate(['/admin/products-grid-admin']);
       });
   }
 
