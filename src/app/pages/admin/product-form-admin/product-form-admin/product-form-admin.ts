@@ -274,6 +274,12 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
+  // Aunque marca como no usado si esta usandose, es necesario para el formulario de extra atributos
+  // Este effect "loadExtraAttributesEffect" escucha los cambios en el mat-select de categoría.
+  // Cuando el usuario elige una categoría distinta, limpia o reconstruye el FormArray de atributos extra con los campos correspondientes.
+  // Si estás en modo edición y ya había datos guardados para esa categoría, los vuelve a cargar en el formulario.
+  // categoryIdSig(); se dispara/actualiza cada vez que se elije una categoria del mat-select
+  // productDataSig() se dispara/actualiza cuando se carga un producto desde el backend en modo edición y se hace .set(...) con esos datos.
   private readonly loadExtraAttributesEffect = effect((onCleanup) => {
     const categoryId = this.categoryIdSig();
     const productData = this.productDataSig();
@@ -286,6 +292,9 @@ export class ProductFormAdmin implements CanComponentDeactivate {
       return;
     }
 
+    // untracked evita que Angular registre como dependencias los signals leídos dentro.
+    // Eso significa que, aunque cambien esos signals, no harán que se vuelva a ejecutar el effect.
+    // En este caso no hay signals dentro de untracked, pero lo dejo por buenas prácticas.
     untracked(() => {
       const sub = this.productExtraAttributeService
         .getExtraAttributesByCategory(categoryId)
@@ -312,15 +321,19 @@ export class ProductFormAdmin implements CanComponentDeactivate {
       const categoriesReady = this.categoriesSig().length > 0;
       const brandsReady = this.brandsSig().length > 0;
       const productReady = this.operation === 'create' || this.productDataSig() !== null;
+      // Si categorias, marcas y producto están cargados, se desactiva el skeleton
       if (categoriesReady && brandsReady && productReady) {
         untracked(() => this.isLoadingSig.set(false));
       }
     });
   }
 
+  //
   canDeactivate(): Observable<boolean> | boolean {
+    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
     if (!this.productForm().dirty()) return true;
 
+    // Si hay cambios, mostramos ventana dialogo (que ya devuelve Observable<boolean>)
     return this._confirmDialogService.open({
       title: 'Tiene cambios sin guardar',
       message: '¿Deseas salir?',
@@ -353,6 +366,7 @@ export class ProductFormAdmin implements CanComponentDeactivate {
       request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
         next: (product) => {
           this._handleSuccess(product);
+          // Una vez guardado, marcamos el formulario como "pristine" para que no aparezca como modificado. y el boton Guardar se desactive hasta que se hagan nuevos cambios.
           this.productForm().reset();
         },
         error: () => this._handleError(),
