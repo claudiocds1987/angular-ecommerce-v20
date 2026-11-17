@@ -8,9 +8,8 @@ describe('AdminSidebar', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminSidebar]
-    })
-    .compileComponents();
+      imports: [AdminSidebar],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AdminSidebar);
     component = fixture.componentInstance;

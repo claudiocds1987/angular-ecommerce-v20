@@ -1,73 +1,59 @@
-import {
-    Directive,
-    ElementRef,
-    inject,
-    Input,
-    Renderer2,
-    OnInit,
-} from "@angular/core";
+import { Directive, ElementRef, inject, Input, Renderer2, OnInit } from '@angular/core';
 
 @Directive({
-    selector: "[appReadOnly]",
-    standalone: true,
+  selector: '[appReadOnly]',
+  standalone: true,
 })
 export class ReadOnlyDirective implements OnInit {
-    /*****************************************************************************************************************************
-     * Directiva 'appReadOnly':
-     * * 1. Propósito: Aplica estilos de 'solo lectura' a un mat-form-field sin usar la propiedad nativa 'disabled'.
-     * * 2. Efecto Visual:
-     * - Cambia el fondo del campo a un gris sutil (rgba(0,0,0,.04)), imitando el estado disabled de Material.
-     * - Elimina el contorno (borde) si usa appearance="outline".
-     * * 3. Interacción:
-     * - Hace que el campo sea NO INTERACTIVO (pointer-events: none) para prevenir clics o focus.
-     * - Evita que el usuario pueda seleccionar o copiar el texto (user-select: none).
-     * - Oculta el cursor de escritura (caret-color: transparent).
-     * * 4. Implementación: Inyecta una etiqueta <style> con el CSS necesario en el <head> del documento
-     * y añade la clase 'read-only-disabled-style' al mat-form-field padre del elemento host.
-     *****************************************************************************************************************************/
+  /*****************************************************************************************************************************
+   * Directiva 'appReadOnly':
+   * * 1. Propósito: Aplica estilos de 'solo lectura' a un mat-form-field sin usar la propiedad nativa 'disabled'.
+   * * 2. Efecto Visual:
+   * - Cambia el fondo del campo a un gris sutil (rgba(0,0,0,.04)), imitando el estado disabled de Material.
+   * - Elimina el contorno (borde) si usa appearance="outline".
+   * * 3. Interacción:
+   * - Hace que el campo sea NO INTERACTIVO (pointer-events: none) para prevenir clics o focus.
+   * - Evita que el usuario pueda seleccionar o copiar el texto (user-select: none).
+   * - Oculta el cursor de escritura (caret-color: transparent).
+   * * 4. Implementación: Inyecta una etiqueta <style> con el CSS necesario en el <head> del documento
+   * y añade la clase 'read-only-disabled-style' al mat-form-field padre del elemento host.
+   *****************************************************************************************************************************/
 
-    // Bandera para asegurar que los estilos solo se inyecten una vez
-    private static stylesInjected = false;
+  // Bandera para asegurar que los estilos solo se inyecten una vez
+  private static stylesInjected = false;
 
-    // El input de la directiva, que recibe el valor booleano
-    @Input() appReadOnly: boolean | undefined = false;
+  // El input de la directiva, que recibe el valor booleano
+  @Input() appReadOnly: boolean | undefined = false;
 
-    private _el = inject(ElementRef);
-    private renderer = inject(Renderer2);
-    private _matFormField: HTMLElement | null = null;
+  private _el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private _matFormField: HTMLElement | null = null;
 
-    ngOnInit(): void {
-        // En este punto, this._el.nativeElement es el <input matInput>
-        this._matFormField = this._el.nativeElement.closest("mat-form-field");
+  ngOnInit(): void {
+    // En este punto, this._el.nativeElement es el <input matInput>
+    this._matFormField = this._el.nativeElement.closest('mat-form-field');
 
-        if (this.appReadOnly && this._matFormField) {
-            // ⭐️ 1. Establecer el atributo [readonly] en el input host.
-            // Esto es necesario para que el CSS inyectado por la directiva aplique los estilos de no interacción.
-            this.renderer.setAttribute(
-                this._el.nativeElement,
-                "readonly",
-                "true",
-            );
+    if (this.appReadOnly && this._matFormField) {
+      // ⭐️ 1. Establecer el atributo [readonly] en el input host.
+      // Esto es necesario para que el CSS inyectado por la directiva aplique los estilos de no interacción.
+      this.renderer.setAttribute(this._el.nativeElement, 'readonly', 'true');
 
-            // 2. Inyectar los estilos una sola vez en el <head>
-            this.injectStyles();
+      // 2. Inyectar los estilos una sola vez en el <head>
+      this.injectStyles();
 
-            // 3. Se agrega al mat-form-field la clase read-only-disabled-style
-            this.renderer.addClass(
-                this._matFormField,
-                "read-only-disabled-style",
-            );
-        }
+      // 3. Se agrega al mat-form-field la clase read-only-disabled-style
+      this.renderer.addClass(this._matFormField, 'read-only-disabled-style');
+    }
+  }
+
+  private injectStyles(): void {
+    if (ReadOnlyDirective.stylesInjected) {
+      return;
     }
 
-    private injectStyles(): void {
-        if (ReadOnlyDirective.stylesInjected) {
-            return;
-        }
+    const disabledBgColor = 'rgba(0, 0, 0, 0.04)';
 
-        const disabledBgColor = "rgba(0, 0, 0, 0.04)";
-
-        const css = `
+    const css = `
             /* ESTILOS DE FONDO */
             /* 1. Aplica el color de fondo gris de Material (disabled) al contenedor interno (MDC) */
             .read-only-disabled-style .mat-mdc-text-field-wrapper {
@@ -98,15 +84,15 @@ export class ReadOnlyDirective implements OnInit {
             }
         `;
 
-        // Crea e inyecta el elemento <style>
-        const style = this.renderer.createElement("style");
-        this.renderer.setAttribute(style, "type", "text/css");
-        this.renderer.appendChild(style, this.renderer.createText(css));
+    // Crea e inyecta el elemento <style>
+    const style = this.renderer.createElement('style');
+    this.renderer.setAttribute(style, 'type', 'text/css');
+    this.renderer.appendChild(style, this.renderer.createText(css));
 
-        // Añade el elemento <style> al <head> del documento
-        const head = this.renderer.selectRootElement("head", true);
-        this.renderer.appendChild(head, style);
+    // Añade el elemento <style> al <head> del documento
+    const head = this.renderer.selectRootElement('head', true);
+    this.renderer.appendChild(head, style);
 
-        ReadOnlyDirective.stylesInjected = true;
-    }
+    ReadOnlyDirective.stylesInjected = true;
+  }
 }

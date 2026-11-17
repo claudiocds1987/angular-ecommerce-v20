@@ -1,17 +1,10 @@
-import {
-    Directive,
-    ElementRef,
-    inject,
-    OnDestroy,
-    OnInit,
-    Renderer2,
-} from "@angular/core";
-import { NgControl } from "@angular/forms";
-import { Subject, takeUntil, merge } from "rxjs";
+import { Directive, ElementRef, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { NgControl } from '@angular/forms';
+import { Subject, takeUntil, merge } from 'rxjs';
 
 @Directive({
-    selector: "[appCustomValidationMessage]",
-    standalone: true,
+  selector: '[appCustomValidationMessage]',
+  standalone: true,
 })
 /**
  * # appCustomValidationMessage (Directiva de Validación Personalizada)
@@ -69,316 +62,243 @@ import { Subject, takeUntil, merge } from "rxjs";
  * La ubicación final para insertar el mensaje es el primero que se encuentre: `_matFormField` O `_componentContainer` (`_parentToAppendError`).
  */
 export class CustomValidationMessageDirective implements OnInit, OnDestroy {
-    private _el = inject(ElementRef);
-    private _ngControl = inject(NgControl, { optional: true });
-    private _renderer = inject(Renderer2);
-    private _destroy$ = new Subject<void>();
-    private _messageElement: HTMLElement | null = null;
-    private _matFormField: HTMLElement | null = null;
-    private _componentContainer: HTMLElement | null = null;
-    private _radioGroupContainer: HTMLElement | null = null;
-    private _subscriptWrapperClass: HTMLElement | null = null;
+  private _el = inject(ElementRef);
+  private _ngControl = inject(NgControl, { optional: true });
+  private _renderer = inject(Renderer2);
+  private _destroy$ = new Subject<void>();
+  private _messageElement: HTMLElement | null = null;
+  private _matFormField: HTMLElement | null = null;
+  private _componentContainer: HTMLElement | null = null;
+  private _radioGroupContainer: HTMLElement | null = null;
+  private _subscriptWrapperClass: HTMLElement | null = null;
 
-    private _isDomSetupDone = false;
-    private _isFirstErrorShown = false;
+  private _isDomSetupDone = false;
+  private _isFirstErrorShown = false;
 
-    private get _parentToAppendError(): HTMLElement | null {
-        return (
-            this._matFormField ||
-            this._componentContainer ||
-            this._radioGroupContainer
+  private get _parentToAppendError(): HTMLElement | null {
+    return this._matFormField || this._componentContainer || this._radioGroupContainer;
+  }
+
+  ngOnInit(): void {
+    if (!this._ngControl || !this._ngControl.control) {
+      return;
+    }
+
+    const control = this._ngControl.control;
+    const ngControl = this._ngControl;
+
+    // 1. Unificar las suscripciones de estado y valor.
+    merge(control.statusChanges!, control.valueChanges!)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((): void => {
+        // Se ejecuta la validación si el control ha sido tocado o modificado,
+        // O si el control está siendo evaluado por el sistema de formularios (statusChanges).
+        if (control.touched || control.dirty || control.invalid) {
+          this._handleValidation();
+        }
+      });
+
+    // 2. ESCUCHA DE BLUR (aplicable a <input>, <mat-select>, o CVA).
+    // Esto asegura que al salir del foco, el error de 'required' se muestre.
+    this._renderer.listen(this._el.nativeElement, 'blur', (): void => {
+      // Marca como touched y fuerza la validación.
+      ngControl?.control?.markAsTouched();
+      this._handleValidation(); // <-- Forzamos el manejo de validación aca
+    });
+
+    // Aseguramos la preparación del DOM
+    this._setupDomElements();
+    this._handleValidation();
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+    this._removeStylesAndMessages();
+  }
+
+  // --- Lógica de DOM y Búsqueda ---
+
+  private _setupDomElements(): void {
+    if (this._isDomSetupDone) {
+      return;
+    }
+
+    const container = this._el.nativeElement;
+
+    // --- Búsqueda Prioritaria (Mat-form-field) ---
+    if (container.tagName === 'APP-DATE-INPUT') {
+      this._matFormField = container.querySelector('mat-form-field') as HTMLElement | null;
+    }
+    if (!this._matFormField) {
+      this._matFormField = container.closest('mat-form-field') as HTMLElement | null;
+    }
+
+    // --- Búsqueda Secundaria de la clase "component-container" (div que envuelve en el componente padre los componentes custom como app-date-input) ---
+    if (!this._matFormField) {
+      this._componentContainer = container.closest('.component-container') as HTMLElement | null;
+
+      if (this._componentContainer) {
+        this._renderer.setStyle(this._componentContainer, 'display', 'block');
+      }
+    }
+
+    // --- Lógica del Wrapper de Material (Solo si se encontró mat-form-field) ---
+    if (this._matFormField) {
+      this._subscriptWrapperClass =
+        this._matFormField.querySelector('.mat-mdc-form-field-subscript-wrapper') || null;
+      // Aca se quita la clase de material "mat-mdc-form-field-subscript-wrapper-active" que genera el espacio entre el input y el mensaje
+      // de esta forma el mensaje de error se pone pegado al input sin espacio.
+      if (this._subscriptWrapperClass) {
+        this._renderer.setStyle(this._subscriptWrapperClass, 'display', 'none');
+        this._renderer.setStyle(this._subscriptWrapperClass, 'min-height', '0');
+        this._renderer.removeClass(
+          this._subscriptWrapperClass,
+          'mat-mdc-form-field-subscript-wrapper-active',
         );
+      }
     }
 
-    ngOnInit(): void {
-        if (!this._ngControl || !this._ngControl.control) {
-            return;
-        }
-
-        const control = this._ngControl.control;
-        const ngControl = this._ngControl;
-
-        // 1. Unificar las suscripciones de estado y valor.
-        merge(control.statusChanges!, control.valueChanges!)
-            .pipe(takeUntil(this._destroy$))
-            .subscribe((): void => {
-                // Se ejecuta la validación si el control ha sido tocado o modificado,
-                // O si el control está siendo evaluado por el sistema de formularios (statusChanges).
-                if (control.touched || control.dirty || control.invalid) {
-                    this._handleValidation();
-                }
-            });
-
-        // 2. ESCUCHA DE BLUR (aplicable a <input>, <mat-select>, o CVA).
-        // Esto asegura que al salir del foco, el error de 'required' se muestre.
-        this._renderer.listen(this._el.nativeElement, "blur", (): void => {
-            // Marca como touched y fuerza la validación.
-            ngControl?.control?.markAsTouched();
-            this._handleValidation(); // <-- Forzamos el manejo de validación aca
-        });
-
-        // Aseguramos la preparación del DOM
-        this._setupDomElements();
-        this._handleValidation();
+    // --- Búsqueda ESPECÍFICA clase: radio-group-container ---
+    if (!this._matFormField && !this._componentContainer) {
+      // intenta encontrar un ancestro con la clase 'radio-container'
+      this._radioGroupContainer = container.closest('.radio-group-container') as HTMLElement | null;
     }
 
-    ngOnDestroy(): void {
-        this._destroy$.next();
-        this._destroy$.complete();
-        this._removeStylesAndMessages();
+    this._isDomSetupDone =
+      !!this._matFormField || !!this._componentContainer || !!this._radioGroupContainer;
+  }
+
+  // --- Lógica de Validación y Estilos ---
+
+  private _handleValidation(): void {
+    const control = this._ngControl?.control;
+    if (!control) {
+      return;
     }
 
-    // --- Lógica de DOM y Búsqueda ---
-
-    private _setupDomElements(): void {
-        if (this._isDomSetupDone) {
-            return;
-        }
-
-        const container = this._el.nativeElement;
-
-        // --- Búsqueda Prioritaria (Mat-form-field) ---
-        if (container.tagName === "APP-DATE-INPUT") {
-            this._matFormField = container.querySelector(
-                "mat-form-field",
-            ) as HTMLElement | null;
-        }
-        if (!this._matFormField) {
-            this._matFormField = container.closest(
-                "mat-form-field",
-            ) as HTMLElement | null;
-        }
-
-        // --- Búsqueda Secundaria de la clase "component-container" (div que envuelve en el componente padre los componentes custom como app-date-input) ---
-        if (!this._matFormField) {
-            this._componentContainer = container.closest(
-                ".component-container",
-            ) as HTMLElement | null;
-
-            if (this._componentContainer) {
-                this._renderer.setStyle(
-                    this._componentContainer,
-                    "display",
-                    "block",
-                );
-            }
-        }
-
-        // --- Lógica del Wrapper de Material (Solo si se encontró mat-form-field) ---
-        if (this._matFormField) {
-            this._subscriptWrapperClass =
-                this._matFormField.querySelector(
-                    ".mat-mdc-form-field-subscript-wrapper",
-                ) || null;
-            // Aca se quita la clase de material "mat-mdc-form-field-subscript-wrapper-active" que genera el espacio entre el input y el mensaje
-            // de esta forma el mensaje de error se pone pegado al input sin espacio.
-            if (this._subscriptWrapperClass) {
-                this._renderer.setStyle(
-                    this._subscriptWrapperClass,
-                    "display",
-                    "none",
-                );
-                this._renderer.setStyle(
-                    this._subscriptWrapperClass,
-                    "min-height",
-                    "0",
-                );
-                this._renderer.removeClass(
-                    this._subscriptWrapperClass,
-                    "mat-mdc-form-field-subscript-wrapper-active",
-                );
-            }
-        }
-
-        // --- Búsqueda ESPECÍFICA clase: radio-group-container ---
-        if (!this._matFormField && !this._componentContainer) {
-            // intenta encontrar un ancestro con la clase 'radio-container'
-            this._radioGroupContainer = container.closest(
-                ".radio-group-container",
-            ) as HTMLElement | null;
-        }
-
-        this._isDomSetupDone =
-            !!this._matFormField ||
-            !!this._componentContainer ||
-            !!this._radioGroupContainer;
+    if (!this._isDomSetupDone) {
+      this._setupDomElements();
     }
 
-    // --- Lógica de Validación y Estilos ---
-
-    private _handleValidation(): void {
-        const control = this._ngControl?.control;
-        if (!control) {
-            return;
-        }
-
-        if (!this._isDomSetupDone) {
-            this._setupDomElements();
-        }
-
-        const parentElement = this._parentToAppendError;
-        if (!parentElement) {
-            return;
-        }
-
-        let errorMessage: string | null = null;
-        // Solo mostramos error si es inválido Y ha sido tocado O modificado.
-        const isControlInvalid =
-            control.invalid && (control.touched || control.dirty);
-
-        if (isControlInvalid) {
-            if (control.hasError("required")) {
-                errorMessage = "Campo obligatorio";
-            } else if (control.hasError("email")) {
-                errorMessage = "Formato de email inválido";
-            }
-
-            // REVISIÓN: Capturamos el mensaje del validador "custom-date-validators.ts"
-            if (control.hasError("dateRange")) {
-                // Aca se pone el mensaje creado desde el validador el validador "custom-date-validators.ts"
-                const rangeError = control.getError("dateRange");
-                errorMessage =
-                    rangeError?.message || "Error en el rango de fechas";
-            }
-
-            if (control.hasError("duplicatedEmail")) {
-                errorMessage = "Email repetido";
-            }
-            if (control.hasError("duplicatedDate")) {
-                errorMessage = "Fecha repetida";
-            }
-            // Validador genérico que usa el nombre 'isDuplicated' para campos
-            // que no encajan en los tipos específicos (ej: radio-button).
-            if (control.hasError("isDuplicated")) {
-                errorMessage = "Valor repetido";
-            }
-            if (control.hasError("dateLessThan")) {
-                errorMessage = "Fecha hasta no puede ser menor a fecha desde";
-            }
-        }
-
-        if (errorMessage) {
-            this._addErrorStyles(parentElement);
-            this._showErrorMessage(errorMessage, parentElement);
-        } else {
-            this._removeStylesAndMessages(parentElement);
-        }
+    const parentElement = this._parentToAppendError;
+    if (!parentElement) {
+      return;
     }
 
-    private _addErrorStyles(targetElement: HTMLElement): void {
-        if (targetElement === this._matFormField && this._matFormField) {
-            this._renderer.addClass(
-                this._matFormField,
-                "mat-form-field-invalid",
-            );
-        }
+    let errorMessage: string | null = null;
+    // Solo mostramos error si es inválido Y ha sido tocado O modificado.
+    const isControlInvalid = control.invalid && (control.touched || control.dirty);
+
+    if (isControlInvalid) {
+      if (control.hasError('required')) {
+        errorMessage = 'Campo obligatorio';
+      } else if (control.hasError('email')) {
+        errorMessage = 'Formato de email inválido';
+      }
+
+      // REVISIÓN: Capturamos el mensaje del validador "custom-date-validators.ts"
+      if (control.hasError('dateRange')) {
+        // Aca se pone el mensaje creado desde el validador el validador "custom-date-validators.ts"
+        const rangeError = control.getError('dateRange');
+        errorMessage = rangeError?.message || 'Error en el rango de fechas';
+      }
+
+      if (control.hasError('duplicatedEmail')) {
+        errorMessage = 'Email repetido';
+      }
+      if (control.hasError('duplicatedDate')) {
+        errorMessage = 'Fecha repetida';
+      }
+      // Validador genérico que usa el nombre 'isDuplicated' para campos
+      // que no encajan en los tipos específicos (ej: radio-button).
+      if (control.hasError('isDuplicated')) {
+        errorMessage = 'Valor repetido';
+      }
+      if (control.hasError('dateLessThan')) {
+        errorMessage = 'Fecha hasta no puede ser menor a fecha desde';
+      }
     }
 
-    private _showErrorMessage(
-        message: string,
-        parentElement: HTMLElement,
-    ): void {
-        if (!this._isDomSetupDone) {
-            this._setupDomElements();
-        }
+    if (errorMessage) {
+      this._addErrorStyles(parentElement);
+      this._showErrorMessage(errorMessage, parentElement);
+    } else {
+      this._removeStylesAndMessages(parentElement);
+    }
+  }
 
-        if (parentElement === this._matFormField && this._matFormField) {
-            this._renderer.setStyle(this._matFormField, "margin-bottom", "0");
-            if (this._subscriptWrapperClass) {
-                // Se reafirma para quitar la clase de material "mat-mdc-form-field-subscript-wrapper-active" que genera el espacio entre el input y el mensaje
-                // de esta forma el mensaje de error se pone pegado al input sin espacio.
-                this._renderer.setStyle(
-                    this._subscriptWrapperClass,
-                    "display",
-                    "none",
-                );
-                this._renderer.setStyle(
-                    this._subscriptWrapperClass,
-                    "min-height",
-                    "0",
-                );
-                this._renderer.setStyle(
-                    this._subscriptWrapperClass,
-                    "padding-top",
-                    "0",
-                );
-                this._renderer.removeClass(
-                    this._subscriptWrapperClass,
-                    "mat-mdc-form-field-subscript-wrapper-active",
-                );
-            }
-        }
+  private _addErrorStyles(targetElement: HTMLElement): void {
+    if (targetElement === this._matFormField && this._matFormField) {
+      this._renderer.addClass(this._matFormField, 'mat-form-field-invalid');
+    }
+  }
 
-        if (this._messageElement) {
-            this._renderer.setProperty(
-                this._messageElement,
-                "textContent",
-                message,
-            );
-        } else {
-            const elementTag =
-                parentElement === this._matFormField ? "mat-error" : "span";
-
-            this._messageElement = this._renderer.createElement(elementTag);
-            this._renderer.addClass(
-                this._messageElement,
-                "custom-validation-error",
-            );
-            const text = this._renderer.createText(message);
-
-            this._renderer.setStyle(this._messageElement, "color", "#f44336");
-            this._renderer.setStyle(this._messageElement, "font-size", "12px");
-            this._renderer.setStyle(this._messageElement, "display", "block");
-
-            this._renderer.appendChild(this._messageElement, text);
-        }
-
-        this._renderer.appendChild(parentElement, this._messageElement);
-        this._isFirstErrorShown = true;
+  private _showErrorMessage(message: string, parentElement: HTMLElement): void {
+    if (!this._isDomSetupDone) {
+      this._setupDomElements();
     }
 
-    private _removeStylesAndMessages(
-        parentElement: HTMLElement | null = null,
-    ): void {
-        const targetElement = parentElement || this._parentToAppendError;
-
-        if (targetElement) {
-            if (targetElement === this._matFormField && this._matFormField) {
-                this._renderer.removeClass(
-                    this._matFormField,
-                    "mat-form-field-invalid",
-                );
-                this._renderer.removeStyle(this._matFormField, "margin-bottom");
-            }
-
-            if (this._messageElement) {
-                this._renderer.removeChild(targetElement, this._messageElement);
-                this._messageElement = null;
-            }
-
-            if (
-                targetElement === this._matFormField &&
-                this._subscriptWrapperClass
-            ) {
-                this._renderer.removeStyle(
-                    this._subscriptWrapperClass,
-                    "display",
-                );
-                this._renderer.removeStyle(
-                    this._subscriptWrapperClass,
-                    "min-height",
-                );
-                this._renderer.removeStyle(
-                    this._subscriptWrapperClass,
-                    "padding-top",
-                );
-                this._renderer.addClass(
-                    this._subscriptWrapperClass,
-                    "mat-mdc-form-field-subscript-wrapper-active",
-                );
-            }
-        }
-
-        this._isFirstErrorShown = false;
+    if (parentElement === this._matFormField && this._matFormField) {
+      this._renderer.setStyle(this._matFormField, 'margin-bottom', '0');
+      if (this._subscriptWrapperClass) {
+        // Se reafirma para quitar la clase de material "mat-mdc-form-field-subscript-wrapper-active" que genera el espacio entre el input y el mensaje
+        // de esta forma el mensaje de error se pone pegado al input sin espacio.
+        this._renderer.setStyle(this._subscriptWrapperClass, 'display', 'none');
+        this._renderer.setStyle(this._subscriptWrapperClass, 'min-height', '0');
+        this._renderer.setStyle(this._subscriptWrapperClass, 'padding-top', '0');
+        this._renderer.removeClass(
+          this._subscriptWrapperClass,
+          'mat-mdc-form-field-subscript-wrapper-active',
+        );
+      }
     }
+
+    if (this._messageElement) {
+      this._renderer.setProperty(this._messageElement, 'textContent', message);
+    } else {
+      const elementTag = parentElement === this._matFormField ? 'mat-error' : 'span';
+
+      this._messageElement = this._renderer.createElement(elementTag);
+      this._renderer.addClass(this._messageElement, 'custom-validation-error');
+      const text = this._renderer.createText(message);
+
+      this._renderer.setStyle(this._messageElement, 'color', '#f44336');
+      this._renderer.setStyle(this._messageElement, 'font-size', '12px');
+      this._renderer.setStyle(this._messageElement, 'display', 'block');
+
+      this._renderer.appendChild(this._messageElement, text);
+    }
+
+    this._renderer.appendChild(parentElement, this._messageElement);
+    this._isFirstErrorShown = true;
+  }
+
+  private _removeStylesAndMessages(parentElement: HTMLElement | null = null): void {
+    const targetElement = parentElement || this._parentToAppendError;
+
+    if (targetElement) {
+      if (targetElement === this._matFormField && this._matFormField) {
+        this._renderer.removeClass(this._matFormField, 'mat-form-field-invalid');
+        this._renderer.removeStyle(this._matFormField, 'margin-bottom');
+      }
+
+      if (this._messageElement) {
+        this._renderer.removeChild(targetElement, this._messageElement);
+        this._messageElement = null;
+      }
+
+      if (targetElement === this._matFormField && this._subscriptWrapperClass) {
+        this._renderer.removeStyle(this._subscriptWrapperClass, 'display');
+        this._renderer.removeStyle(this._subscriptWrapperClass, 'min-height');
+        this._renderer.removeStyle(this._subscriptWrapperClass, 'padding-top');
+        this._renderer.addClass(
+          this._subscriptWrapperClass,
+          'mat-mdc-form-field-subscript-wrapper-active',
+        );
+      }
+    }
+
+    this._isFirstErrorShown = false;
+  }
 }

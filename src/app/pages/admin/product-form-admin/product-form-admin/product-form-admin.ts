@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -9,25 +8,24 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
-
+  applyEach,
+  form,
+  FormField,
+  max,
+  min,
+  required,
+  submit,
+  validate,
+} from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryStore } from '@features/categories/state/category.store';
 import { BrandStore } from '@features/brands/state/brand.store';
 import { ProductService } from '@features/products/services/product-service';
 import { ExtraAttribute, Product } from '@features/products/models/product.model';
 import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
-import { finalize, Observable, startWith } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
@@ -51,17 +49,70 @@ import { SkeletonDirective } from '@shared/directives/skeleton.directive';
 
 type AdminProductOperation = 'create' | 'edit';
 
-interface ExtraAttributeFormRow {
+export interface ExtraAttributeFormItem {
+  id: number;
   name: string;
   label: string;
   dataType: string;
-  value: unknown;
+  value: string | boolean;
 }
 
-interface ImageFormRow {
-  id?: number | null;
+export interface ImageFormItem {
+  id?: number | string;
   imageUrl: string;
 }
+
+export interface ProductFormModel {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage: number;
+  stock: number;
+  sku: string;
+  width: number;
+  height: number;
+  depth: number;
+  weight: number;
+  warrantyInformation: string;
+  shippingInformation: string;
+  returnPolicy: string;
+  availabilityStatus: string;
+  minimumOrderQuantity: number;
+  thumbnail: string;
+  categoryId: number;
+  brandId: number;
+  isActive: boolean;
+  images: ImageFormItem[];
+  tags: string[];
+  extraAttributes: ExtraAttributeFormItem[];
+}
+
+const INITIAL_PRODUCT_MODEL: ProductFormModel = {
+  id: 0,
+  title: '',
+  description: '',
+  price: 0,
+  discountPercentage: 0,
+  stock: 0,
+  sku: '',
+  width: 0,
+  height: 0,
+  depth: 0,
+  weight: 0,
+  warrantyInformation: '',
+  shippingInformation: '',
+  returnPolicy: '',
+  availabilityStatus: 'instock',
+  minimumOrderQuantity: 1,
+  thumbnail: '',
+  categoryId: 0,
+  brandId: 0,
+  isActive: true,
+  images: [],
+  tags: [],
+  extraAttributes: [],
+};
 
 @Component({
   selector: 'app-product-form-admin',
@@ -69,7 +120,7 @@ interface ImageFormRow {
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
+    FormField,
     UploadImageComponent,
     FormFieldError,
     MatButtonModule,
@@ -109,12 +160,10 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     ',',
   ];
 
-  private readonly fb = inject(FormBuilder);
   private readonly spinnerService = inject(SpinnerService);
   private readonly productService = inject(ProductService);
   private readonly activeRoute = inject(ActivatedRoute);
   private readonly productExtraAttributeService = inject(ProductExtraAttributeService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly categoryStore = inject(CategoryStore);
   readonly brandStore = inject(BrandStore);
@@ -122,54 +171,121 @@ export class ProductFormAdmin implements CanComponentDeactivate {
   private _confirmDialogService = inject(ConfirmDialogService);
   private _toastService = inject(ToastService);
 
-  productForm: FormGroup = this._createProductForm();
+  private readonly extraAttributeDefinitionsSig = signal<ProductExtraAttribute[]>([]);
+
+  productModel = signal<ProductFormModel>({ ...INITIAL_PRODUCT_MODEL });
+
+  productForm = form(this.productModel, (s) => {
+    required(s.title, { message: 'El título es requerido' });
+    required(s.description, { message: 'La descripción es requerida' });
+    required(s.price, { message: 'El precio es requerido' });
+    min(s.price, 0, { message: 'El precio no puede ser negativo' });
+    min(s.discountPercentage, 0, { message: 'El descuento no puede ser menor a 0%' });
+    max(s.discountPercentage, 100, { message: 'El descuento no puede ser mayor a 100%' });
+    required(s.stock, { message: 'El stock es requerido' });
+    min(s.stock, 0, { message: 'El stock no puede ser negativo' });
+    required(s.sku, { message: 'El SKU es requerido' });
+    required(s.minimumOrderQuantity, { message: 'La cantidad mínima es requerida' });
+    min(s.minimumOrderQuantity, 1, { message: 'La cantidad mínima debe ser al menos 1' });
+    required(s.thumbnail, { message: 'La imagen principal es requerida' });
+
+    validate(s.categoryId, ({ value }) => {
+      return value() > 0
+        ? undefined
+        : { kind: 'required', message: 'Debe seleccionar una categoría' };
+    });
+
+    validate(s.brandId, ({ value }) => {
+      return value() > 0 ? undefined : { kind: 'required', message: 'Debe seleccionar una marca' };
+    });
+
+    applyEach(s.extraAttributes, (attr) => {
+      validate(attr.value, ({ value, valueOf }) => {
+        const attrName = valueOf(attr.name);
+        const def = this.extraAttributeDefinitionsSig().find((d) => d.name === attrName);
+        const validations = def?.validations;
+        if (!validations) return undefined;
+
+        const dataType = valueOf(attr.dataType);
+        if (dataType === 'boolean') {
+          return undefined;
+        }
+
+        const val = value();
+        const strVal = String(val ?? '').trim();
+
+        if (validations.required && (!strVal || strVal === '')) {
+          return { kind: 'required', message: 'Este campo es obligatorio.' };
+        }
+
+        if (!strVal) return undefined;
+
+        if (validations.minLength != null && strVal.length < validations.minLength) {
+          return { kind: 'minlength', message: `Mínimo ${validations.minLength} caracteres.` };
+        }
+
+        if (validations.maxLength != null && strVal.length > validations.maxLength) {
+          return { kind: 'maxlength', message: `Máximo ${validations.maxLength} caracteres.` };
+        }
+
+        if (dataType === 'number') {
+          const numVal = Number(strVal);
+          if (Number.isNaN(numVal)) {
+            return { kind: 'pattern', message: 'El valor debe ser un número válido.' };
+          }
+          if (validations.min != null && numVal < validations.min) {
+            return {
+              kind: 'min',
+              message: `El valor debe ser mayor o igual a ${validations.min}.`,
+            };
+          }
+          if (validations.max != null && numVal > validations.max) {
+            return {
+              kind: 'max',
+              message: `El valor debe ser menor o igual a ${validations.max}.`,
+            };
+          }
+        }
+
+        if (validations.pattern) {
+          const regex = new RegExp(validations.pattern);
+          if (!regex.test(strVal)) {
+            return { kind: 'pattern', message: 'El formato introducido no es válido.' };
+          }
+        }
+
+        return undefined;
+      });
+    });
+  });
 
   readonly categoriesSig = this.categoryStore.items;
   readonly brandsSig = this.brandStore.items;
   private readonly productDataSig = signal<Product | null>(null);
   private readonly operation = this.activeRoute.snapshot.data['operation'] as AdminProductOperation;
 
-  private readonly priceValue = toSignal(this.productForm.get('price')!.valueChanges, {
-    initialValue: this.productForm.get('price')?.value ?? 0,
-  });
-
-  private readonly discountValue = toSignal(
-    this.productForm.get('discountPercentage')!.valueChanges,
-    { initialValue: this.productForm.get('discountPercentage')?.value ?? 0 },
-  );
-
-  readonly categoryIdSig = toSignal(
-    this.productForm
-      .get('categoryId')!
-      .valueChanges.pipe(startWith(this.productForm.get('categoryId')?.value)),
-    { initialValue: this.productForm.get('categoryId')?.value },
-  );
+  readonly categoryIdSig = computed(() => this.productModel().categoryId);
 
   readonly finalPriceSig = computed(() => {
-    const price = Number(this.priceValue()) || 0;
-    const discount = Number(this.discountValue()) || 0;
+    const price = Number(this.productModel().price) || 0;
+    const discount = Number(this.productModel().discountPercentage) || 0;
     if (discount <= 0) return price;
     if (discount >= 100) return 0;
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
-  // Aunque marca como no usado si esta usandose, es necesario para el formulario de extra atributos
-  // Este effect "loadExtraAttributesEffect" escucha los cambios en el mat-select de categoría.
-  // Cuando el usuario elige una categoría distinta, limpia o reconstruye el FormArray de atributos extra con los campos correspondientes.
-  // Si estás en modo edición y ya había datos guardados para esa categoría, los vuelve a cargar en el formulario.
-  // categoryIdSig(); se dispara/actualiza cada vez que se elije una categoria del mat-select
-  // productDataSig() se dispara/actualiza cuando se carga un producto desde el backend en modo edición y se hace .set(...) con esos datos.
   private readonly loadExtraAttributesEffect = effect((onCleanup) => {
     const categoryId = this.categoryIdSig();
     const productData = this.productDataSig();
 
     if (!categoryId) {
-      untracked(() => this.extraAttributesArray.clear());
+      untracked(() => {
+        this.extraAttributeDefinitionsSig.set([]);
+        this.productModel.update((m) => ({ ...m, extraAttributes: [] }));
+      });
       return;
     }
-    // untracked evita que Angular registre como dependencias los signals leídos dentro.
-    // Eso significa que, aunque cambien esos signals, no harán que se vuelva a ejecutar el effect.
-    // En este caso no hay signals dentro de untracked, pero lo dejo por buenas prácticas.
+
     untracked(() => {
       const sub = this.productExtraAttributeService
         .getExtraAttributesByCategory(categoryId)
@@ -196,19 +312,15 @@ export class ProductFormAdmin implements CanComponentDeactivate {
       const categoriesReady = this.categoriesSig().length > 0;
       const brandsReady = this.brandsSig().length > 0;
       const productReady = this.operation === 'create' || this.productDataSig() !== null;
-      // Si categorias, marcas y producto están cargados, se desactiva el skeleton
       if (categoriesReady && brandsReady && productReady) {
         untracked(() => this.isLoadingSig.set(false));
       }
     });
   }
 
-  //
   canDeactivate(): Observable<boolean> | boolean {
-    // Si no ha cambiado nada o el carrito esta vacío, dejamos salir sin preguntar
-    if (!this.productForm.dirty) return true;
+    if (!this.productForm().dirty()) return true;
 
-    // Si hay cambios, lanzamos tu servicio (que ya devuelve Observable<boolean>)
     return this._confirmDialogService.open({
       title: 'Tiene cambios sin guardar',
       message: '¿Deseas salir?',
@@ -222,37 +334,29 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     return extraAttributeName || index.toString();
   }
 
-  get tagsArray(): FormArray {
-    return this.productForm.get('tags') as FormArray;
-  }
-
-  get extraAttributesArray(): FormArray {
-    return this.productForm.get('extraAttributes') as FormArray;
-  }
-
   isReadyToSave(): boolean {
-    return this.productForm.valid && this.productForm.dirty;
+    return this.productForm().valid() && this.productForm().dirty();
   }
 
   onSubmit(): void {
-    if (this.productForm.invalid) return;
-    this.spinnerService.show();
+    submit(this.productForm, async () => {
+      this.spinnerService.show();
 
-    const formValue = this.productForm.getRawValue();
-    const productToSave = this.mapFormToProductPayload(formValue);
+      const formValue = this.productModel();
+      const productToSave = this.mapFormToProductPayload(formValue);
 
-    const request =
-      this.operation === 'create'
-        ? this.productService.createProduct(productToSave)
-        : this.productService.updateProduct(productToSave.id!, productToSave);
+      const request =
+        this.operation === 'create'
+          ? this.productService.createProduct(productToSave)
+          : this.productService.updateProduct(productToSave.id, productToSave);
 
-    request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
-      next: (product) => {
-        this._handleSuccess(product);
-        // Una vez guardado, marcamos el formulario como "pristine" para que no aparezca como modificado. y el boton Guardar se desactive hasta que se hagan nuevos cambios.
-        this.productForm.markAsPristine();
-      },
-      error: () => this._handleError(),
+      request.pipe(finalize(() => this.spinnerService.hide())).subscribe({
+        next: (product) => {
+          this._handleSuccess(product);
+          this.productForm().reset();
+        },
+        error: () => this._handleError(),
+      });
     });
   }
 
@@ -261,14 +365,20 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     if (!rawValue) return;
 
     const cleanTag = rawValue.replace(ProductFormAdmin.TAG_SANITIZE, '').trim();
-    if (cleanTag && !this.tagsArray.value.includes(cleanTag)) {
-      this.tagsArray.push(new FormControl(cleanTag));
+    if (cleanTag && !this.productModel().tags.includes(cleanTag)) {
+      this.productModel.update((m) => ({
+        ...m,
+        tags: [...m.tags, cleanTag],
+      }));
     }
     input.value = '';
   }
 
   removeTag(index: number): void {
-    this.tagsArray.removeAt(index);
+    this.productModel.update((m) => ({
+      ...m,
+      tags: m.tags.filter((_, i) => i !== index),
+    }));
   }
 
   onNumberKeydown(event: KeyboardEvent): void {
@@ -278,7 +388,7 @@ export class ProductFormAdmin implements CanComponentDeactivate {
   }
 
   confirmCancel(): void {
-    if (!this.productForm.dirty) {
+    if (!this.productForm().dirty()) {
       void this._router.navigate(['/admin']);
       return;
     }
@@ -297,39 +407,61 @@ export class ProductFormAdmin implements CanComponentDeactivate {
   }
 
   private patchFormFromProduct(product: Product): void {
-    this.productForm.patchValue(product);
-
-    this.tagsArray.clear();
-    product.tags?.forEach((tagObj) => {
-      this.tagsArray.push(new FormControl(tagObj.tagName));
-    });
+    const tags = product.tags?.map((tagObj) => tagObj.tagName) ?? [];
+    this.productModel.update((m) => ({
+      ...m,
+      id: product.id ?? 0,
+      title: product.title ?? '',
+      description: product.description ?? '',
+      price: product.price ?? 0,
+      discountPercentage: product.discountPercentage ?? 0,
+      stock: product.stock ?? 0,
+      sku: product.sku ?? '',
+      width: product.width ?? 0,
+      height: product.height ?? 0,
+      depth: product.depth ?? 0,
+      weight: product.weight ?? 0,
+      warrantyInformation: product.warrantyInformation ?? '',
+      shippingInformation: product.shippingInformation ?? '',
+      returnPolicy: product.returnPolicy ?? '',
+      availabilityStatus: product.availabilityStatus ?? 'instock',
+      minimumOrderQuantity: product.minimumOrderQuantity ?? 1,
+      thumbnail: product.thumbnail ?? '',
+      categoryId: product.categoryId ?? 0,
+      brandId: product.brandId ?? 0,
+      isActive: product.isActive ?? true,
+      images: (product.images ?? []).map((img) => ({
+        id: img.id,
+        imageUrl: img.imageUrl,
+      })),
+      tags,
+    }));
+    this.productForm().reset();
   }
 
   private buildExtraAttributes(
     definitions: ProductExtraAttribute[],
     savedValues: ExtraAttribute[] = [],
   ): void {
-    const extraArray = this.extraAttributesArray;
-    extraArray.clear({ emitEvent: false });
-
-    definitions.forEach((def) => {
+    this.extraAttributeDefinitionsSig.set(definitions);
+    const extraAttributes: ExtraAttributeFormItem[] = definitions.map((def) => {
       const saved = savedValues.find((v) => v.name === def.name);
       const initialValue = this.resolveInitialExtraValue(def, saved);
-      const validators = this.validatorsFromDefinition(def);
 
-      extraArray.push(
-        this.fb.group({
-          id: [def.id || 0],
-          name: [def.name],
-          label: [def.label || def.name],
-          dataType: [def.dataType],
-          value: [initialValue, validators],
-        }),
-      );
+      return {
+        id: def.id || 0,
+        name: def.name,
+        label: def.label || def.name,
+        dataType: def.dataType,
+        value: initialValue,
+      };
     });
 
-    extraArray.markAsPristine();
-    this.cdr.detectChanges();
+    this.productModel.update((m) => ({
+      ...m,
+      extraAttributes,
+    }));
+    this.productForm().reset();
   }
 
   private resolveInitialExtraValue(
@@ -342,43 +474,36 @@ export class ProductFormAdmin implements CanComponentDeactivate {
     return (saved?.value ?? '') as string;
   }
 
-  private validatorsFromDefinition(def: ProductExtraAttribute): ValidatorFn[] {
-    const v = def.validations;
-    if (!v) return [];
-
-    const validators: ValidatorFn[] = [];
-    if (v.required) validators.push(Validators.required);
-    if (v.minLength != null) validators.push(Validators.minLength(v.minLength));
-    if (v.maxLength != null) validators.push(Validators.maxLength(v.maxLength));
-    if (v.min !== undefined && v.min !== null) validators.push(Validators.min(v.min));
-    if (v.max !== undefined && v.max !== null) validators.push(Validators.max(v.max));
-    if (v.pattern) validators.push(Validators.pattern(v.pattern));
-    return validators;
-  }
-
-  private mapFormToProductPayload(formValue: Record<string, unknown>): Product {
-    const extraRows = (formValue['extraAttributes'] ?? []) as ExtraAttributeFormRow[];
-    const formattedExtraAttributes = extraRows.map((attr) => ({
+  private mapFormToProductPayload(formValue: ProductFormModel): Product {
+    const currentProduct = this.productDataSig();
+    const formattedExtraAttributes: ExtraAttribute[] = formValue.extraAttributes.map((attr) => ({
       name: attr.name,
       label: attr.label,
-      dataType: attr.dataType,
+      dataType: attr.dataType as ExtraAttribute['dataType'],
       value: attr.dataType === 'boolean' ? String(!!attr.value) : String(attr.value ?? ''),
     }));
 
-    const tagStrings = (formValue['tags'] ?? []) as string[];
-    const imageRows = (formValue['images'] ?? []) as ImageFormRow[];
-    const id = (formValue['id'] as number) || null;
+    const id = formValue.id || (currentProduct?.id ?? 0);
 
     return {
-      ...(formValue as unknown as Product),
-      id: id ?? 0,
-      price: Number(formValue['price']),
-      discountPercentage: Number(formValue['discountPercentage']),
-      stock: Number(formValue['stock']),
-      extraAttributes: formattedExtraAttributes as ExtraAttribute[],
-      tags: tagStrings.map((tag) => ({ tagName: tag }) as Product['tags'][number]),
-      images: imageRows.map((img) => ({
-        id: img.id || null,
+      ...(currentProduct ?? {}),
+      ...formValue,
+      id,
+      price: Number(formValue.price) || 0,
+      discountPercentage: Number(formValue.discountPercentage) || 0,
+      stock: Number(formValue.stock) || 0,
+      width: Number(formValue.width) || 0,
+      height: Number(formValue.height) || 0,
+      depth: Number(formValue.depth) || 0,
+      weight: Number(formValue.weight) || 0,
+      minimumOrderQuantity: Number(formValue.minimumOrderQuantity) || 1,
+      rating: currentProduct?.rating ?? 0,
+      reviewCount: currentProduct?.reviewCount ?? 0,
+      reviews: currentProduct?.reviews ?? [],
+      extraAttributes: formattedExtraAttributes,
+      tags: formValue.tags.map((tag) => ({ tagName: tag }) as Product['tags'][number]),
+      images: formValue.images.map((img) => ({
+        id: Number(img.id) || 0,
         imageUrl: img.imageUrl,
         productId: id,
       })) as Product['images'],
@@ -403,33 +528,5 @@ export class ProductFormAdmin implements CanComponentDeactivate {
         this.productDataSig.set(data);
       });
     }
-  }
-
-  private _createProductForm(): FormGroup {
-    return this.fb.group({
-      id: [0],
-      title: ['', [Validators.required]],
-      description: ['', [Validators.required]],
-      price: [0, [Validators.required, Validators.min(0)]],
-      discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
-      stock: [0, [Validators.required, Validators.min(0)]],
-      sku: ['', [Validators.required]],
-      width: [0],
-      height: [0],
-      depth: [0],
-      weight: [0],
-      warrantyInformation: [''],
-      shippingInformation: [''],
-      returnPolicy: [''],
-      availabilityStatus: ['instock'],
-      minimumOrderQuantity: [1, [Validators.required, Validators.min(1)]],
-      thumbnail: ['', [Validators.required]],
-      categoryId: [null, [Validators.required]],
-      brandId: [null, [Validators.required]],
-      isActive: [true],
-      images: [[]],
-      tags: this.fb.array([]),
-      extraAttributes: this.fb.array([]),
-    });
   }
 }

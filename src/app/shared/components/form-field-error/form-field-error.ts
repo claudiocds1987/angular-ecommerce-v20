@@ -11,7 +11,7 @@ import type { AbstractControl, ValidationErrors } from '@angular/forms';
 import { FieldState } from '@angular/forms/signals';
 import { Subscription } from 'rxjs';
 
-type FieldStateType = FieldState<string, string>; // ajusta genéricos si tu FieldState usa otros tipos
+type FieldStateType = FieldState<any, any>; // Permite FieldState de cualquier tipo (string, number, boolean, etc.)
 type PossibleControl = AbstractControl | FieldStateType | null;
 
 @Component({

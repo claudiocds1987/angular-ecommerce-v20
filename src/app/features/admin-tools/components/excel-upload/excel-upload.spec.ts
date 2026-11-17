@@ -8,9 +8,8 @@ describe('ExcelUpload', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExcelUpload]
-    })
-    .compileComponents();
+      imports: [ExcelUpload],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ExcelUpload);
     component = fixture.componentInstance;

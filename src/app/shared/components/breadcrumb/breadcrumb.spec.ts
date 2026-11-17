@@ -10,7 +10,7 @@ describe('Breadcrumb', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Breadcrumb],
-      providers: [provideRouter([]), provideZonelessChangeDetection()]
+      providers: [provideRouter([]), provideZonelessChangeDetection()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Breadcrumb);
@@ -18,7 +18,7 @@ describe('Breadcrumb', () => {
     fixture.componentRef.setInput('items', [
       { label: 'Home', url: '/' },
       { label: 'Products', url: '/products' },
-      { label: 'Current' }
+      { label: 'Current' },
     ]);
     // Removido fixture.detectChanges() según la guía zoneless
   });
