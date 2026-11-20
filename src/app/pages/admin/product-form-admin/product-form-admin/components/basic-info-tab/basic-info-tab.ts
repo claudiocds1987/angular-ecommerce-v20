@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
 import { FormFieldError } from '../../../../../../shared/components/form-field-error/form-field-error';
 import { SkeletonDirective } from '@shared/directives/skeleton.directive';
-import { ProductFormModel } from '../../product-form-admin';
+import { ProductFormModel } from '@features/products/models/product-form.model';
 
 @Component({
   selector: 'app-basic-info-tab',

@@ -11,7 +11,7 @@ import { FormFieldError } from '../../../../../../shared/components/form-field-e
 import { SkeletonDirective } from '@shared/directives/skeleton.directive';
 import { ProductCategory } from '@features/categories/models/product-category.model';
 import { ProductBrand } from '@features/brands/models/product-brand.model';
-import { ProductFormModel } from '../../product-form-admin';
+import { ProductFormModel } from '@features/products/models/product-form.model';
 
 @Component({
   selector: 'app-pricing-classification-tab',

@@ -19,13 +19,17 @@ import { finalize } from 'rxjs';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
+import {
+  ExtraAttributeFormItem,
+  ImageFormItem,
+  ProductFormModel,
+} from '@features/products/models/product-form.model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
-import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
 
 import { BasicInfoTab } from './components/basic-info-tab/basic-info-tab';
@@ -37,44 +41,7 @@ import { TagsTab } from './components/tags-tab/tags-tab';
 
 type AdminProductOperation = 'create' | 'edit';
 
-export interface ExtraAttributeFormItem {
-  id: number;
-  name: string;
-  label: string;
-  dataType: string;
-  value: string | boolean;
-}
-
-export interface ImageFormItem {
-  id?: number | string;
-  imageUrl: string;
-}
-
-export interface ProductFormModel {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  discountPercentage: number;
-  stock: number;
-  sku: string;
-  width: number;
-  height: number;
-  depth: number;
-  weight: number;
-  warrantyInformation: string;
-  shippingInformation: string;
-  returnPolicy: string;
-  availabilityStatus: string;
-  minimumOrderQuantity: number;
-  thumbnail: string;
-  categoryId: number;
-  brandId: number;
-  isActive: boolean;
-  images: ImageFormItem[];
-  tags: string[];
-  extraAttributes: ExtraAttributeFormItem[];
-}
+export type { ExtraAttributeFormItem, ImageFormItem, ProductFormModel };
 
 const INITIAL_PRODUCT_MODEL: ProductFormModel = {
   id: 0,
@@ -158,6 +125,7 @@ export class ProductFormAdmin {
 
   productModel = signal<ProductFormModel>({ ...INITIAL_PRODUCT_MODEL });
 
+  // Schema de validación del formulario. Se define usando la API de formularios reactivos de Angular.
   productForm = form(this.productModel, (s) => {
     required(s.title, { message: 'El título es requerido' });
     required(s.description, { message: 'La descripción es requerida' });
@@ -312,7 +280,7 @@ export class ProductFormAdmin {
           next: (definitions) => {
             const saved: ExtraAttribute[] =
               this.operation === 'edit' && productData ? (productData.extraAttributes ?? []) : [];
-            this.buildExtraAttributes(definitions, saved);
+            this._buildExtraAttributes(definitions, saved);
           },
         });
       onCleanup(() => sub.unsubscribe());
@@ -324,7 +292,7 @@ export class ProductFormAdmin {
     effect(() => {
       const product = this.productDataSig();
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
-        untracked(() => this.patchFormFromProduct(product));
+        untracked(() => this._patchFormFromProduct(product));
       }
     });
     effect(() => {
@@ -351,7 +319,7 @@ export class ProductFormAdmin {
       this.spinnerService.show();
 
       const formValue = this.productModel();
-      const productToSave = this.mapFormToProductPayload(formValue);
+      const productToSave = this._mapFormToProductPayload(formValue);
 
       const request =
         this.operation === 'create'
@@ -417,7 +385,7 @@ export class ProductFormAdmin {
       });
   }
 
-  private patchFormFromProduct(product: Product): void {
+  private _patchFormFromProduct(product: Product): void {
     const tags = product.tags?.map((tagObj) => tagObj.tagName) ?? [];
     this.productModel.update((m) => ({
       ...m,
@@ -450,14 +418,14 @@ export class ProductFormAdmin {
     this.productForm().reset();
   }
 
-  private buildExtraAttributes(
+  private _buildExtraAttributes(
     definitions: ProductExtraAttribute[],
     savedValues: ExtraAttribute[] = [],
   ): void {
     this.extraAttributeDefinitionsSig.set(definitions);
     const extraAttributes: ExtraAttributeFormItem[] = definitions.map((def) => {
       const saved = savedValues.find((v) => v.name === def.name);
-      const initialValue = this.resolveInitialExtraValue(def, saved);
+      const initialValue = this._resolveInitialExtraValue(def, saved);
 
       return {
         id: def.id || 0,
@@ -475,7 +443,7 @@ export class ProductFormAdmin {
     this.productForm().reset();
   }
 
-  private resolveInitialExtraValue(
+  private _resolveInitialExtraValue(
     def: ProductExtraAttribute,
     saved: ExtraAttribute | undefined,
   ): string | boolean {
@@ -485,7 +453,7 @@ export class ProductFormAdmin {
     return (saved?.value ?? '') as string;
   }
 
-  private mapFormToProductPayload(formValue: ProductFormModel): Product {
+  private _mapFormToProductPayload(formValue: ProductFormModel): Product {
     const currentProduct = this.productDataSig();
     const formattedExtraAttributes: ExtraAttribute[] = formValue.extraAttributes.map((attr) => ({
       name: attr.name,

@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { SkeletonDirective } from '@shared/directives/skeleton.directive';
-import { ProductFormModel } from '../../product-form-admin';
+import { ProductFormModel } from '@features/products/models/product-form.model';
 
 @Component({
   selector: 'app-shipping-warranty-tab',

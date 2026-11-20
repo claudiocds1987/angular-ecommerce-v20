@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormFieldError } from '../../../../../../shared/components/form-field-error/form-field-error';
 import { SkeletonDirective } from '@shared/directives/skeleton.directive';
-import { ProductFormModel } from '../../product-form-admin';
+import { ProductFormModel } from '@features/products/models/product-form.model';
 
 @Component({
   selector: 'app-inventory-tab',
