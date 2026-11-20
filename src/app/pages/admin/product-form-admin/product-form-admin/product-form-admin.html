@@ -36,7 +36,7 @@
             <div class="flex items-center gap-2 py-1">
               <mat-icon class="!h-5 !w-5 !text-[20px] text-indigo-600">article</mat-icon>
               <span class="font-medium text-slate-700">Información Básica</span>
-              @if (basicInfoHasError()) {
+              @if (basicInfoSectionHasError()) {
                 <span class="h-2 w-2 rounded-full bg-rose-500"></span>
               }
             </div>
@@ -51,7 +51,7 @@
             <div class="flex items-center gap-2 py-1">
               <mat-icon class="!h-5 !w-5 !text-[20px] text-emerald-600">straighten</mat-icon>
               <span class="font-medium text-slate-700">Inventario y Medidas</span>
-              @if (inventoryHasError()) {
+              @if (inventorySectionHasError()) {
                 <span class="h-2 w-2 rounded-full bg-rose-500"></span>
               }
             </div>
@@ -104,7 +104,7 @@
             <div class="flex items-center gap-2 py-1">
               <mat-icon class="!h-5 !w-5 !text-[20px] text-emerald-700">payments</mat-icon>
               <span class="font-medium text-slate-700">Precio y Clasificación</span>
-              @if (pricingHasError()) {
+              @if (pricingSectionHasError()) {
                 <span class="h-2 w-2 rounded-full bg-rose-500"></span>
               }
             </div>

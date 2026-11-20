@@ -225,15 +225,16 @@ export class ProductFormAdmin {
     return Number((price * (1 - discount / 100)).toFixed(2));
   });
 
-  readonly basicInfoHasError = computed(() => {
+  // Computed para determinar si hay errores en cada sección del formulario. Esto se usa para mostrar un icono (circulito rojo) de error en la pestaña "Información Básica".
+  readonly basicInfoSectionHasError = computed(() => {
     return (
       (this.productForm.title().touched() && this.productForm.title().invalid()) ||
       (this.productForm.description().touched() && this.productForm.description().invalid()) ||
       (this.productForm.thumbnail().touched() && this.productForm.thumbnail().invalid())
     );
   });
-
-  readonly inventoryHasError = computed(() => {
+  // Computed para determinar si hay errores en cada sección del formulario. Esto se usa para mostrar un icono (circulito rojo) de error en la pestaña "Inventario y Medidas".
+  readonly inventorySectionHasError = computed(() => {
     return (
       (this.productForm.stock().touched() && this.productForm.stock().invalid()) ||
       (this.productForm.minimumOrderQuantity().touched() &&
@@ -241,8 +242,8 @@ export class ProductFormAdmin {
       (this.productForm.sku().touched() && this.productForm.sku().invalid())
     );
   });
-
-  readonly pricingHasError = computed(() => {
+  // Computed para determinar si hay errores en cada sección del formulario. Esto se usa para mostrar un icono (circulito rojo) de error en la pestaña "Precio y Clasificación".
+  readonly pricingSectionHasError = computed(() => {
     return (
       (this.productForm.price().touched() && this.productForm.price().invalid()) ||
       (this.productForm.discountPercentage().touched() &&
@@ -288,7 +289,7 @@ export class ProductFormAdmin {
   });
 
   constructor() {
-    this._initData();
+    this._LoadData();
     effect(() => {
       const product = this.productDataSig();
       if (this.categoriesSig().length > 0 && this.brandsSig().length > 0 && product) {
@@ -497,7 +498,7 @@ export class ProductFormAdmin {
     this._toastService.show(`Error al procesar el producto`, 'danger');
   }
 
-  private _initData(): void {
+  private _LoadData(): void {
     this.categoryStore.loadAll();
     this.brandStore.loadAll();
 
