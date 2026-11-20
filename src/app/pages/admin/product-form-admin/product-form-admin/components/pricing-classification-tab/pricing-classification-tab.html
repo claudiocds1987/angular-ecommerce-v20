@@ -1,0 +1,95 @@
+<div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+  <!-- Precio -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+      <mat-icon class="text-emerald-700">payments</mat-icon>
+      <h3 class="text-sm font-semibold text-slate-800">Estructura de Precios</h3>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Precio Base ($)</mat-label>
+        <input
+          matInput
+          type="number"
+          [formField]="productForm().price"
+          (keydown)="onNumberKeydown()($event)"
+        />
+        <mat-error>
+          <app-form-field-error [control]="productForm().price()" />
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Descuento (%)</mat-label>
+        <input
+          matInput
+          type="number"
+          [formField]="productForm().discountPercentage"
+          (keydown)="onNumberKeydown()($event)"
+        />
+        <mat-error>
+          <app-form-field-error [control]="productForm().discountPercentage()" />
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
+      <span class="text-xs font-medium tracking-wide text-emerald-800 uppercase"
+        >Precio Final Calculado</span
+      >
+      <div class="mt-1 flex items-baseline justify-between">
+        <span class="text-3xl font-black text-emerald-900" [appSkeleton]="isLoading()">
+          ${{ finalPrice() | number: '1.2-2' }}
+        </span>
+        <span class="rounded-md bg-emerald-200/60 px-2 py-0.5 text-xs font-bold text-emerald-800">
+          ARS
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clasificación -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+      <mat-icon class="text-slate-600">category</mat-icon>
+      <h3 class="text-sm font-semibold text-slate-800">Clasificación y Estado</h3>
+    </div>
+
+    <div class="product-form-admin__fields">
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Categoría</mat-label>
+        <mat-select [formField]="productForm().categoryId">
+          @for (cat of categories(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>
+          <app-form-field-error [control]="productForm().categoryId()" />
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Marca</mat-label>
+        <mat-select [formField]="productForm().brandId">
+          @for (brand of brands(); track brand.id) {
+            <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>
+          <app-form-field-error [control]="productForm().brandId()" />
+        </mat-error>
+      </mat-form-field>
+
+      <div
+        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3"
+      >
+        <div>
+          <span class="text-sm font-semibold text-slate-700">Producto activo</span>
+          <p class="text-xs text-slate-400">Controla si el producto se muestra en la tienda</p>
+        </div>
+        <mat-slide-toggle [formField]="productForm().isActive" color="primary" />
+      </div>
+    </div>
+  </div>
+</div>
