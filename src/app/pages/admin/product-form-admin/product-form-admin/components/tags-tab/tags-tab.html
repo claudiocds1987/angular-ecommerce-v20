@@ -1,0 +1,56 @@
+<div class="p-6">
+  <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+      <mat-icon class="text-indigo-600">label</mat-icon>
+      <div>
+        <h3 class="text-sm font-semibold text-slate-800">Gestión de Etiquetas</h3>
+        <p class="text-xs text-slate-400">
+          Palabras clave para optimizar la búsqueda y filtros en el catálogo
+        </p>
+      </div>
+    </div>
+
+    <div class="product-form-admin__fields">
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Nueva etiqueta</mat-label>
+        <input
+          matInput
+          type="text"
+          #tagInput
+          (keydown.enter)="$event.preventDefault(); onAddTag(tagInput)"
+          placeholder="Ej: Verano, Gamer, Oferta..."
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="onAddTag(tagInput)"
+          aria-label="Añadir etiqueta"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div
+        class="flex min-h-[56px] flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-white p-4"
+      >
+        @if (tags().length === 0) {
+          <span class="m-auto text-center text-xs text-slate-400 italic">
+            Sin etiquetas asignadas. Escribe arriba y presiona Enter o el botón (+).
+          </span>
+        } @else {
+          <mat-chip-set class="w-full">
+            @for (tag of tags(); track $index) {
+              <mat-chip removable (removed)="onRemoveTag($index)">
+                {{ tag }}
+                <button type="button" matChipRemove [attr.aria-label]="'Quitar ' + tag">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </mat-chip-set>
+        }
+      </div>
+    </div>
+  </div>
+</div>

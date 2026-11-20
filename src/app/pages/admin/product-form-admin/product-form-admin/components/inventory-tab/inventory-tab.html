@@ -1,0 +1,91 @@
+<div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+  <!-- Inventario y Stock -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+      <mat-icon class="text-emerald-600">warehouse</mat-icon>
+      <h3 class="text-sm font-semibold text-slate-800">Control de Stock</h3>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Stock disponible</mat-label>
+        <input matInput type="number" [formField]="productForm().stock" />
+        <mat-error>
+          <app-form-field-error [control]="productForm().stock()" />
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+        <mat-label>Mín. de compra</mat-label>
+        <input matInput type="number" [formField]="productForm().minimumOrderQuantity" />
+        <mat-error>
+          <app-form-field-error [control]="productForm().minimumOrderQuantity()" />
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+      <mat-label>SKU (Código único)</mat-label>
+      <input matInput type="text" [formField]="productForm().sku" class="font-mono uppercase" />
+      <mat-error>
+        <app-form-field-error [control]="productForm().sku()" />
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- Dimensiones físicas -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/50 p-5">
+    <div class="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+      <mat-icon class="text-emerald-700">fit_screen</mat-icon>
+      <h3 class="text-sm font-semibold text-slate-800">Dimensiones y Peso</h3>
+    </div>
+
+    <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+      Dimensiones del paquete (cm)
+    </span>
+    <div class="grid grid-cols-3 gap-3">
+      <mat-form-field appearance="outline" class="w-full text-center" [appSkeleton]="isLoading()">
+        <mat-label>Ancho</mat-label>
+        <input
+          matInput
+          type="number"
+          [formField]="productForm().width"
+          (keydown)="onNumberKeydown()($event)"
+          placeholder="0.00"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full text-center" [appSkeleton]="isLoading()">
+        <mat-label>Alto</mat-label>
+        <input
+          matInput
+          type="number"
+          [formField]="productForm().height"
+          (keydown)="onNumberKeydown()($event)"
+          placeholder="0.00"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full text-center" [appSkeleton]="isLoading()">
+        <mat-label>Profundidad</mat-label>
+        <input
+          matInput
+          type="number"
+          [formField]="productForm().depth"
+          (keydown)="onNumberKeydown()($event)"
+          placeholder="0.00"
+        />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-full" [appSkeleton]="isLoading()">
+      <mat-label>Peso (kg)</mat-label>
+      <input
+        matInput
+        type="number"
+        [formField]="productForm().weight"
+        (keydown)="onNumberKeydown()($event)"
+        placeholder="0.00"
+      />
+    </mat-form-field>
+  </div>
+</div>

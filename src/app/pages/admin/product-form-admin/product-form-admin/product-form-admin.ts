@@ -9,44 +9,31 @@ import {
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  applyEach,
-  form,
-  FormField,
-  max,
-  min,
-  required,
-  submit,
-  validate,
-} from '@angular/forms/signals';
+import { applyEach, form, max, min, required, submit, validate } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryStore } from '@features/categories/state/category.store';
 import { BrandStore } from '@features/brands/state/brand.store';
 import { ProductService } from '@features/products/services/product-service';
 import { ExtraAttribute, Product } from '@features/products/models/product.model';
-import { UploadImageComponent } from '@shared/components/upload-image/upload-image';
-import { finalize, Observable } from 'rxjs';
+import { finalize } from 'rxjs';
 import { SpinnerService } from '@shared/services/spinner-service';
 import { ProductExtraAttributeService } from '@features/products/services/product-extra-attribute-service';
 import { ProductExtraAttribute } from '@features/products/models/product-extra-attribute.model';
-import { FormFieldError } from '../../../../shared/components/form-field-error/form-field-error';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ConfirmDialogService } from '../../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Button } from '@shared/components/button/button';
 import { ToastService } from '@shared/services/toast-service';
 import { CanComponentDeactivate } from '@core/guards/unsaved-changes.guard';
 import { Breadcrumb, BreadcrumbItem } from '@shared/components/breadcrumb/breadcrumb';
-import { SkeletonDirective } from '@shared/directives/skeleton.directive';
+
+import { BasicInfoTab } from './components/basic-info-tab/basic-info-tab';
+import { InventoryTab } from './components/inventory-tab/inventory-tab';
+import { ShippingWarrantyTab } from './components/shipping-warranty-tab/shipping-warranty-tab';
+import { TechnicalSpecificationsTab } from './components/technical-specifications-tab/technical-specifications-tab';
+import { PricingClassificationTab } from './components/pricing-classification-tab/pricing-classification-tab';
+import { TagsTab } from './components/tags-tab/tags-tab';
 
 type AdminProductOperation = 'create' | 'edit';
 
@@ -121,23 +108,17 @@ const INITIAL_PRODUCT_MODEL: ProductFormModel = {
   imports: [
     CommonModule,
     FormsModule,
-    FormField,
-    UploadImageComponent,
-    FormFieldError,
     MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
-    MatDividerModule,
-    MatExpansionModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
     MatTabsModule,
     Button,
     Breadcrumb,
-    SkeletonDirective,
+    BasicInfoTab,
+    InventoryTab,
+    ShippingWarrantyTab,
+    TechnicalSpecificationsTab,
+    PricingClassificationTab,
+    TagsTab,
   ],
   templateUrl: './product-form-admin.html',
   styleUrls: ['./product-form-admin.scss', '../../../../shared/styles/skeleton.scss'],
@@ -388,8 +369,8 @@ export class ProductFormAdmin {
     });
   }
 
-  addTag(input: HTMLInputElement): void {
-    const rawValue = input.value.trim();
+  addTag(inputOrTag: HTMLInputElement | string): void {
+    const rawValue = typeof inputOrTag === 'string' ? inputOrTag.trim() : inputOrTag.value.trim();
     if (!rawValue) return;
 
     const cleanTag = rawValue.replace(ProductFormAdmin.TAG_SANITIZE, '').trim();
@@ -399,7 +380,9 @@ export class ProductFormAdmin {
         tags: [...m.tags, cleanTag],
       }));
     }
-    input.value = '';
+    if (typeof inputOrTag !== 'string') {
+      inputOrTag.value = '';
+    }
   }
 
   removeTag(index: number): void {
@@ -409,11 +392,11 @@ export class ProductFormAdmin {
     }));
   }
 
-  onNumberKeydown(event: KeyboardEvent): void {
+  onNumberKeydown = (event: KeyboardEvent): void => {
     if (!ProductFormAdmin.NUMBER_NAV_KEYS.includes(event.key) && Number.isNaN(Number(event.key))) {
       event.preventDefault();
     }
-  }
+  };
 
   confirmCancel(): void {
     if (!this.productForm().dirty()) {
