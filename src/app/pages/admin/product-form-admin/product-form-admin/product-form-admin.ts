@@ -141,55 +141,66 @@ export class ProductFormAdmin {
     required(s.thumbnail, { message: 'La imagen principal es requerida' });
 
     validate(s.categoryId, ({ value }) => {
+      // Si el valor de categoryId es mayor a 0, significa que se ha seleccionado una categoría válida. En ese caso, no hay error y se devuelve undefined.
       return value() > 0
         ? undefined
         : { kind: 'required', message: 'Debe seleccionar una categoría' };
     });
 
     validate(s.brandId, ({ value }) => {
+      // Si el valor de brandId es mayor a 0, significa que se ha seleccionado una marca válida. En ese caso, no hay error y se devuelve undefined.
       return value() > 0 ? undefined : { kind: 'required', message: 'Debe seleccionar una marca' };
     });
-
+    // "applyEach" permite aplicar una función de validación a cada elemento de un array. En este caso, se aplica a cada atributo extra del producto.
     applyEach(s.extraAttributes, (attr) => {
+      // Validación de atributos extra según las reglas definidas en ProductExtraAttribute.validations.
       validate(attr.value, ({ value, valueOf }) => {
+        // Se obtiene el nombre del atributo extra correspondiente a este campo del formulario.
         const attrName = valueOf(attr.name);
+        // Se busca la definición del atributo extra en la lista de definiciones cargadas desde el backend.
         const def = this.extraAttributeDefinitionsSig().find((d) => d.name === attrName);
+        // Se extraen las reglas de validación configuradas para este atributo, si existen.
         const validations = def?.validations;
+        // Si no se encuentra la definición o no tiene validaciones, no hay error y se devuelve undefined.
         if (!validations) return undefined;
-
+        // Se obtiene el tipo de dato del atributo para saber cómo tratar su valor.
         const dataType = valueOf(attr.dataType);
+        // Los campos booleanos no pasan por estas validaciones de texto o número, así que se devuelven como válidos.
         if (dataType === 'boolean') {
           return undefined;
         }
-
+        // Se obtiene el valor actual del atributo y se normaliza como texto sin espacios en los extremos.
         const val = value();
         const strVal = String(val ?? '').trim();
-
+        // Si el atributo es obligatorio y está vacío, se devuelve un error de tipo required.
         if (validations.required && (!strVal || strVal === '')) {
           return { kind: 'required', message: 'Este campo es obligatorio.' };
         }
-
+        // Si el campo está vacío y no es obligatorio, no hace falta seguir validando.
         if (!strVal) return undefined;
-
+        // Si tiene longitud mínima y el texto es más corto, se devuelve error de minlength.
         if (validations.minLength != null && strVal.length < validations.minLength) {
           return { kind: 'minlength', message: `Mínimo ${validations.minLength} caracteres.` };
         }
-
+        // Si tiene longitud máxima y el texto supera ese límite, se devuelve error de maxlength.
         if (validations.maxLength != null && strVal.length > validations.maxLength) {
           return { kind: 'maxlength', message: `Máximo ${validations.maxLength} caracteres.` };
         }
-
+        // Si el atributo es numérico, se verifica que sea un número válido y que cumpla con min y max.
         if (dataType === 'number') {
           const numVal = Number(strVal);
+          // Si al convertir a número da NaN, significa que no se ingresó un número válido.
           if (Number.isNaN(numVal)) {
             return { kind: 'pattern', message: 'El valor debe ser un número válido.' };
           }
+          // Si tiene valor mínimo y el número es menor, se devuelve error de min.
           if (validations.min != null && numVal < validations.min) {
             return {
               kind: 'min',
               message: `El valor debe ser mayor o igual a ${validations.min}.`,
             };
           }
+          // Si tiene valor máximo y el número es mayor, se devuelve error de max.
           if (validations.max != null && numVal > validations.max) {
             return {
               kind: 'max',
@@ -197,14 +208,14 @@ export class ProductFormAdmin {
             };
           }
         }
-
+        // Si existe una expresión regular (pattern), se comprueba que el valor cumpla con ese formato.
         if (validations.pattern) {
           const regex = new RegExp(validations.pattern);
           if (!regex.test(strVal)) {
             return { kind: 'pattern', message: 'El formato introducido no es válido.' };
           }
         }
-
+        // Si pasó todas las validaciones sin problemas, se devuelve undefined (sin error).
         return undefined;
       });
     });
