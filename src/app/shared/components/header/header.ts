@@ -72,6 +72,10 @@ export class Header {
     this._router.navigate(['/admin']);
   }
 
+  redirectToMyPurchases() {
+    this._router.navigate(['/my-purchases']);
+  }
+
   toggleMenu() {
     this.isMenuOpen.update((prev) => !prev);
   }

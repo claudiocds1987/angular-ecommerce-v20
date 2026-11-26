@@ -32,6 +32,11 @@ export const routes: Routes = [
       import('@pages/product-detail/product-detail').then((m) => m.ProductDetail),
   },
   {
+    path: 'my-purchases', // url: http://localhost:5000/#/my-purchases
+    loadComponent: () =>
+      import('@pages/user-purchases/user-purchases').then((m) => m.UserPurchases),
+  },
+  {
     path: 'admin',
     loadChildren: () => import('@pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES), // url: http://localhost:5000/#/admin
     // canActivate: Se ejecuta antes de navegar a una ruta
