@@ -47,6 +47,7 @@ export class ProductDetail implements OnInit {
   readonly productStore = inject(ProductStore);
   readonly brandStore = inject(BrandStore);
   readonly categoryStore = inject(CategoryStore);
+
   product = signal<Product | undefined>(undefined);
   safeThumbnail = signal<SafeResourceUrl>('');
   safeGallery = signal<SafeResourceUrl[]>([]);
@@ -67,8 +68,8 @@ export class ProductDetail implements OnInit {
     return catObj ? catObj.name : 'Sin Categoría';
   });
 
-  // Inyectamos la data (que es un Product completo o solo el ID)
-  private _data = inject<Product>(MAT_DIALOG_DATA, { optional: true });
+  // Inyectamos la data que es el id del producto que queremos mostrar en detalle
+  private _matDialogData = inject<number>(MAT_DIALOG_DATA, { optional: true });
   private _productService = inject(ProductService);
   private _productReviewService = inject(ProductReviewService);
   private _titleService = inject(Title);
@@ -81,9 +82,9 @@ export class ProductDetail implements OnInit {
   private _document = inject(DOCUMENT);
 
   ngOnInit(): void {
-    if (this._data) {
-      // Si recibimos un objeto completo usamos el ID, si no, asumimos que es el ID directo
-      const productId = typeof this._data === 'object' ? this._data.id : this._data;
+    if (this._matDialogData) {
+      // Si se proporciona un id de producto, lo usamos para cargar los detalles del producto
+      const productId = this._matDialogData;
       this._getProduct(productId);
     }
     // CARGA BAJO DEMANDA (Lazy Loading):
