@@ -1,6 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
 import { redirectIfAuthenticatedGuard } from '@core/guards/redirect-If-authenticated.guard';
+import { roleGuard } from '@core/guards/role.guard';
 import { unsavedChangesGuard } from '@core/guards/unsaved-changes.guard';
 
 export const routes: Routes = [
@@ -33,6 +34,7 @@ export const routes: Routes = [
   },
   {
     path: 'my-purchases', // url: http://localhost:5000/#/my-purchases
+    canActivate: [roleGuard(['customer', 'admin'])], // solo acceden usuario comprador o admin
     loadComponent: () =>
       import('@pages/user-purchases/user-purchases').then((m) => m.UserPurchases),
   },

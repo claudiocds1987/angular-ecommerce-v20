@@ -35,7 +35,7 @@ export class ProductCard {
 
   openDetailModal(): void {
     this._matDialog.open(ProductDetail, {
-      data: this.product(), // Enviamos el producto al componente ProductDetail
+      data: this.product().id, // Enviamos el id producto al componente ProductDetail
       width: '1000px',
       maxWidth: '95vw',
       maxHeight: '90vh',

@@ -18,13 +18,12 @@ export const AuthStore = signalStore(
     error: null as string | null,
   }),
 
-  // INYECTAMOS PLATFORM_ID AQUÍ ARRIBA, junto con los demás servicios
   withMethods(
     (
       state,
       http = inject(HttpClient),
       router = inject(Router),
-      platformId = inject(PLATFORM_ID), // <--- ¡Aquí mismo es seguro!
+      platformId = inject(PLATFORM_ID),
     ) => {
       const apiUrl = `${environment.serverUrl}/api/auth`;
       const cartService = inject(CartService);
