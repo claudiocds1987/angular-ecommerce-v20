@@ -23,6 +23,9 @@ import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client';
 import { environment } from '@env/environment';
 import { AuthStore } from '@features/auth/state/auth.store';
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
 
 /**
  * Equivalente moderno de `lara-light-blue` (PrimeNG ≤17 usaba CSS en angular.json).
@@ -47,8 +50,14 @@ const LaraLightBlue = definePreset(Lara, {
   },
 });
 
+registerLocaleData(localeEsAr);
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: LOCALE_ID,
+      useValue: 'es-AR',
+    },
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideClientHydration(withEventReplay()),

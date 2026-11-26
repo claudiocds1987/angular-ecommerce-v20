@@ -1,0 +1,124 @@
+<div class="mx-auto flex max-w-4xl flex-col gap-4 p-4">
+  <!-- Filtros -->
+  <mat-card appearance="outlined" class="p-4">
+    <div class="mb-4">
+      <h2 class="m-0 text-xl font-semibold">Mis compras</h2>
+      <p class="m-0 text-sm text-gray-500">
+        Revisá tu historial y encontrá productos comprados anteriormente.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <!-- Buscar por título -->
+      <mat-form-field appearance="outline">
+        <mat-label>Producto</mat-label>
+        <input matInput placeholder="Buscar..." [formField]="filtersForm.search" />
+      </mat-form-field>
+
+      <!-- Categoría -->
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+        <mat-select [formField]="filtersForm.categoryId">
+          <mat-option [value]="null">Todas</mat-option>
+          @for (category of categories(); track category.id) {
+            <mat-option [value]="category.id">
+              {{ category.name }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Fecha desde -->
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput type="date" [formField]="filtersForm.dateFrom" />
+      </mat-form-field>
+
+      <!-- Fecha hasta -->
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput type="date" [formField]="filtersForm.dateTo" />
+      </mat-form-field>
+    </div>
+
+    <div class="mt-2 flex justify-end">
+      <button mat-stroked-button color="primary" type="button" (click)="resetFilters()">
+        Limpiar filtros
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Listado de compras -->
+  @if (purchasesStore.isLoading()) {
+    <div class="flex justify-center py-12">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (purchasesStore.error()) {
+    <mat-card appearance="outlined" class="bg-red-50 p-4 text-red-700">
+      {{ purchasesStore.error() }}
+    </mat-card>
+  } @else if (purchasesStore.isEmpty()) {
+    <mat-card appearance="outlined" class="p-10 text-center text-gray-500">
+      <mat-icon class="mb-2 !h-12 !w-12 !text-5xl text-gray-300">shopping_bag</mat-icon>
+      <p class="m-0 text-base">
+        @if (purchasesStore.hasActiveFilters()) {
+          No se encontraron compras con los filtros seleccionados.
+        } @else {
+          Todavía no tenés compras aprobadas.
+        }
+      </p>
+    </mat-card>
+  } @else {
+    <div class="flex flex-col gap-3">
+      @for (item of purchases(); track item.orderId + '-' + item.productId) {
+        <mat-card appearance="outlined" class="cursor-pointer transition-shadow hover:shadow-md">
+          <div class="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
+            <div class="flex min-w-0 flex-1 items-center gap-4">
+              <!-- Imagen del producto -->
+              <img
+                [src]="item.productImage || 'assets/images/placeholder.png'"
+                [alt]="item.productTitle"
+                class="h-20 w-20 shrink-0 rounded-md border border-gray-200 object-cover"
+              />
+
+              <!-- Título, fecha y precio -->
+              <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                <h3 class="m-0 truncate text-base font-medium text-gray-900">
+                  {{ item.productTitle }}
+                </h3>
+
+                <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                  <span>
+                    Comprado el {{ item.createdAt | date: "d 'de' MMM. y" : '' : 'es-AR' }}
+                  </span>
+
+                  <span class="text-gray-300">|</span>
+
+                  <span class="font-semibold text-gray-900">
+                    {{ item.price | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                  </span>
+
+                  @if (item.quantity > 1) {
+                    <span class="text-xs text-gray-500">({{ item.quantity }} u.)</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón Volver a comprar -->
+            <div class="flex shrink-0 justify-end">
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="buyAgain(item, $event)"
+              >
+                Volver a comprar
+              </button>
+            </div>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
