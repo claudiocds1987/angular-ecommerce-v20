@@ -1,12 +1,9 @@
-﻿import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common'; // Importación necesaria
+﻿import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Product } from '@features/products/models/product.model';
 import { Button } from '@shared/components/button/button';
 import { CartService } from '@features/checkout/services/cart-service';
 import { RouterLink } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ProductDetail } from '../../product-detail/product-detail';
-import { ToastService } from '@shared/services/toast-service';
 
 @Component({
   selector: 'app-product-card',
@@ -19,28 +16,14 @@ import { ToastService } from '@shared/services/toast-service';
 export class ProductCard {
   product = input.required<Product>();
   cartService = inject(CartService);
+  viewDetail = output<number>();
+  addToCart = output<Product>();
 
-  private _toastService = inject(ToastService);
-  private _matDialog = inject(MatDialog);
-
-  addToCart(product: Product) {
-    const isProductRepeated = this.cartService.checkItemsRepeated(product.id);
-    if (isProductRepeated) {
-      this._toastService.show(`El producto ya esta en el carrito`, 'warning');
-      return;
-    }
-    this.cartService.addToCart(product);
-    this._toastService.show(`El producto se agregó al carrito`, 'success');
+  onAddToCart(): void {
+    this.addToCart.emit(this.product());
   }
 
-  openDetailModal(): void {
-    this._matDialog.open(ProductDetail, {
-      data: this.product().id, // Enviamos el id producto al componente ProductDetail
-      width: '1000px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      autoFocus: false,
-      backdropClass: 'custom-modal-backdrop', // Esta clase esta definida en styles.scss para que elefecto desenfoque funcione en todo el body
-    });
+  onViewDetail(): void {
+    this.viewDetail.emit(this.product().id);
   }
 }

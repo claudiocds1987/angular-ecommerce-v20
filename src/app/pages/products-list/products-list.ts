@@ -20,6 +20,10 @@ import { ProductFilter } from './product-filter/product-filter';
 import { CarouselComponent } from '@shared/components/carousel/carousel.component';
 import { ProductStore } from '@features/products/state/product.store';
 import { Button } from '@shared/components/button/button';
+import { ProductDetail } from '@pages/product-detail/product-detail';
+import { MatDialog } from '@angular/material/dialog';
+import { CartService } from '@features/checkout/services/cart-service';
+import { ToastService } from '@shared/services/toast-service';
 
 @Component({
   selector: 'app-products-list',
@@ -44,6 +48,9 @@ export class ProductsList implements OnInit {
   private _productsService = inject(ProductService);
   private _titleService = inject(Title);
   private _metaService = inject(Meta);
+  private _matDialog = inject(MatDialog);
+  private _cartService = inject(CartService);
+  private _toastService = inject(ToastService);
 
   private _queryState = computed(() => ({
     filters: this.currentFilters(),
@@ -71,6 +78,27 @@ export class ProductsList implements OnInit {
       content:
         'Explora nuestra amplia variedad de productos de la mejor calidad. Encuentra lo que buscas al mejor precio.',
     });
+  }
+
+  openDetailModal(productId: number): void {
+    this._matDialog.open(ProductDetail, {
+      data: productId,
+      width: '1000px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      backdropClass: 'custom-modal-backdrop', // Esta clase esta definida en styles.scss para que elefecto desenfoque funcione en todo el body
+    });
+  }
+
+  addToCart(product: Product) {
+    const isProductRepeated = this._cartService.checkItemsRepeated(product.id);
+    if (isProductRepeated) {
+      this._toastService.show(`El producto ya esta en el carrito`, 'warning');
+      return;
+    }
+    this._cartService.addToCart(product);
+    this._toastService.show(`El producto se agregó al carrito`, 'success');
   }
 
   /*   private _loadCarouselProducts() {

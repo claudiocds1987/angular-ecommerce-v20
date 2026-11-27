@@ -130,7 +130,11 @@
     >
       @for (item of productStore.items(); track item.id) {
         <li class="animate-in fade-in duration-500">
-          <app-product-card [product]="item" />
+          <app-product-card
+            [product]="item"
+            (viewDetail)="openDetailModal($event)"
+            (addToCart)="addToCart($event)"
+          />
         </li>
       }
 
