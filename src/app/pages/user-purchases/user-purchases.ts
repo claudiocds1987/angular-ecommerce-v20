@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { PurchasesStore } from '@features/purchases/store/purchases.store';
@@ -36,6 +36,7 @@ import { PurchaseCard } from './purchase-card/purchase-card';
   selector: 'app-user-purchases',
   styleUrl: './user-purchases.scss',
   templateUrl: './user-purchases.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserPurchases {
   readonly purchasesStore = inject(PurchasesStore);

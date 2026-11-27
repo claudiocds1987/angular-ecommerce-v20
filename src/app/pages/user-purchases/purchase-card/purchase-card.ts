@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MyPurchaseItem } from '@features/purchases/models/purchase.model';
@@ -10,6 +10,7 @@ import { MyPurchaseItem } from '@features/purchases/models/purchase.model';
   selector: 'app-purchase-card',
   styleUrl: './purchase-card.scss',
   templateUrl: './purchase-card.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseCard {
   item = input.required<MyPurchaseItem>();
