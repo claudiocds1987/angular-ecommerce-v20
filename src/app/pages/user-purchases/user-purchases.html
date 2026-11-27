@@ -71,53 +71,7 @@
   } @else {
     <div class="flex flex-col gap-3">
       @for (item of purchases(); track item.orderId + '-' + item.productId) {
-        <mat-card appearance="outlined" class="cursor-pointer transition-shadow hover:shadow-md">
-          <div class="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
-            <div class="flex min-w-0 flex-1 items-center gap-4">
-              <!-- Imagen del producto -->
-              <img
-                [src]="item.productImage || 'assets/images/placeholder.png'"
-                [alt]="item.productTitle"
-                class="h-20 w-20 shrink-0 rounded-md border border-gray-200 object-cover"
-              />
-
-              <!-- Título, fecha y precio -->
-              <div class="flex min-w-0 flex-1 flex-col gap-1.5">
-                <h3 class="m-0 truncate text-base font-medium text-gray-900">
-                  {{ item.productTitle }}
-                </h3>
-
-                <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                  <span>
-                    Comprado el {{ item.createdAt | date: "d 'de' MMM. y" : '' : 'es-AR' }}
-                  </span>
-
-                  <span class="text-gray-300">|</span>
-
-                  <span class="font-semibold text-gray-900">
-                    {{ item.price | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
-                  </span>
-
-                  @if (item.quantity > 1) {
-                    <span class="text-xs text-gray-500">({{ item.quantity }} u.)</span>
-                  }
-                </div>
-              </div>
-            </div>
-
-            <!-- Botón Volver a comprar -->
-            <div class="flex shrink-0 justify-end">
-              <button
-                mat-flat-button
-                color="primary"
-                type="button"
-                (click)="buyAgain(item.productId, $event)"
-              >
-                Volver a comprar
-              </button>
-            </div>
-          </div>
-        </mat-card>
+        <app-purchase-card [item]="item" (buyAgain)="buyAgain($event)" />
       }
     </div>
   }

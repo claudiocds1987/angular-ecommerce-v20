@@ -1,4 +1,3 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -18,12 +17,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ProductDetail } from '@pages/product-detail/product-detail';
 import { AuthStore } from '@features/auth/state/auth.store';
+import { PurchaseCard } from './purchase-card/purchase-card';
 
 @Component({
   standalone: true,
   imports: [
-    CurrencyPipe,
-    DatePipe,
     MatCard,
     MatProgressSpinnerModule,
     MatIconModule,
@@ -33,6 +31,7 @@ import { AuthStore } from '@features/auth/state/auth.store';
     FormField,
     MatButtonModule,
     MatDialogModule,
+    PurchaseCard,
   ],
   selector: 'app-user-purchases',
   styleUrl: './user-purchases.scss',
@@ -96,9 +95,7 @@ export class UserPurchases {
     this.purchasesStore.resetFilters(this.userId);
   }
 
-  buyAgain(productId: number, event: Event): void {
-    // Evita que se dispare el (click) de la mat-card que lleva al detalle del producto
-    event.stopPropagation();
+  buyAgain(productId: number): void {
     this._openDetailModal(productId);
   }
 
